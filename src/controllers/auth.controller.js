@@ -13,13 +13,13 @@ export const signUp = async(req, res) => {
         case '/auth/admin/register':
             req.body.tipoUsuario = 'administradores'
             break;
-        case '/auth/profesor/register':
+        case '/auth/teacher/register':
             req.body.tipoUsuario = 'profesores'
             break
-        case '/auth/alumno/register':
+        case '/auth/student/register':
             req.body.tipoUsuario = 'alumnos'
             break
-        case '/auth/familia/register':
+        case '/auth/family/register':
             req.body.tipoUsuario = 'familias'
             break
     }

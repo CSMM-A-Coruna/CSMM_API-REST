@@ -16,3 +16,12 @@ db.connect(function(err) {
     console.log(err)
   }
 })
+
+export const executeQuery = (query) => {
+  return new Promise((resolve, reject) => {
+    db.query(query, (error, results, fields) => {
+      if(error) return reject(error)
+      return resolve(results)
+    })
+  })
+}
