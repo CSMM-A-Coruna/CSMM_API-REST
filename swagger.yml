@@ -74,37 +74,39 @@ components:
     ObjetoComunicacion:
       type: object
       required:
-        - idComunicacion
-        - idRemite
-        - idDestino
-        - tipoRemite
-        - tipoDestino
+        - id_comunicacion
+        - id_remite
+        - id_destino
+        - tipo_remite
+        - tipo_destino
+        - id_alumnoAsociado
         - asunto
         - texto
-        - fecha
-        - nombreRemite
-        - nombreDestino
+        - fecha 
+        - nombre_alumnoAsociado
+        - nombre_remite
+        - nombre_destino
       properties:
-        idComunicacion:
+        id_comunicacion:
           type: integer
           description: ID de la comunicaciónº
-        idRemite:
+        id_remite:
           type: integer
           description: ID del remite
-        idDestino:
+        id_destino:
           type: integer
           description: ID del destino
-        alumnoAsociado:
-          type: string
-          description: Nombre del alumno asociado
-        tipoRemite:
+        tipo_remite:
           type: string
           enum: [alumno, familia, profesor]
           description: Tipo de remite
-        tipoDestino:
+        tipo_destino:
           type: string
           enum: [alumno, familia, profesor]
           description: Tipo de destino
+        id_alumnoAsociado:
+          type: string
+          description: Nombre del alumno asociado
         asunto:
           type: string
           description: Asunto de la comunicación
@@ -115,10 +117,21 @@ components:
           type: string
           format: date
           description: Fecha de la comunicación 
-        nombreRemite:
+        leida:
+          type: string
+          format: date
+          description: Fecha de lectura
+        eliminado:
+          type: string
+          format: date
+          description: Fecha de eliminado
+        nombre_alumnoAsociado:
+          type: string
+          description: Nombre del alumno asociado
+        nombre_remite:
           type: string
           description: Nombre del remite
-        nombreDestino: 
+        nombre_destino: 
           type: string
           description: Nombre del destino
     NuevaComunicacionCuerpoPeticion:
@@ -234,12 +247,12 @@ paths:
           description: La petición ha fallado porque la contraseña es incorrecta
         "404":
           description: La petición ha fallado porque el usuario no existe
-  /comms/received/:user_id/:tipo_destino:
+  /comms/received/:user_id:
     get:
       tags:
         - Comunicaciones
       description: |
-        Devuelve una lista de todas las comunicaciones recibidas del usuario
+        Devuelve una lista de todas las comunicaciones recibidas de la familia
       security:
         - BearerAuth: [read]
       parameters:
@@ -249,12 +262,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: tipo_destino
-          in: path
-          description: Tipo de destino
-          required: true
-          schema:
-            enum: [1, 2, 3]
         - name: Authorization
           in: header
           description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
@@ -272,28 +279,20 @@ paths:
                 items:
                   $ref: "#/components/schemas/ObjetoComunicacion"
               example:
-                - idComunicacion: 5
-                  idRemite: 9
-                  idDestino: 3
-                  alumnoAsociado: "Juan Rodríguez"
-                  tipoRemite: familia
-                  tipoDestino: profesores
-                  asunto: Asunto de la Comunicación
-                  texto: Mensaje de la Comunicación
-                  fecha: 2022-03-18T08:30:00.000Z
-                  nombreRemite: María del Carmen Miramontes Blanco
-                  nombreDestino: Elena Blanco Hernández
-                - idComunicacion: 3
-                  idRemite: 4
-                  idDestino: 3
-                  alumnoAsociado: null
-                  tipoRemite: familia
-                  tipoDestino: profesores
-                  asunto: Asunto de la Comunicación
-                  texto: Mensaje de la Comunicación
-                  fecha: 2022-03-18T08:30:00.000Z
-                  nombreRemite: María del Carmen Miramontes Blanco
-                  nombreDestino: Elena Blanco Hernández
+                - id_comunicacion: 3
+                  id_remite: 2
+                  id_destino: 2
+                  tipo_remite: 2
+                  tipo_destino: 3
+                  id_alumnoAsociado: 4
+                  asunto: Calificaciones 2º Trimestre
+                  texto: Prueba...
+                  fecha: 2022-03-22 13:00:00
+                  leida: null
+                  eliminado: null
+                  nombre_alumnoAsociado: Mario García Pérez
+                  nombre_remite: Juana María Pérez
+                  nombre_destino: Pedro López
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
