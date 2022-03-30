@@ -1,0 +1,424 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: GestorEscolarAPI
+  description: API REST Gestor Escolar.
+servers:
+  - url: https://api.csmm.es/v1
+tags:
+  - name: Auth
+    description: Todo lo relacionado con autentificación
+  - name: Comunicaciones
+    description: Todo lo relacionado con las publicaciones que realizan los usuarios
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    NuevoUsuarioCuerpoPeticion:
+      type: object
+      required:
+        - usuario
+        - password
+        - nombre
+        - apellido1
+        - apellido2
+        - dni
+        - oa
+      properties:
+        usuario:
+          type: string
+          description: Usuario
+        password:
+          type: string
+          format: password
+          description: Contraseña creada por el usuario
+        nombre:
+          type: string
+          description: Nombre del usuario
+        apellido1:
+          type: string
+          description: Primer apellido del usuario
+        apellido2:
+          type: string
+          description: Segundo apellido del usuario
+        dni:
+          type: string
+          description: DNI del usuario
+        oa:
+          type: string
+          description: Chico/chica
+    LoginUsuarioCuerpoRespuesta:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: JWT (Json Web Token), en el payload, vendrán todos los datos. Habrá que decodearlo. Se usará como autentificación en todas las peticiones.
+    LoginUsuarioCuerpoPeticion:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: Correo electrónico del usuario
+        password:
+          type: string
+          format: password
+          description: Contraseña creada por el usuario
+    ObjetoComunicacion:
+      type: object
+      required:
+        - idComunicacion
+        - idRemite
+        - idDestino
+        - tipoRemite
+        - tipoDestino
+        - asunto
+        - texto
+        - fecha
+        - nombreRemite
+        - nombreDestino
+      properties:
+        idComunicacion:
+          type: integer
+          description: ID de la comunicaciónº
+        idRemite:
+          type: integer
+          description: ID del remite
+        idDestino:
+          type: integer
+          description: ID del destino
+        alumnoAsociado:
+          type: string
+          description: Nombre del alumno asociado
+        tipoRemite:
+          type: string
+          enum: [alumno, familia, profesor]
+          description: Tipo de remite
+        tipoDestino:
+          type: string
+          enum: [alumno, familia, profesor]
+          description: Tipo de destino
+        asunto:
+          type: string
+          description: Asunto de la comunicación
+        texto:
+          type: string
+          description: Texto/Cuerpo de la comunicación
+        fecha:
+          type: string
+          format: date
+          description: Fecha de la comunicación 
+        nombreRemite:
+          type: string
+          description: Nombre del remite
+        nombreDestino: 
+          type: string
+          description: Nombre del destino
+    NuevaComunicacionCuerpoPeticion:
+      type: object
+      required:
+        - user_id
+        - title
+        - desc
+        - requested_date
+        - published_state
+        - images
+        - latitude
+        - longitude
+      properties:
+        user_id:
+          type: string
+          description: ID del usuario que crea la publicación
+        title:
+          type: string
+          description: Título del trabajador
+        desc:
+          type: string
+          description: Descripción del post
+        requested_date:
+          type: string
+          enum: [urgent, days, months]
+          description: Fecha de disponibilidad del cliente para realizar el trabajo publicado
+        images:
+          type: array
+          items:
+            type: string
+          description: Todas las imágenes de la publicación en un array encodeadas en base64
+          uniqueItems: true
+        latitude:
+          type: integer
+          description: Latitud de la publicación.
+        longitude:
+          type: integer
+          description: Longitud de la publicación
+paths:
+  /auth/register/:tipo_usuario:
+    post:
+      tags:
+        - Auth
+      description: |
+        Registra un nuevo usuario
+      parameters:
+        - name: tipoUsuario
+          in: query
+          description: Tipo de usuario [teacher, admin, student, family]
+          required: true
+          schema:
+            type: string
+          example: teacher
+      requestBody:
+        description: |
+          Datos del nuevo usuario.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NuevoUsuarioCuerpoPeticion"
+            examples:
+              example1:
+                summary: Nuevo usuario con todos los datos
+                value:
+                  usuario: javimr
+                  password: 1234ad
+                  nombre: Javier,
+                  apellido1: Miralles,
+                  apellido2: Rancano,
+                  dni: 48116360S,
+                  oa: o
+      responses:
+        "201":
+          description: Creado con éxito
+        "400":
+          description: La petición ha fallado porque alguno de los parámetros falta o no es válido
+        "409":
+          description: La petición ha fallado porque ya existe un usuario registrado con ese email o teléfono
+  /auth/login:
+    post:      
+      tags:
+        - Auth
+      description: |
+        Permite a un usuario hacer login. Se recibe la contraseña y se devuelve un token de acceso.
+
+        Las aplicaciones cliente deben almacenar el token de acceso para usarlo en futuras peticiones que requieren autenticación, donde se mandará como cabecera HTTP.
+      requestBody:
+        description: |
+          Datos del nuevo usuario.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginUsuarioCuerpoPeticion"
+            example:
+              email: pepedepura@csmm.es
+              password: mypass1234
+      responses:
+        "200":
+          description: |
+            Usuario logueado con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o son inválidos
+        "401":
+          description: La petición ha fallado porque la contraseña es incorrecta
+        "404":
+          description: La petición ha fallado porque el usuario no existe
+  /comms/received/:user_id/:tipo_destino:
+    get:
+      tags:
+        - Comunicaciones
+      description: |
+        Devuelve una lista de todas las comunicaciones recibidas del usuario
+      security:
+        - BearerAuth: [read]
+      parameters:
+        - name: user_id
+          in: path
+          description: ID del usuario
+          required: true
+          schema:
+            type: string
+        - name: tipo_destino
+          in: path
+          description: Tipo de destino
+          required: true
+          schema:
+            enum: [1, 2, 3]
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
+      responses:
+        "200":
+          description: Lista de las comunicaciones del usuario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ObjetoComunicacion"
+              example:
+                - idComunicacion: 5
+                  idRemite: 9
+                  idDestino: 3
+                  alumnoAsociado: "Juan Rodríguez"
+                  tipoRemite: familia
+                  tipoDestino: profesores
+                  asunto: Asunto de la Comunicación
+                  texto: Mensaje de la Comunicación
+                  fecha: 2022-03-18T08:30:00.000Z
+                  nombreRemite: María del Carmen Miramontes Blanco
+                  nombreDestino: Elena Blanco Hernández
+                - idComunicacion: 3
+                  idRemite: 4
+                  idDestino: 3
+                  alumnoAsociado: null
+                  tipoRemite: familia
+                  tipoDestino: profesores
+                  asunto: Asunto de la Comunicación
+                  texto: Mensaje de la Comunicación
+                  fecha: 2022-03-18T08:30:00.000Z
+                  nombreRemite: María del Carmen Miramontes Blanco
+                  nombreDestino: Elena Blanco Hernández
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque el user_id no existe
+  /comms/sent/:user_id/:tipo_remite:
+    get:
+      tags:
+        - Comunicaciones
+      description: |
+        Devuelve una lista de todas las comunicaciones enviados por el usuario
+      security:
+        - BearerAuth: [read]
+      parameters:
+        - name: user_id
+          in: path
+          description: ID del usuario
+          required: true
+          schema:
+            type: string
+        - name: tipo_remite
+          in: path
+          description: Tipo de remite
+          required: true
+          schema:
+            enum: [1, 2, 3]
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
+      responses:
+        "200":
+          description: Lista de las comunicaciones enviadas del usuario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ObjetoComunicacion"
+              example:
+                - idComunicacion: 5
+                  idRemite: 9
+                  idDestino: 3
+                  tipoRemite: familia
+                  tipoDestino: profesores
+                  asunto: Asunto de la Comunicación
+                  texto: Mensaje de la Comunicación
+                  fecha: 2022-03-18T08:30:00.000Z
+                  nombreRemite: María del Carmen Miramontes Blanco
+                  nombreDestino: Elena Blanco Hernández
+                - idComunicacion: 3
+                  idRemite: 4
+                  idDestino: 3
+                  tipoRemite: familia
+                  tipoDestino: profesores
+                  asunto: Asunto de la Comunicación
+                  texto: Mensaje de la Comunicación
+                  fecha: 2022-03-18T08:30:00.000Z
+                  nombreRemite: María del Carmen Miramontes Blanco
+                  nombreDestino: Elena Blanco Hernández
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque el user_id no existe
+  /comms/send:
+    post:
+      tags:
+        - Comunicaciones
+      description: |
+        Devuelve una lista de todas las comunicaciones recibidas del usuario
+      security:
+        - BearerAuth: [read]
+      parameters:
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
+      responses:
+        "200":
+          description: Lista de las comunicaciones del usuario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NuevaComunicacionCuerpoPeticion"
+              example:
+                - idComunicacion: 5
+                  idRemite: 9
+                  idDestino: 3
+                  tipoRemite: familia
+                  tipoDestino: profesores
+                  asunto: Asunto de la Comunicación
+                  texto: Mensaje de la Comunicación
+                  fecha: 2022-03-18T08:30:00.000Z
+                  nombreRemite: María del Carmen Miramontes Blanco
+                  nombreDestino: Elena Blanco Hernández
+                - idComunicacion: 3
+                  idRemite: 4
+                  idDestino: 3
+                  tipoRemite: familia
+                  tipoDestino: profesores
+                  asunto: Asunto de la Comunicación
+                  texto: Mensaje de la Comunicación
+                  fecha: 2022-03-18T08:30:00.000Z
+                  nombreRemite: María del Carmen Miramontes Blanco
+                  nombreDestino: Elena Blanco Hernández
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque el user_id no existe
