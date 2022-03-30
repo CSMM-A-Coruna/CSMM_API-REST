@@ -9,17 +9,17 @@ const tipoUsuarios = ['administradores', 'profesores', 'alumnos', 'familias']
 // Registro
 export const signUp = async(req, res) => {
     // Comprobamos que tipo de usuario es
-    switch(req.path) {
-        case '/auth/admin/register':
+    switch(req.query.tipoUsuario) {
+        case 'admin':
             req.body.tipoUsuario = 'administradores'
             break;
-        case '/auth/teacher/register':
+        case 'teacher':
             req.body.tipoUsuario = 'profesores'
             break
-        case '/auth/student/register':
+        case 'student':
             req.body.tipoUsuario = 'alumnos'
             break
-        case '/auth/family/register':
+        case 'family':
             req.body.tipoUsuario = 'familias'
             break
     }

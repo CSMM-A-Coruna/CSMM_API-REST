@@ -5,10 +5,8 @@ import morgan from 'morgan'
 import helmet from 'helmet'
 import cors from 'cors'
 import Routes from './routes/routes'
-import { db } from './database'
 
 const app = express()
-
  
 // Definir el puerto
 app.set('port', config.port)
@@ -16,6 +14,8 @@ app.set('port', config.port)
 // ---- LOGGER ----
 // Le decimos que utilice morgan como logger
 app.use(morgan('dev'))
+// Desactivamos response 304
+app.disable('etag');
 
 // ---- JSON y URLEncoded ----
 app.use(express.json())
