@@ -1,33 +1,38 @@
 import { db, executeQuery } from '../database'
 
 class Comunicacion {
-    constructor(idComunicacion, idRemite, idDestino, tipoRemite, tipoDestino, asunto, texto, fecha) {
-        this.idComunicacion = idComunicacion
-        this.idRemite = idRemite,
-        this.idDestino = idDestino,
-        this.tipoRemite = null,
-        this.tipoDestino = null,
+    constructor(id_comunicacion, id_remite, id_destino, id_alumnoAsociado, asunto, texto, importante, fecha, leida, eliminado, nombre_alumnoAsociado) {
+        this.id_comunicacion = id_comunicacion
+        this.id_remite = id_remite,
+        this.id_destino = id_destino,
+        this.tipo_remite = null,
+        this.tipo_destino = null,
+        this.id_alumnoAsociado = id_alumnoAsociado
         this.asunto = asunto,
         this.texto = texto,
+        this.importante = importante
         this.fecha = fecha,
-        this.nombreRemite = null,
-        this.nombreDestino = null
+        this.leida = leida,
+        this.eliminado = eliminado,
+        this.nombre_alumnoAsociado = nombre_alumnoAsociado,
+        this.nombre_remite = null,
+        this.nombre_destino = null
     }
     
 
     // Calculamos el tipo de remite y destino según el número (1 = alumnos, 2 = familias, 3 = profesores)
     calcularTipoRemite(tipo) {
         const tipos = ['', 'alumnos', 'familias', 'profesores']
-        this.tipoRemite = tipos[tipo]
+        this.tipo_remite = tipos[tipo]
     }
 
     calcularTipoDestino(tipo) {
         const tipos = ['', 'alumnos', 'familias', 'profesores']
-        this.tipoDestino = tipos[tipo]
+        this.tipo_destino = tipos[tipo]
     }
 
     calcularNombreRemite() {
-        const query = `SELECT * FROM ${this.tipoRemite} WHERE id = ${this.idDestino}`
+        const query = `SELECT * FROM ${this.tipo_remite} WHERE id = ${this.id_destino}`
         return new Promise((resolve, reject) => {
             db.query(query, (error, results, fields) => {
                 if(error) return reject(error)
@@ -37,7 +42,7 @@ class Comunicacion {
     }
 
     calcularNombreDestino() {
-        const query = `SELECT * FROM ${this.tipoDestino} WHERE id = ${this.idDestino}`
+        const query = `SELECT * FROM ${this.tipo_destino} WHERE id = ${this.id_destino}`
         return new Promise((resolve, reject) => {
             db.query(query, (error, results, fields) => {
                 if(error) return reject(error)

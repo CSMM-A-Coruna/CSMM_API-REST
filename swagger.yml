@@ -82,6 +82,7 @@ components:
         - id_alumnoAsociado
         - asunto
         - texto
+        - importante
         - fecha 
         - nombre_alumnoAsociado
         - nombre_remite
@@ -113,6 +114,9 @@ components:
         texto:
           type: string
           description: Texto/Cuerpo de la comunicación
+        importante:
+          type: string
+          description: 0 = no, 1 = si
         fecha:
           type: string
           format: date
@@ -287,7 +291,8 @@ paths:
                   id_alumnoAsociado: 4
                   asunto: Calificaciones 2º Trimestre
                   texto: Prueba...
-                  fecha: 2022-03-22 13:00:00
+                  importante: 0
+                  fecha: "2022-03-22 13:00:00"
                   leida: null
                   eliminado: null
                   nombre_alumnoAsociado: Mario García Pérez
@@ -301,7 +306,7 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el user_id no existe
-  /comms/sent/:user_id/:tipo_remite:
+  /comms/sent/:user_id:
     get:
       tags:
         - Comunicaciones
@@ -316,12 +321,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: tipo_remite
-          in: path
-          description: Tipo de remite
-          required: true
-          schema:
-            enum: [1, 2, 3]
         - name: Authorization
           in: header
           description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
@@ -339,26 +338,36 @@ paths:
                 items:
                   $ref: "#/components/schemas/ObjetoComunicacion"
               example:
-                - idComunicacion: 5
-                  idRemite: 9
-                  idDestino: 3
-                  tipoRemite: familia
-                  tipoDestino: profesores
-                  asunto: Asunto de la Comunicación
-                  texto: Mensaje de la Comunicación
-                  fecha: 2022-03-18T08:30:00.000Z
-                  nombreRemite: María del Carmen Miramontes Blanco
-                  nombreDestino: Elena Blanco Hernández
-                - idComunicacion: 3
-                  idRemite: 4
-                  idDestino: 3
-                  tipoRemite: familia
-                  tipoDestino: profesores
-                  asunto: Asunto de la Comunicación
-                  texto: Mensaje de la Comunicación
-                  fecha: 2022-03-18T08:30:00.000Z
-                  nombreRemite: María del Carmen Miramontes Blanco
-                  nombreDestino: Elena Blanco Hernández
+                - id_comunicacion: 3
+                  id_remite: 2
+                  id_destino: 2
+                  tipo_remite: 2
+                  tipo_destino: 3
+                  id_alumnoAsociado: 4
+                  asunto: Calificaciones 2º Trimestre
+                  texto: Prueba...
+                  importante: 0
+                  fecha: "2022-03-22 13:00:00"
+                  leida: null
+                  eliminado: null
+                  nombre_alumnoAsociado: Mario García Pérez
+                  nombre_remite: Juana María Pérez
+                  nombre_destino: Pedro López
+                - id_comunicacion: 3
+                  id_remite: 2
+                  id_destino: 2
+                  tipo_remite: 2
+                  tipo_destino: 3
+                  id_alumnoAsociado: 4
+                  asunto: Calificaciones 2º Trimestre
+                  texto: Prueba...
+                  importante: 0
+                  fecha: "2022-03-22 13:00:00"
+                  leida: null
+                  eliminado: null
+                  nombre_alumnoAsociado: Mario García Pérez
+                  nombre_remite: Juana María Pérez
+                  nombre_destino: Pedro López
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
@@ -393,26 +402,36 @@ paths:
                 items:
                   $ref: "#/components/schemas/NuevaComunicacionCuerpoPeticion"
               example:
-                - idComunicacion: 5
-                  idRemite: 9
-                  idDestino: 3
-                  tipoRemite: familia
-                  tipoDestino: profesores
-                  asunto: Asunto de la Comunicación
-                  texto: Mensaje de la Comunicación
-                  fecha: 2022-03-18T08:30:00.000Z
-                  nombreRemite: María del Carmen Miramontes Blanco
-                  nombreDestino: Elena Blanco Hernández
-                - idComunicacion: 3
-                  idRemite: 4
-                  idDestino: 3
-                  tipoRemite: familia
-                  tipoDestino: profesores
-                  asunto: Asunto de la Comunicación
-                  texto: Mensaje de la Comunicación
-                  fecha: 2022-03-18T08:30:00.000Z
-                  nombreRemite: María del Carmen Miramontes Blanco
-                  nombreDestino: Elena Blanco Hernández
+                - id_comunicacion: 3
+                  id_remite: 2
+                  id_destino: 2
+                  tipo_remite: 2
+                  tipo_destino: 3
+                  id_alumnoAsociado: 4
+                  asunto: Calificaciones 2º Trimestre
+                  texto: Prueba...
+                  importante: 0
+                  fecha: "2022-03-22 13:00:00"
+                  leida: null
+                  eliminado: null
+                  nombre_alumnoAsociado: Mario García Pérez
+                  nombre_remite: Juana María Pérez
+                  nombre_destino: Pedro López
+                - id_comunicacion: 3
+                  id_remite: 2
+                  id_destino: 2
+                  tipo_remite: 2
+                  tipo_destino: 3
+                  id_alumnoAsociado: 4
+                  asunto: Calificaciones 2º Trimestre
+                  texto: Prueba...
+                  importante: 0
+                  fecha: "2022-03-22 13:00:00"
+                  leida: null
+                  eliminado: null
+                  nombre_alumnoAsociado: Mario García Pérez
+                  nombre_remite: Juana María Pérez
+                  nombre_destino: Pedro López
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
@@ -421,3 +440,46 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el user_id no existe
+  /comms/update/:id_com/:state:
+    post:
+      tags:
+        - Comunicaciones
+      description: |
+        Actualiza el estado de una comunicación
+      security:
+        - BearerAuth: [read]
+      parameters:
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
+        - name: id_com
+          in: query
+          description: ID de la comunicación
+          required: true
+          schema:
+            type: integer
+        - name: state
+          in: query
+          description: Estado que se quiere actualizar
+          required: true
+          schema:
+            type: string
+            enum:
+              - importante
+              - leido
+              - eliminado
+      responses:
+        "200":
+          description: Comunicación actualizada con éxito
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque la comunicación no existe

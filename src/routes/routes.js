@@ -18,6 +18,8 @@ router.get('/comms/received', authJwt.verifyToken, commsController.getAllCommsRe
 router.get('/comms/sent', authJwt.verifyToken, commsController.getAllCommsSent)
 // Enviar comunicación
 router.post('/comms/send', authJwt.verifyToken, commsController.sendCom)
+// Actualizar comunicación
+router.post('/comms/update', authJwt.verifyToken, commsController.updateCom)
 
     
 export default router
