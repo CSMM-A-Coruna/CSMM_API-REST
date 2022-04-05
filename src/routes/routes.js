@@ -12,10 +12,14 @@ router.post('/auth/login', authController.signIn)
 router.post('/auth/register', authController.signUp)
 
 // -- Comunicaciones (JWT Required) --
+// Todas las comunicaciones
+router.get('/comms', authJwt.verifyToken, commsController.getAllComms)
 // Comunicaciones recibidas
 router.get('/comms/received', authJwt.verifyToken, commsController.getAllCommsReceived)
 // Comunicaciones enviadas
 router.get('/comms/sent', authJwt.verifyToken, commsController.getAllCommsSent)
+// Comunicaciones borradas
+router.get('/comms/deleted', authJwt.verifyToken, commsController.getAllCommsDeleted)
 // Enviar comunicación
 router.post('/comms/send', authJwt.verifyToken, commsController.sendCom)
 // Actualizar comunicación

@@ -1,7 +1,7 @@
 import { db, executeQuery } from '../database'
 
 class Comunicacion {
-    constructor(id_comunicacion, id_remite, id_destino, id_alumnoAsociado, asunto, texto, importante, fecha, leida, eliminado, nombre_alumnoAsociado) {
+    constructor(id_comunicacion, id_remite, id_destino, id_alumnoAsociado, asunto, texto, importante, fecha, leida, eliminado, estado, nombre_alumnoAsociado) {
         this.id_comunicacion = id_comunicacion
         this.id_remite = id_remite,
         this.id_destino = id_destino,
@@ -14,6 +14,7 @@ class Comunicacion {
         this.fecha = fecha,
         this.leida = leida,
         this.eliminado = eliminado,
+        this.estado = estado,
         this.nombre_alumnoAsociado = nombre_alumnoAsociado,
         this.nombre_remite = null,
         this.nombre_destino = null
@@ -32,7 +33,7 @@ class Comunicacion {
     }
 
     calcularNombreRemite() {
-        const query = `SELECT * FROM ${this.tipo_remite} WHERE id = ${this.id_destino}`
+        const query = `SELECT * FROM ${this.tipo_remite} WHERE id = ${this.id_remite}`
         return new Promise((resolve, reject) => {
             db.query(query, (error, results, fields) => {
                 if(error) return reject(error)
