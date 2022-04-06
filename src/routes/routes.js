@@ -10,6 +10,8 @@ const router = Router()
 router.post('/auth/login', authController.signIn)
 // Registrar un usuario nuevo
 router.post('/auth/register', authController.signUp)
+// Verificar datos una vez ya está logeado
+router.post('/auth/update', authJwt.verifyToken, authController.compareData)
 
 // -- Comunicaciones (JWT Required) --
 // Todas las comunicaciones

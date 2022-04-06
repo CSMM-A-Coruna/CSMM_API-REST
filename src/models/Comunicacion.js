@@ -1,7 +1,7 @@
 import { db, executeQuery } from '../database'
 
 class Comunicacion {
-    constructor(id_comunicacion, id_remite, id_destino, id_alumnoAsociado, asunto, texto, importante, fecha, leida, eliminado, estado, nombre_alumnoAsociado) {
+    constructor(id_comunicacion, id_remite, id_destino, id_alumnoAsociado, asunto, texto, importante, fecha, leida, eliminado, estado, nombre_alumnoAsociado, nombre_remite, nombre_destino) {
         this.id_comunicacion = id_comunicacion
         this.id_remite = id_remite,
         this.id_destino = id_destino,
@@ -16,8 +16,8 @@ class Comunicacion {
         this.eliminado = eliminado,
         this.estado = estado,
         this.nombre_alumnoAsociado = nombre_alumnoAsociado,
-        this.nombre_remite = null,
-        this.nombre_destino = null
+        this.nombre_remite = nombre_remite,
+        this.nombre_destino = nombre_destino
     }
     
 

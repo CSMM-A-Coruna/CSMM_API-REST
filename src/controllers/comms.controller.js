@@ -4,10 +4,12 @@ import Comunicacion from '../models/Comunicacion'
 export const getAllCommsReceived = async (req, res) => {
     try {
         if(req.query.user_id) {
-            const query = `SELECT * FROM comunicaciones_generales WHERE tipodestino = 2 AND iddestino = ${req.query.user_id} AND comunicaciones_generales.eliminado IS NULL ORDER BY comunicaciones_generales.fecha DESC`
+            const query = `SELECT *, nombreRemite(comunicaciones_generales.tiporemite, comunicaciones_generales.idremite) AS nombreRemite, nombreDestino(comunicaciones_generales.tipodestino, comunicaciones_generales.iddestino) AS nombreDestino
+                            FROM comunicaciones_generales
+                            WHERE tipodestino = 2 AND iddestino = ${req.query.user_id} AND comunicaciones_generales.eliminado IS NULL ORDER BY comunicaciones_generales.fecha DESC`
             const result = await executeQuery(query)
-            let comms = []
             if(result.length) {
+                let comms = []
                 for (let index = 0; index < result.length; index++) {
                     const com = new Comunicacion(
                         result[index].idcomunicacion, 
@@ -21,11 +23,18 @@ export const getAllCommsReceived = async (req, res) => {
                         result[index].leida,
                         result[index].eliminado,
                         'recibida',
-                        result[index].alumnoAsociado
+                        result[index].alumnoAsociado,
+                        result[index].nombreRemite,
+                        result[index].nombreDestino
                     )
                     com.calcularTipoDestino(result[index].tipodestino)
                     com.calcularTipoRemite(result[index].tiporemite)
-                    com.calcularNombreDestino().then(data => {
+                    //!TODO Calcular nombre remite y destino
+                    comms.push(com)
+                    if(!result[index+1]) {
+                        res.status(200).json(comms)
+                    }
+                    /*com.calcularNombreDestino().then(data => {
                         com.nombre_destino = data[0].nombre + ' ' + data[0].apellido1 + ' ' + data[0].apellido2
                         com.calcularNombreRemite().then(data2 => {
                             com.nombre_remite = data2[0].nombre + ' ' + data2[0].apellido1 + ' ' + data2[0].apellido2
@@ -34,7 +43,7 @@ export const getAllCommsReceived = async (req, res) => {
                                 res.status(200).json(comms)
                             }
                         })
-                    })
+                    })*/
                 }
             } else {
                 throw '404'
