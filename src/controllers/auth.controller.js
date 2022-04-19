@@ -68,7 +68,7 @@ export const signIn = async(req, res) => {
                             const alumnosResult = Usuario.calcularAlumnosAsociados(result[0].id).then(data => {
                                 if(data.length) {
                                     let alumnos = []
-                                    for (let index = 0; index < result.length; index++) {
+                                    for (let index = 0; index < data.length; index++) {
                                         const alumno = new Alumno(
                                             data[index].idAlumno,
                                             data[index].alumnoNombre,
@@ -78,6 +78,7 @@ export const signIn = async(req, res) => {
                                         )
                                         alumnos.push(alumno)
                                     }
+                                    console.log(alumnos)
                                     // Creamos y firmamos el token de autentificación
                                     const token = jwt.sign({
                                         id: result[0].id,
