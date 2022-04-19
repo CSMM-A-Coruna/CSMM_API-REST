@@ -19,7 +19,6 @@
     // Comprobamos que la firma es correcta
     try {
       const decoded = jwt.verify(token, config.jwtSecret)
-      console.log('Token verificado correctamente')
       next()
     } catch(err){
       return res.status(401).json({ message: 'Token invalid' })

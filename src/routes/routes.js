@@ -8,22 +8,24 @@ const router = Router()
 // -- Autentificación --
 // Login
 router.post('/auth/login', authController.signIn)
-// Registrar administrador
-router.post('/auth/admin/register', authController.signUp)
-// Registrar profesor
-router.post('/auth/teacher/register', authController.signUp)
-// Registrar alumno
-router.post('/auth/student/register', authController.signUp)
-// Registrar familia
-router.post('/auth/family/register', authController.signUp)
+// Registrar un usuario nuevo
+router.post('/auth/register', authController.signUp)
+// Verificar datos una vez ya está logeado
+router.post('/auth/update', authJwt.verifyToken, authController.compareData)
 
 // -- Comunicaciones (JWT Required) --
+// Todas las comunicaciones
+router.get('/comms', authJwt.verifyToken, commsController.getAllComms)
 // Comunicaciones recibidas
 router.get('/comms/received', authJwt.verifyToken, commsController.getAllCommsReceived)
 // Comunicaciones enviadas
 router.get('/comms/sent', authJwt.verifyToken, commsController.getAllCommsSent)
+// Comunicaciones borradas
+router.get('/comms/deleted', authJwt.verifyToken, commsController.getAllCommsDeleted)
 // Enviar comunicación
 router.post('/comms/send', authJwt.verifyToken, commsController.sendCom)
+// Actualizar comunicación
+router.post('/comms/update', authJwt.verifyToken, commsController.updateCom)
 
     
 export default router

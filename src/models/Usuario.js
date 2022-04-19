@@ -46,6 +46,16 @@ class Usuario {
             }
         })
     }
+
+    static calcularAlumnosAsociados = async (idUser) => {
+        const query = `SELECT * FROM familias_alumnos WHERE idFamiliar = ${idUser}`
+        return new Promise((resolve, reject) => {
+            db.query(query, (error, results, fields) => {
+                if(error) return reject(error)
+                return resolve(results)
+              })
+          })
+    }
 }
   
 export default Usuario;
