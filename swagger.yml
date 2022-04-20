@@ -6,10 +6,10 @@ info:
 servers:
   - url: https://api.csmm.es/v1
 tags:
-  - name: Auth
+  - name: Auth - /auth
     description: Todo lo relacionado con autentificación
-  - name: Comunicaciones
-    description: Todo lo relacionado con las publicaciones que realizan los usuarios
+  - name: Comunicaciones - /comms
+    description: Todo lo relacionado con las comunicaciones
 components:
   securitySchemes:
     BearerAuth:
@@ -60,7 +60,7 @@ components:
     LoginUsuarioCuerpoPeticion:
       type: object
       required:
-        - email
+        - usuario
         - password
       properties:
         email:
@@ -176,10 +176,10 @@ components:
           type: integer
           description: Longitud de la publicación
 paths:
-  /auth/register/:tipo_usuario:
+  /register/:tipo_usuario:
     post:
       tags:
-        - Auth
+        - Auth - /auth
       description: |
         Registra un nuevo usuario
       parameters:
@@ -216,10 +216,10 @@ paths:
           description: La petición ha fallado porque alguno de los parámetros falta o no es válido
         "409":
           description: La petición ha fallado porque ya existe un usuario registrado con ese email o teléfono
-  /auth/login:
+  /login:
     post:      
       tags:
-        - Auth
+        - Auth - /auth
       description: |
         Permite a un usuario hacer login. Se recibe la contraseña y se devuelve un token de acceso.
 
@@ -233,7 +233,7 @@ paths:
             schema:
               $ref: "#/components/schemas/LoginUsuarioCuerpoPeticion"
             example:
-              email: pepedepura@csmm.es
+              usuario: mariamb
               password: mypass1234
       responses:
         "200":
@@ -251,10 +251,10 @@ paths:
           description: La petición ha fallado porque la contraseña es incorrecta
         "404":
           description: La petición ha fallado porque el usuario no existe
-  /comms/received/:user_id:
+  /received/:user_id:
     get:
       tags:
-        - Comunicaciones
+        - Comunicaciones - /comms
       description: |
         Devuelve una lista de todas las comunicaciones recibidas de la familia
       security:
@@ -306,10 +306,10 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el user_id no existe
-  /comms/sent/:user_id:
+  /sent/:user_id:
     get:
       tags:
-        - Comunicaciones
+        - Comunicaciones - /comms
       description: |
         Devuelve una lista de todas las comunicaciones enviados por el usuario
       security:
@@ -376,10 +376,80 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el user_id no existe
-  /comms/send:
+  /deleted/:user_id:
+    get:
+      tags:
+        - Comunicaciones - /comms
+      description: |
+        Devuelve una lista de todas las comunicaciones enviados por el usuario
+      security:
+        - BearerAuth: [read]
+      parameters:
+        - name: user_id
+          in: path
+          description: ID del usuario
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
+      responses:
+        "200":
+          description: Lista de las comunicaciones enviadas del usuario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ObjetoComunicacion"
+              example:
+                - id_comunicacion: 3
+                  id_remite: 2
+                  id_destino: 2
+                  tipo_remite: 2
+                  tipo_destino: 3
+                  id_alumnoAsociado: 4
+                  asunto: Calificaciones 2º Trimestre
+                  texto: Prueba...
+                  importante: 0
+                  fecha: "2022-03-22 13:00:00"
+                  leida: null
+                  eliminado: null
+                  nombre_alumnoAsociado: Mario García Pérez
+                  nombre_remite: Juana María Pérez
+                  nombre_destino: Pedro López
+                - id_comunicacion: 3
+                  id_remite: 2
+                  id_destino: 2
+                  tipo_remite: 2
+                  tipo_destino: 3
+                  id_alumnoAsociado: 4
+                  asunto: Calificaciones 2º Trimestre
+                  texto: Prueba...
+                  importante: 0
+                  fecha: "2022-03-22 13:00:00"
+                  leida: null
+                  eliminado: null
+                  nombre_alumnoAsociado: Mario García Pérez
+                  nombre_remite: Juana María Pérez
+                  nombre_destino: Pedro López
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque el user_id no existe
+  /send:
     post:
       tags:
-        - Comunicaciones
+        - Comunicaciones - /comms
       description: |
         Devuelve una lista de todas las comunicaciones recibidas del usuario
       security:
@@ -440,10 +510,10 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el user_id no existe
-  /comms/update/:id_com/:state:
+  /update/:id_com/:state/:id_destino:
     post:
       tags:
-        - Comunicaciones
+        - Comunicaciones - /comms
       description: |
         Actualiza el estado de una comunicación
       security:
@@ -472,6 +542,7 @@ paths:
               - importante
               - leido
               - eliminado
+              - restaurar
       responses:
         "200":
           description: Comunicación actualizada con éxito

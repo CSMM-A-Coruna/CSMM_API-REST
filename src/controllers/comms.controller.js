@@ -51,7 +51,6 @@ export const getAllCommsReceived = async (req, res) => {
     }
 }
 
-
 export const getAllCommsSent = async (req, res) => {
     try {
         if(req.query.user_id) {
@@ -246,5 +245,9 @@ export const updateCom = async (req, res) => {
 }
 
 export const sendCom = async (req, res) => {
-
+    try {
+        
+    } catch(err) {
+        res.status(500).send(err)
+    }
 }
