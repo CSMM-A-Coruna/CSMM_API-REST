@@ -29,21 +29,10 @@ export const getAllCommsReceived = async (req, res) => {
                     )
                     com.calcularTipoDestino(result[index].tipodestino)
                     com.calcularTipoRemite(result[index].tiporemite)
-                    //!TODO Calcular nombre remite y destino
                     comms.push(com)
                     if(!result[index+1]) {
                         res.status(200).json(comms)
                     }
-                    /*com.calcularNombreDestino().then(data => {
-                        com.nombre_destino = data[0].nombre + ' ' + data[0].apellido1 + ' ' + data[0].apellido2
-                        com.calcularNombreRemite().then(data2 => {
-                            com.nombre_remite = data2[0].nombre + ' ' + data2[0].apellido1 + ' ' + data2[0].apellido2
-                            comms.push(com)
-                            if(!result[index+1]) {
-                                res.status(200).json(comms)
-                            }
-                        })
-                    })*/
                 }
             } else {
                 throw '404'
@@ -62,142 +51,6 @@ export const getAllCommsReceived = async (req, res) => {
     }
 }
 
-export const getAllComms = async (req, res) => {
-    try {
-        if(req.query.user_id) {
-            const query = `SELECT * FROM comunicaciones_generales WHERE tipodestino = 2 AND iddestino = ${req.query.user_id} AND comunicaciones_generales.eliminado IS NULL ORDER BY comunicaciones_generales.fecha DESC`
-            const result = await executeQuery(query)
-            const query1 = `SELECT * FROM comunicaciones_generales WHERE tiporemite = 2 AND idremite = ${req.query.user_id} AND comunicaciones_generales.eliminado IS NULL ORDER BY comunicaciones_generales.fecha DESC`
-            const result1 = await executeQuery(query1)
-            let comms = []
-            if(result.length && result1.length) {
-                for (let index = 0; index < result.length; index++) {
-                    const com = new Comunicacion(
-                        result[index].idcomunicacion, 
-                        result[index].idremite, 
-                        result[index].iddestino,
-                        result[index].idAlumnoAsociado,
-                        result[index].asunto, 
-                        result[index].texto, 
-                        result[index].importante,
-                        result[index].fecha,
-                        result[index].leida,
-                        result[index].eliminado,
-                        'recibida',
-                        result[index].alumnoAsociado
-                    )
-                    com.calcularTipoDestino(result[index].tipodestino)
-                    com.calcularTipoRemite(result[index].tiporemite)
-                    com.calcularNombreDestino().then(data => {
-                        com.nombre_destino = data[0].nombre + ' ' + data[0].apellido1 + ' ' + data[0].apellido2
-                        com.calcularNombreRemite().then(data2 => {
-                            com.nombre_remite = data2[0].nombre + ' ' + data2[0].apellido1 + ' ' + data2[0].apellido2
-                            comms.push(com)
-                        })
-                    })
-                }
-                for (let index = 0; index < result1.length; index++) {
-                    const com = new Comunicacion(
-                        result1[index].idcomunicacion, 
-                        result1[index].idremite, 
-                        result1[index].iddestino,
-                        result1[index].idAlumnoAsociado,
-                        result1[index].asunto, 
-                        result1[index].texto,
-                        result1[index].importante,
-                        result1[index].fecha,
-                        result1[index].leida,
-                        result1[index].eliminado,
-                        'enviada',
-                        result1[index].alumnoAsociado
-                    )
-                    com.calcularTipoDestino(result1[index].tipodestino)
-                    com.calcularTipoRemite(result1[index].tiporemite)
-                    com.calcularNombreDestino().then(data => {
-                        com.nombre_destino = data[0].nombre + ' ' + data[0].apellido1 + ' ' + data[0].apellido2
-                        com.calcularNombreRemite().then(data2 => {
-                            com.nombre_remite = data2[0].nombre + ' ' + data2[0].apellido1 + ' ' + data2[0].apellido2
-                            comms.push(com)
-                            if(!result[index+1]) {
-                                res.status(200).json(comms)
-                            }
-                        })
-                    })
-                }
-            } else if(result.length && !result1.length) {
-                for (let index = 0; index < result.length; index++) {
-                    const com = new Comunicacion(
-                        result[index].idcomunicacion, 
-                        result[index].idremite, 
-                        result[index].iddestino,
-                        result[index].idAlumnoAsociado,
-                        result[index].asunto, 
-                        result[index].texto, 
-                        result[index].importante,
-                        result[index].fecha,
-                        result[index].leida,
-                        result[index].eliminado,
-                        'recibida',
-                        result[index].alumnoAsociado
-                    )
-                    com.calcularTipoDestino(result[index].tipodestino)
-                    com.calcularTipoRemite(result[index].tiporemite)
-                    com.calcularNombreDestino().then(data => {
-                        com.nombre_destino = data[0].nombre + ' ' + data[0].apellido1 + ' ' + data[0].apellido2
-                        com.calcularNombreRemite().then(data2 => {
-                            com.nombre_remite = data2[0].nombre + ' ' + data2[0].apellido1 + ' ' + data2[0].apellido2
-                            comms.push(com)
-                            if(!result[index+1]) {
-                                res.status(200).json(comms)
-                            }
-                        })
-                    })
-                }
-            } else if(!result.length && result1.length) {
-                for (let index = 0; index < result1.length; index++) {
-                    const com = new Comunicacion(
-                        result1[index].idcomunicacion, 
-                        result1[index].idremite, 
-                        result1[index].iddestino,
-                        result1[index].idAlumnoAsociado,
-                        result1[index].asunto, 
-                        result1[index].texto,
-                        result1[index].importante,
-                        result1[index].fecha,
-                        result1[index].leida,
-                        result1[index].eliminado,
-                        'enviada',
-                        result1[index].alumnoAsociado
-                    )
-                    com.calcularTipoDestino(result1[index].tipodestino)
-                    com.calcularTipoRemite(result1[index].tiporemite)
-                    com.calcularNombreDestino().then(data => {
-                        com.nombre_destino = data[0].nombre + ' ' + data[0].apellido1 + ' ' + data[0].apellido2
-                        com.calcularNombreRemite().then(data2 => {
-                            com.nombre_remite = data2[0].nombre + ' ' + data2[0].apellido1 + ' ' + data2[0].apellido2
-                            comms.push(com)
-                            if(!result[index+1]) {
-                                res.status(200).json(comms)
-                            }
-                        })
-                    })
-                }
-            } else {
-                throw '404'
-            }
-        } else {
-            throw '400'
-        }
-    } catch(err) {
-        if(err=='400') {
-            res.status(400).json({ message: 'Faltan parámetros' })
-        } else if(err='404') {
-            res.status(404).json({ message: 'No se han encontrado comunicaciones recibidas'})
-        } else {
-            res.status(500).json({ message: 'Error interno del servidor' })
-        }
-    }
-}
 
 export const getAllCommsSent = async (req, res) => {
     try {
@@ -317,7 +170,6 @@ export const updateCom = async (req, res) => {
                     } else if (result.affectedRows == 1 && result.changedRows == 0) {
                         throw '409'
                     } else {
-                        console.log(result)
                         throw '500'
                     }
                     break
@@ -331,7 +183,6 @@ export const updateCom = async (req, res) => {
                     } else if (result1.affectedRows == 1 && result1.changedRows == 0) {
                         throw '409'
                     } else {
-                        console.log(result1)
                         throw '500'
                     }
                     break
@@ -365,6 +216,18 @@ export const updateCom = async (req, res) => {
                         throw '500'
                     }
                     break
+                case 'restaurar':
+                    const query4 = `UPDATE comunicaciones_destinos SET eliminado = NULL WHERE comunicaciones_destinos.idcomunicacion = ${req.query.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`
+                    const result4 = await executeQuery(query4)
+                    if(result4.changedRows == 1) {
+                        res.status(200).json({ message: 'Estado de la comunicación actualizado'})
+                    } else if (result4.affectedRows == 0) {
+                        throw '404'
+                    } else if (result4.affectedRows == 1 && result4.changedRows == 0) {
+                        throw '409'
+                    } else {
+                        throw '500'
+                    }
             }
         } else {
             throw '400'

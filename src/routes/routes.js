@@ -14,8 +14,6 @@ router.post('/auth/register', authController.signUp)
 router.post('/auth/update', authJwt.verifyToken, authController.compareData)
 
 // -- Comunicaciones (JWT Required) --
-// Todas las comunicaciones
-router.get('/comms', authJwt.verifyToken, commsController.getAllComms)
 // Comunicaciones recibidas
 router.get('/comms/received', authJwt.verifyToken, commsController.getAllCommsReceived)
 // Comunicaciones enviadas

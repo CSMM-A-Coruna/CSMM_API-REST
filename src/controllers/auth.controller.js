@@ -78,7 +78,6 @@ export const signIn = async(req, res) => {
                                         )
                                         alumnos.push(alumno)
                                     }
-                                    console.log(alumnos)
                                     // Creamos y firmamos el token de autentificación
                                     const token = jwt.sign({
                                         id: result[0].id,
