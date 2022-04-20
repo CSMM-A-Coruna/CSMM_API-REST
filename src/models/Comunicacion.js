@@ -2,15 +2,15 @@ import { db, executeQuery } from '../database'
 
 class Comunicacion {
     constructor(id_comunicacion, id_remite, id_destino, id_alumnoAsociado, asunto, texto, importante, fecha, leida, eliminado, estado, nombre_alumnoAsociado, nombre_remite, nombre_destino) {
-        this.id_comunicacion = id_comunicacion
+        this.id_comunicacion = id_comunicacion,
         this.id_remite = id_remite,
         this.id_destino = id_destino,
         this.tipo_remite = null,
         this.tipo_destino = null,
-        this.id_alumnoAsociado = id_alumnoAsociado
+        this.id_alumnoAsociado = id_alumnoAsociado,
         this.asunto = asunto,
         this.texto = texto,
-        this.importante = importante
+        this.importante = importante,
         this.fecha = fecha,
         this.leida = leida,
         this.eliminado = eliminado,

@@ -1,5 +1,6 @@
 import { executeQuery } from '../database'
 import Comunicacion from '../models/Comunicacion'
+import NuevaComunicacion from '../models/NuevaComunicacion'
 
 export const getAllCommsReceived = async (req, res) => {
     try {
@@ -246,8 +247,38 @@ export const updateCom = async (req, res) => {
 
 export const sendCom = async (req, res) => {
     try {
-        
+        if(req.body.asunto && req.body.texto && req.body.id_remite && req.body.tipo_destino && req.body.id_destino && req.body.id_alumnoAsociado) {
+            const com = new NuevaComunicacion(
+                req.body.asunto,
+                req.body.texto,
+                req.body.id_remite,
+                req.body.tipo_destino,
+                req.body.id_destino,
+                req.body.id_alumnoAsociado
+            )
+            const query = `INSERT INTO comunicaciones (tiporemite, idremite, fecha, asunto, texto) VALUES (${com.tipoRemite}, ${com.idRemite}, "${com.fecha}", "${com.asunto}", "${com.texto}");`
+            const result = executeQuery(query).then(data => {
+                if(data.message == '') {
+                    const query2 = `INSERT INTO comunicaciones_destinos (idcomunicacion, tipodestino, iddestino, leida, eliminado, email, idAlumnoAsociado, importante) VALUES (${data.insertId}, ${com.tipoDestino}, ${com.idDestino}, ${com.leida}, ${com.eliminado}, ${com.email}, ${com.idAlumnoAsociado}, ${com.importante});`
+                    const result2 = executeQuery(query2).then(data2 => {
+                        if(data2.message == '') {
+                            res.status(200).json({ message: 'Comunicación enviada con éxito'})
+                        }
+                    })
+                } else {
+                    throw '500'
+                }
+            })
+        } else {
+            throw '400'
+        }
     } catch(err) {
-        res.status(500).send(err)
+        if(err=='400') {
+            res.status(400).json({ message: 'Faltan parámetros' })
+        } else if(err=='409') {
+            res.status(409).send()
+        } else {
+            res.status(500).json({ message: 'Error interno del servidor' })
+        }
     }
 }

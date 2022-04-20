@@ -176,7 +176,7 @@ components:
           type: integer
           description: Longitud de la publicación
 paths:
-  /register/:tipo_usuario:
+  /register:
     post:
       tags:
         - Auth - /auth
@@ -251,7 +251,7 @@ paths:
           description: La petición ha fallado porque la contraseña es incorrecta
         "404":
           description: La petición ha fallado porque el usuario no existe
-  /received/:user_id:
+  /received:
     get:
       tags:
         - Comunicaciones - /comms
@@ -306,7 +306,7 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el user_id no existe
-  /sent/:user_id:
+  /sent:
     get:
       tags:
         - Comunicaciones - /comms
@@ -376,7 +376,7 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el user_id no existe
-  /deleted/:user_id:
+  /deleted:
     get:
       tags:
         - Comunicaciones - /comms
@@ -451,7 +451,7 @@ paths:
       tags:
         - Comunicaciones - /comms
       description: |
-        Devuelve una lista de todas las comunicaciones recibidas del usuario
+        Crea una comunicación
       security:
         - BearerAuth: [read]
       parameters:
@@ -462,6 +462,21 @@ paths:
           schema:
             type: string
           example: Bearer {token}
+      requestBody:
+        description: |
+          Datos de la nueva comunicación.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginUsuarioCuerpoPeticion"
+            example:
+              asunto: Calificaciones 2º Trimestre
+              texto: lorem ipsumdadas fasñdfsaj ñasldjff
+              id_remite: 2
+              tipo_destino: 3
+              id_destino: 5
+              id_alumnoAsociado: 3
       responses:
         "200":
           description: Lista de las comunicaciones del usuario
@@ -510,7 +525,7 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el user_id no existe
-  /update/:id_com/:state/:id_destino:
+  /update:
     post:
       tags:
         - Comunicaciones - /comms
@@ -529,6 +544,12 @@ paths:
         - name: id_com
           in: query
           description: ID de la comunicación
+          required: true
+          schema:
+            type: integer
+        - name: id_destino
+          in: query
+          description: ID del destino
           required: true
           schema:
             type: integer
