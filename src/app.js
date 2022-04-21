@@ -6,6 +6,9 @@ import helmet from 'helmet'
 import cors from 'cors'
 import Routes from './routes/routes'
 
+// Definimos la ruta base, para el sistema de descarga y subida de archivos
+global.__basedir = __dirname
+
 const app = express()
  
 // Definir el puerto

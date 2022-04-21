@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import * as authController from '../controllers/auth.controller'
 import * as commsController from '../controllers/comms.controller'
+import * as fileController from '../controllers/files.controller'
 import { authJwt } from '../middlewares/index'
 const router = Router()
 
@@ -24,6 +25,11 @@ router.get('/comms/deleted', authJwt.verifyToken, commsController.getAllCommsDel
 router.post('/comms/send', authJwt.verifyToken, commsController.sendCom)
 // Actualizar comunicación
 router.post('/comms/update', authJwt.verifyToken, commsController.updateCom)
+
+// -- Subida de archivos --
+router.post('/resources/upload', fileController.upload)
+router.get('/resources/list', fileController.getListFiles)
+router.get('/resources/download', fileController.downloadFile)
 
     
 export default router
