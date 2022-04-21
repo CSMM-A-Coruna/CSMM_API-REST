@@ -3,8 +3,8 @@ import * as authController from '../controllers/auth.controller'
 import * as commsController from '../controllers/comms.controller'
 import * as fileController from '../controllers/files.controller'
 import { authJwt } from '../middlewares/index'
-const router = Router()
 
+const router = Router()
 
 // -- Autentificación --
 // Login
@@ -27,9 +27,12 @@ router.post('/comms/send', authJwt.verifyToken, commsController.sendCom)
 router.post('/comms/update', authJwt.verifyToken, commsController.updateCom)
 
 // -- Subida de archivos --
-router.post('/resources/upload', fileController.upload)
-router.get('/resources/list', fileController.getListFiles)
-router.get('/resources/download', fileController.downloadFile)
+// Subir archivo
+router.post('/resources/upload', authJwt.verifyToken, fileController.upload)
+// Ver lista de archivos
+router.get('/resources/list',authJwt.verifyToken, fileController.getListFiles)
+// Descargar un archivo
+router.get('/resources/download', authJwt.verifyToken, fileController.downloadFile)
 
     
 export default router
