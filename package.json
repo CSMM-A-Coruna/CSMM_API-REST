@@ -8,7 +8,7 @@
     "start:dev": "nodemon src/index.js --exec babel-node",
     "start-win:dev": "nodemon --exec npm run babel-node src/index.js",
     "build": "babel src -d build",
-    "start": "babel src -d build && node build/index.js"
+    "start": "node build/index.js"
   },
   "author": "Javier Miralles",
   "license": "ISC",
