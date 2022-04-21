@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "babel-node": "babel-node --presets=@babel/preset-env",
-    "start": "nodemon src/index.js --exec babel-node",
-    "start-win": "nodemon --exec npm run babel-node src/index.js"
+    "start:dev": "nodemon src/index.js --exec babel-node",
+    "start-win:dev": "nodemon --exec npm run babel-node src/index.js",
+    "start": "node index.js"
   },
   "author": "Javier Miralles",
   "license": "ISC",
