@@ -4,7 +4,6 @@ import { executeQuery } from '../database'
 import Alumno from '../models/Alumno'
 import jwt from 'jsonwebtoken'
 import config from '../config'
-import { restart } from 'nodemon'
 
 
 const tipoUsuarios = ['administradores', 'profesores', 'alumnos', 'familias']
