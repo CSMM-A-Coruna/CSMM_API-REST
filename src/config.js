@@ -8,5 +8,6 @@ export default {
   dbPassword: process.env.PASSWORD,
   dbDatabase: process.env.DATABASE,
   port: process.env.PORT,
-  jwtSecret: process.env.JWTSECRET
+  jwtSecret: process.env.JWTSECRET,
+  ftpPassword: process.env.FTPPASSWORD
 }

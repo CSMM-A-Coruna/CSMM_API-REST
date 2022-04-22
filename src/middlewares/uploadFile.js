@@ -1,11 +1,16 @@
 import util from 'util'
 import multer from 'multer'
+const fs = require('fs')
 
 const maxSize = 2 * 1024 * 1024
 
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, __basedir + '/resources/uploads')
+    let dir = __basedir + '/resources/uploads/' + req.query.id_comunicacion
+    if (!fs.existsSync(dir)){
+      fs.mkdirSync(dir);
+    }
+    cb(null, dir)
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname)

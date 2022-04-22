@@ -28,11 +28,11 @@ router.post('/comms/update', authJwt.verifyToken, commsController.updateCom)
 
 // -- Subida de archivos --
 // Subir archivo
-router.post('/resources/upload', authJwt.verifyToken, fileController.upload)
+router.post('/resources/upload', fileController.upload)
 // Ver lista de archivos
-router.get('/resources/list',authJwt.verifyToken, fileController.getListFiles)
+router.get('/resources/list', fileController.getListFiles)
 // Descargar un archivo
-router.get('/resources/download', authJwt.verifyToken, fileController.downloadFile)
+router.get('/resources/download', fileController.downloadFile)
 
     
 export default router
