@@ -1,4 +1,3 @@
-import res from 'express/lib/response'
 import config from './../config'
 const fs = require('fs')
 const Client = require('ftp')
