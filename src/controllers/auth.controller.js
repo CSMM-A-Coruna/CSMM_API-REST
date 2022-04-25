@@ -4,6 +4,7 @@ import { executeQuery } from '../database'
 import Alumno from '../models/Alumno'
 import jwt from 'jsonwebtoken'
 import config from '../config'
+import app from '../app'
 
 
 const tipoUsuarios = ['administradores', 'profesores', 'alumnos', 'familias']
@@ -47,7 +48,11 @@ export const signUp = async(req, res) => {
         if(err == '400') {
             res.status(400).json({ message: 'Faltan parámetros'})
         } else  {
-            res.status(500).json({ message: 'Error interno del servidor' })
+            if(app.settings.env=='production') {
+                res.status(500).json({ message: 'Error interno del servidor' })
+            } else {
+                res.status(500).json({ message: err })
+            }
         }
     }
 }
@@ -112,7 +117,11 @@ export const signIn = async(req, res) => {
         if(err='400') {
             res.status(400).json({ message: 'Faltan parámetros' })
         } else {
-            res.status(500).json({ message: 'Error interno del servidor' })
+            if(app.settings.env=='production') {
+                res.status(500).json({ message: 'Error interno del servidor' })
+            } else {
+                res.status(500).json({ message: err })
+            }
         }
     }
 }
@@ -168,7 +177,11 @@ export const compareData = async (req, res) => {
         } else if(err='404') {
             res.status(404).json({ message: 'No se ha encontrado el usuario' })
         } else {
-            res.status(500).json({ message: 'Error interno del servidor' })
+            if(app.settings.env=='production') {
+                res.status(500).json({ message: 'Error interno del servidor' })
+            } else {
+                res.status(500).json({ message: err })
+            }
         }
     }
 }

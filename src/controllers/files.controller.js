@@ -1,6 +1,7 @@
 import { cacheFileMiddleware } from '../middlewares'
 import FTPClient from '../middlewares/FTPClient'
 import { executeQuery } from '../database'
+import app from '../app'
 
 
 export const upload = async (req, res) => {
@@ -25,7 +26,11 @@ export const upload = async (req, res) => {
     if(err.code == 'LIMIT_FILE_SIZE') {
       return res.status(413).json({ message: 'El archivo no puede superar los 10MB'})
     }
-    res.status(500).json({ message: 'No se ha podido subir el archivo: ' + err })
+    if(app.settings.env=='production') {
+      res.status(500).json({ message: 'Error interno del servidor' })
+  } else {
+      res.status(500).json({ message: err })
+  }
   }
 }
 
@@ -40,8 +45,11 @@ export const downloadFile = async (req, res) => {
   
     res.download(directoryPath + '/' + fileName, fileName, (err) => {
       if(err) {
-        console.log(err)
-        res.status(500).json({ message: 'No se ha podido descargar el archivo ' +  err })
+        if(app.settings.env=='production') {
+          res.status(500).json({ message: 'Error interno del servidor' })
+      } else {
+          res.status(500).json({ message: err })
+      }
       }
     })
   } else {

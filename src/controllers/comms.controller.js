@@ -1,6 +1,7 @@
 import { executeQuery } from '../database'
 import Comunicacion from '../models/Comunicacion'
 import NuevaComunicacion from '../models/NuevaComunicacion'
+import app from '../app'
 
 export const getAllCommsReceived = async (req, res) => {
     try {
@@ -63,7 +64,11 @@ export const getAllCommsReceived = async (req, res) => {
         } else if(err='404') {
             res.status(404).json({ message: 'No se han encontrado comunicaciones recibidas'})
         } else {
-            res.status(500).json({ message: 'Error interno del servidor' })
+            if(app.settings.env=='production') {
+                res.status(500).json({ message: 'Error interno del servidor' })
+            } else {
+                res.status(500).json({ message: err })
+            }
         }
     }
 }
@@ -129,7 +134,11 @@ export const getAllCommsSent = async (req, res) => {
         } else if(err=='400') {
             res.status(400).json({ message: 'Faltan parámetros' })
         } else {
-            res.status(500).json({ message: 'Error interno del servidor' })
+            if(app.settings.env=='production') {
+                res.status(500).json({ message: 'Error interno del servidor' })
+            } else {
+                res.status(500).json({ message: err })
+            }
         }
     }
 }
@@ -195,7 +204,11 @@ export const getAllCommsDeleted = async (req, res) => {
         } else if(err='404') {
             res.status(404).json({ message: 'No se han encontrado comunicaciones recibidas'})
         } else {
-            res.status(500).json({ message: 'Error interno del servidor' })
+            if(app.settings.env=='production') {
+                res.status(500).json({ message: 'Error interno del servidor' })
+            } else {
+                res.status(500).json({ message: err })
+            }
         }
     }
 }
@@ -284,7 +297,11 @@ export const updateCom = async (req, res) => {
         } else if(err=='409') {
             res.status(409).send()
         } else {
-            res.status(500).json({ message: 'Error interno del servidor' })
+            if(app.settings.env=='production') {
+                res.status(500).json({ message: 'Error interno del servidor' })
+            } else {
+                res.status(500).json({ message: err })
+            }
         }
     }
 }
@@ -322,7 +339,11 @@ export const sendCom = async (req, res) => {
         } else if(err=='409') {
             res.status(409).send()
         } else {
-            res.status(500).json({ message: 'Error interno del servidor' })
+            if(app.settings.env=='production') {
+                res.status(500).json({ message: 'Error interno del servidor' })
+            } else {
+                res.status(500).json({ message: err })
+            }
         }
     }
 }
