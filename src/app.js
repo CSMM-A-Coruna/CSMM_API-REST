@@ -21,11 +21,22 @@ if(app.settings.env=='production') {
     apiKey: 'jjPNsgfxz6qFFjUksixnWR1kVS45AcrN',
     projectId: '7bHOBENbeXSgaXvs'
   })  
+  
+  // ---- SEGURIDAD ----
+  // Usamos cors y helmet para más seguridad
+  const corsOptions = {
+    origin: 'https://csmm-api.herokuapp.com/',
+  }
+  app.use(cors(corsOptions))
+  app.use(helmet())
+  // Deshabilitamos cabeceras que dan información adicional
+  app.disable('x-powered-by')
+} else {
+  // ---- LOGGER ----
+  // Le decimos que utilice morgan como logger
+  app.use(morgan('dev'))
 }
 
-// ---- LOGGER ----
-// Le decimos que utilice morgan como logger
-app.use(morgan('dev'))
 // Desactivamos response 304
 app.disable('etag');
 
@@ -35,13 +46,6 @@ app.use(express.urlencoded({
   extended: true
 }))
 
-// ---- SEGURIDAD ----
-// Usamos cors y helmet para más seguridad
-const corsOptions = {
-  // origin: "http://localhost:3000",
-}
-app.use(cors(corsOptions))
-app.use(helmet())
 
 // ---- RUTAS ----
 // Ruta base
