@@ -43,7 +43,9 @@ class FTPClient {
         // Primero creamos el directorio en caso de que no exista.
         c.on('ready', function() {
             c.mkdir('/adjuntos/' + idComunicacion, false, function(err) {
-                if(err != 'Error: Create directory operation failed.') throw err
+                if(err && err != 'Error: Create directory operation failed.') {
+                    console.log(err)
+                }
                 const cacheDir = __basedir + '/resources/uploads/' + idComunicacion + '/' + fileName
                 const ftpDir = '/adjuntos/' + idComunicacion + '/' + fileName
                 c.put(cacheDir, ftpDir, function(err) {

@@ -2,7 +2,7 @@ import util from 'util'
 import multer from 'multer'
 const fs = require('fs')
 
-const maxSize = 2 * 1024 * 1024
+const maxSize = 10 * 1024 * 1024
 
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -13,7 +13,7 @@ let storage = multer.diskStorage({
     cb(null, dir)
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname)
+    cb(null, file.originalname.replace(/\s/g, '-'))
   }
 })
 
@@ -22,6 +22,6 @@ let uploadFile = multer({
   limits: { fileSize: maxSize }
 }).single('file')
 
-let uploadFileMiddleware = util.promisify(uploadFile)
+let cacheFileMiddleware = util.promisify(uploadFile)
 
-export default uploadFileMiddleware
+export default cacheFileMiddleware

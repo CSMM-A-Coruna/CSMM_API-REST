@@ -1,4 +1,4 @@
 import * as authJwt from './authJwt'
-import uploadFileMiddleware from './uploadFile';
+import cacheFileMiddleware from './uploadFile';
 
-export { authJwt, uploadFileMiddleware };
+export { authJwt, cacheFileMiddleware };
