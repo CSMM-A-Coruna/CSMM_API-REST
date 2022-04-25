@@ -7,19 +7,19 @@ const maxSize = 10 * 1024 * 1024
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
     let dir = __basedir + '/resources/uploads/' + req.query.id_comunicacion
-    if (!fs.existsSync(dir)){
-      fs.mkdirSync(dir);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir)
     }
     cb(null, dir)
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname.replace(/\s/g, '-'))
-  }
+  },
 })
 
 let uploadFile = multer({
   storage: storage,
-  limits: { fileSize: maxSize }
+  limits: { fileSize: maxSize },
 }).single('file')
 
 let cacheFileMiddleware = util.promisify(uploadFile)

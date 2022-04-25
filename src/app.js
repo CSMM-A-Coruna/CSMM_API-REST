@@ -11,17 +11,17 @@ import { useTreblle } from 'treblle'
 global.__basedir = __dirname
 
 const app = express()
- 
+
 // Definir el puerto
 app.set('port', config.port)
 
 // Real time logs with treblle
-if(app.settings.env=='production') {
+if (app.settings.env == 'production') {
   useTreblle(app, {
     apiKey: 'jjPNsgfxz6qFFjUksixnWR1kVS45AcrN',
-    projectId: '7bHOBENbeXSgaXvs'
-  })  
-  
+    projectId: '7bHOBENbeXSgaXvs',
+  })
+
   // ---- SEGURIDAD ----
   // Usamos cors y helmet para más seguridad
   const corsOptions = {
@@ -38,14 +38,15 @@ if(app.settings.env=='production') {
 }
 
 // Desactivamos response 304
-app.disable('etag');
+app.disable('etag')
 
 // ---- JSON y URLEncoded ----
 app.use(express.json())
-app.use(express.urlencoded({
-  extended: true
-}))
-
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+)
 
 // ---- RUTAS ----
 // Ruta base
@@ -55,4 +56,4 @@ app.get('/v1', (req, res) => {
 
 app.use('/v1', Routes)
 
-export default app;
+export default app

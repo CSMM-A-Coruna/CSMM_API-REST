@@ -32,7 +32,6 @@ router.post('/resources/upload', authJwt.verifyToken, fileController.upload)
 // Ver lista de archivos
 router.get('/resources/list', authJwt.verifyToken, fileController.getListFiles)
 // Descargar un archivo
-router.get('/resources/download', authJwt.verifyToken, fileController.downloadFile)
+router.get('/resources/download', authJwt.verifyToken,fileController.downloadFile)
 
-    
 export default router
