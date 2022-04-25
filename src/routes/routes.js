@@ -16,7 +16,7 @@ router.post('/auth/update', authJwt.verifyToken, authController.compareData)
 
 // -- Comunicaciones (JWT Required) --
 // Comunicaciones recibidas
-router.get('/comms/received', authJwt.verifyToken, commsController.getAllCommsReceived)
+router.get('/comms/received', commsController.getAllCommsReceived)
 // Comunicaciones enviadas
 router.get('/comms/sent', authJwt.verifyToken, commsController.getAllCommsSent)
 // Comunicaciones borradas
