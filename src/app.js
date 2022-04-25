@@ -16,10 +16,12 @@ const app = express()
 app.set('port', config.port)
 
 // Real time logs with treblle
-useTreblle(app, {
-  apiKey: 'jjPNsgfxz6qFFjUksixnWR1kVS45AcrN',
-  projectId: '7bHOBENbeXSgaXvs'
-})
+if(app.settings.env=='production') {
+  useTreblle(app, {
+    apiKey: 'jjPNsgfxz6qFFjUksixnWR1kVS45AcrN',
+    projectId: '7bHOBENbeXSgaXvs'
+  })  
+}
 
 // ---- LOGGER ----
 // Le decimos que utilice morgan como logger

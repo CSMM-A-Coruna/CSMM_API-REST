@@ -16,7 +16,7 @@ router.post('/auth/update', authJwt.verifyToken, authController.compareData)
 
 // -- Comunicaciones (JWT Required) --
 // Comunicaciones recibidas
-router.get('/comms/received', commsController.getAllCommsReceived)
+router.get('/comms/received', authJwt.verifyToken, commsController.getAllCommsReceived)
 // Comunicaciones enviadas
 router.get('/comms/sent', authJwt.verifyToken, commsController.getAllCommsSent)
 // Comunicaciones borradas
@@ -28,11 +28,11 @@ router.post('/comms/update', authJwt.verifyToken, commsController.updateCom)
 
 // -- Subida de archivos --
 // Subir archivo
-router.post('/resources/upload', fileController.upload)
+router.post('/resources/upload', authJwt.verifyToken, fileController.upload)
 // Ver lista de archivos
-router.get('/resources/list', fileController.getListFiles)
+router.get('/resources/list', authJwt.verifyToken, fileController.getListFiles)
 // Descargar un archivo
-router.get('/resources/download', fileController.downloadFile)
+router.get('/resources/download', authJwt.verifyToken, fileController.downloadFile)
 
     
 export default router
