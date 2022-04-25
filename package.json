@@ -23,7 +23,8 @@
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "multer": "^1.4.4",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "treblle": "^1.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",

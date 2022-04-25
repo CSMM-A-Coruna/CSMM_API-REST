@@ -5,6 +5,7 @@ import morgan from 'morgan'
 import helmet from 'helmet'
 import cors from 'cors'
 import Routes from './routes/routes'
+import { useTreblle } from 'treblle'
 
 // Definimos la ruta base, para el sistema de descarga y subida de archivos
 global.__basedir = __dirname
@@ -13,6 +14,12 @@ const app = express()
  
 // Definir el puerto
 app.set('port', config.port)
+
+// Real time logs with treblle
+useTreblle(app, {
+  apiKey: 'jjPNsgfxz6qFFjUksixnWR1kVS45AcrN',
+  projectId: '7bHOBENbeXSgaXvs'
+})
 
 // ---- LOGGER ----
 // Le decimos que utilice morgan como logger
