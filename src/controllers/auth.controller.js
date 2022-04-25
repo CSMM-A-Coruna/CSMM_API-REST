@@ -6,8 +6,7 @@ import jwt from 'jsonwebtoken'
 import config from '../config'
 import app from '../app'
 
-
-const tipoUsuarios = ['administradores', 'profesores', 'alumnos', 'familias']
+const jwtExpireDate = '30d'
 
 // Registro
 export const signUp = async(req, res) => {
@@ -58,63 +57,56 @@ export const signUp = async(req, res) => {
 }
 
 // Login
-export const signIn = async(req, res) => {
-    // Hacemos un forEach con un SELECT por cada tipo de usuario
+export const signIn = async (req, res) => {
     try {
         if(req.body.usuario && req.body.password) {
-            tipoUsuarios.forEach(tipo => {
-                db.query(`SELECT * FROM ${tipo} WHERE usuario = ?`, req.body.usuario, function(err, result){
-                    // Comprobamos que hay resultado
-                    if(result.length) {
-                        // Verificamos la contraseña
-                        const verifyPassword = Usuario.compareSyncPassword(req.body.password, result[0].password)
-                        if(verifyPassword) {
-                            const alumnosResult = Usuario.calcularAlumnosAsociados(result[0].id).then(data => {
-                                if(data.length) {
-                                    let alumnos = []
-                                    for (let index = 0; index < data.length; index++) {
-                                        const alumno = new Alumno(
-                                            data[index].idAlumno,
-                                            data[index].alumnoNombre,
-                                            data[index].alumnoApellido1,
-                                            data[index].alumnoApellido2,
-                                            data[index].relacion
-                                        )
-                                        alumnos.push(alumno)
-                                    }
-                                    // Creamos y firmamos el token de autentificación
-                                    const token = jwt.sign({
-                                        id: result[0].id,
-                                        usuario: result[0].usuario,
-                                        nombre: result[0].nombre,
-                                        apellido1: result[0].apellido1,
-                                        apellido2: result[0].apellido2,
-                                        nacimiento: result[0].nacimiento,
-                                        dni: result[0].dni,
-                                        oa: result[0].oa,
-                                        accesos: result[0].accesos,
-                                        tipoUsuario: tipo,
-                                        alumnosAsociados: alumnos
-                                    }, config.jwtSecret, {
-                                        expiresIn: 84600,
-                                    })
-                                    res.status(200).json({ token: token })
-                                }
+            const result = await executeQuery(`SELECT * FROM familias WHERE usuario = '${req.body.usuario}'`)
+            if(result.length) {
+                const verifyPassword = Usuario.compareSyncPassword(req.body.password, result[0].password)
+                if(verifyPassword) {
+                    const alumnosResult = Usuario.calcularAlumnosAsociados(result[0].id).then(data => {
+                        if(data.length) {
+                            let alumnos = []
+                            for(let index = 0; index < data.length; index++) {
+                                const alumno = new Alumno(
+                                    data[index].idAlumno,
+                                    data[index].alumnoNombre,
+                                    data[index].alumnoApellido1,
+                                    data[index].alumnoApellido2,
+                                    data[index].relacion
+                                )
+                                alumnos.push(alumno)
+                            }
+                            // Creamos y firmamos el token de autentificación
+                            const token = jwt.sign({
+                                id: result[0].id,
+                                usuario: result[0].usuario,
+                                nombre: result[0].nombre,
+                                apellido1: result[0].apellido1,
+                                apellido2: result[0].apellido2,
+                                nacimiento: result[0].nacimiento,
+                                dni: result[0].dni,
+                                oa: result[0].oa,
+                                accesos: result[0].accesos,
+                                tipoUsuario: 'familias',
+                                alumnosAsociados: alumnos
+                            }, config.jwtSecret, {
+                                expiresIn: jwtExpireDate,
                             })
-                        } else {
-                            res.status(401).json({ message: 'Contraseña incorrecta' })
+                            res.status(200).json({ token: token })
                         }
-                    // Si el tipo de usuario es familias (que corresponde al último elemento del array y aún no se ha enviado respuesta, significa que el usuario no ha sido encontrado)
-                    } else if(tipo == 'familias' && !res.headersSent) {
-                        res.status(404).json({ message: 'Usuario no encontrado' })
-                    }
-                })
-            })
+                    })
+                } else {
+                    res.status(401).json({ message: 'Contraseña incorrecta' })
+                }
+            } else {
+                res.status(404).json({ message: 'Usuario no encontrado' })
+            }
         } else {
             throw '400'
         }
     } catch(err) {
-        if(err='400') {
+        if(err=='400') {
             res.status(400).json({ message: 'Faltan parámetros' })
         } else {
             if(app.settings.env=='production') {
@@ -160,7 +152,7 @@ export const compareData = async (req, res) => {
                             tipoUsuario: token.tipoUsuario,
                             alumnosAsociados: alumnos
                         }, config.jwtSecret, {
-                            expiresIn: 84600,
+                            expiresIn: jwtExpireDate,
                         })
                         res.status(200).json({ token: newToken })
                     }
