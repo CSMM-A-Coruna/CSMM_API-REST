@@ -40,6 +40,7 @@ export const downloadFile = async (req, res) => {
   
     res.download(directoryPath + '/' + fileName, fileName, (err) => {
       if(err) {
+        console.log(err)
         res.status(500).json({ message: 'No se ha podido descargar el archivo ' +  err })
       }
     })

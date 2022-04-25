@@ -6,7 +6,8 @@ export const getAllCommsReceived = async (req, res) => {
     try {
         if(req.query.user_id) {
             const query = `SELECT *, nombreRemite(comunicaciones_generales.tiporemite, comunicaciones_generales.idremite) AS nombreRemite, 
-                            nombreDestino(comunicaciones_generales.tipodestino, comunicaciones_generales.iddestino) AS nombreDestino
+                            nombreDestino(comunicaciones_generales.tipodestino, comunicaciones_generales.iddestino) AS nombreDestino,
+                            calculoAdjuntos(comunicaciones_generales.idcomunicacion) AS adjuntos
                             FROM comunicaciones_generales
                             WHERE tipodestino = 2 AND iddestino = ${req.query.user_id} 
                             AND comunicaciones_generales.eliminado IS NULL 
@@ -15,6 +16,17 @@ export const getAllCommsReceived = async (req, res) => {
             if(result.length) {
                 let comms = []
                 for (let index = 0; index < result.length; index++) {
+                    let adjuntos = []
+                    if(result[index].adjuntos!=0) {
+                        const result1 = await executeQuery(`SELECT adjunto FROM comunicaciones_adjuntos WHERE idcomunicacion = ${result[index].idcomunicacion}`)
+                        if(result1.length == 1) {
+                            adjuntos.push(result1[0].adjunto)
+                        } else {
+                            for(let i = 0; i<result1.length; i++) {
+                                adjuntos.push(result1[i].adjunto)
+                            }
+                        }
+                    }
                     const com = new Comunicacion(
                         result[index].idcomunicacion, 
                         result[index].idremite, 
@@ -29,7 +41,8 @@ export const getAllCommsReceived = async (req, res) => {
                         'recibida',
                         result[index].alumnoAsociado,
                         result[index].nombreRemite,
-                        result[index].nombreDestino
+                        result[index].nombreDestino,
+                        adjuntos
                     )
                     com.calcularTipoDestino(result[index].tipodestino)
                     com.calcularTipoRemite(result[index].tiporemite)

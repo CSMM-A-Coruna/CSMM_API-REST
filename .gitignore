@@ -1,1 +1,4 @@
 node_modules
+src/resources/uploads/
+src/resources/downloads/
+.DS_Store
