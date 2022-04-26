@@ -5,6 +5,7 @@ import Alumno from '../models/Alumno'
 import jwt from 'jsonwebtoken'
 import config from '../config'
 import app from '../app'
+import { updateLoginUser } from '../middlewares/updateLoginUser'
 
 const jwtExpireDate = '30d'
 
@@ -115,6 +116,7 @@ export const signIn = async (req, res) => {
                   expiresIn: jwtExpireDate,
                 }
               )
+              updateLoginUser(result[0].id, req.connection.remoteAddress.split(`:`).pop(), 'Android')
               res.status(200).json({ token: token })
             }
           })
@@ -182,6 +184,7 @@ export const compareData = async (req, res) => {
                 expiresIn: jwtExpireDate,
               }
             )
+            updateLoginUser(result[0].id, req.connection.remoteAddress.split(`:`).pop(), 'Android')
             res.status(200).json({ token: newToken })
           }
         })
