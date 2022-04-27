@@ -1,5 +1,5 @@
-import * as authJwt from './authJwt'
+import * as auth from './auth'
 import cacheFileMiddleware from './uploadFile'
 import updateLoginUser from './updateLoginUser'
 
-export { authJwt, cacheFileMiddleware, updateLoginUser }
+export { auth, cacheFileMiddleware, updateLoginUser }
