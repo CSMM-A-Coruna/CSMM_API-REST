@@ -381,3 +381,40 @@ export const sendCom = async (req, res) => {
     }
   }
 }
+
+export const getAllDispoSenders = async (req, res) => {
+  try {
+    if(req.query.id_usuario) {
+      //!TODO Lógica para buscar usuario disponible
+      const usuario = {
+        id: 2,
+        nombre: 'Daniel Fernández',
+        tipo_usuario: 'profesores'
+      }
+      const usuario2 = {
+        id: 3,
+        nombre: 'Sara Docampo',
+        tipo_usuario: 'profesores'
+      }
+      let usuarios = []
+      usuarios.push(usuario)
+      usuarios.push(usuario2)
+      res.status(200).json(usuarios)
+    } else {
+      throw '400'
+    }
+  } catch(err) {
+    if (err == '400') {
+      res.status(400).json({ message: 'Faltan parámetros' })
+
+    } else if(err == '404') {
+      res.status(404).json({ message_: 'No existe un usuario con ese ID o no tiene gente disponible para enviar'})
+    } else {
+      if (app.settings.env == 'production') {
+        res.status(500).json({ message: 'Error interno del servidor' })
+      } else {
+        res.status(500).json({ message: err })
+      }
+    }
+  }
+}

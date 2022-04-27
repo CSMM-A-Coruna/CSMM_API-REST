@@ -25,6 +25,8 @@ router.get('/comms/deleted', auth.verifyToken, commsController.getAllCommsDelete
 router.post('/comms/send', auth.verifyToken, commsController.sendCom)
 // Actualizar comunicación
 router.post('/comms/update', auth.verifyToken, commsController.updateCom)
+// Usuario disponibles a los que enviar una comunicación (siendo usuario familia)
+router.get('/comms/senders', auth.verifyToken, commsController.getAllDispoSenders)
 
 // -- Subida de archivos --
 // Subir archivo

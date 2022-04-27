@@ -148,12 +148,10 @@ export const compareData = async (req, res) => {
       const query = `SELECT * FROM ${token.tipoUsuario} WHERE id = ${token.id}`
       const result = await executeQuery(query)
       if (result.length) {
-        const alumnosResult = Usuario.calcularAlumnosAsociados(
-          result[0].id
-        ).then((data) => {
+        const alumnosResult = Usuario.calcularAlumnosAsociados(result[0].id).then((data) => {
           if (data.length) {
             let alumnos = []
-            for (let index = 0; index < result.length; index++) {
+            for (let index = 0; index < data.length; index++) {
               const alumno = new Alumno(
                 data[index].idAlumno,
                 data[index].alumnoNombre,
