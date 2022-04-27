@@ -1,11 +1,10 @@
 import Usuario from '../models/Usuario'
-import { db } from '../database'
 import { executeQuery } from '../database'
 import Alumno from '../models/Alumno'
 import jwt from 'jsonwebtoken'
 import config from '../config'
 import app from '../app'
-import { updateLoginUser } from '../middlewares/updateLoginUser'
+import { updateLoginUser } from '../middlewares/index'
 
 const jwtExpireDate = '30d'
 

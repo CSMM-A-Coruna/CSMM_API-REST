@@ -1,6 +1,6 @@
 import { executeQuery } from "../database"
 
-export const updateLoginUser = async (userId, userIp, device) => {
+const updateLoginUser = async (userId, userIp, device) => {
   try {
     const intAccesos = await executeQuery(`SELECT accesos FROM familias WHERE id = ${userId}`)
     const updateAccesos = await executeQuery(`UPDATE familias SET accesos = ${intAccesos[0].accesos+1} WHERE id = ${userId}`)
@@ -12,3 +12,5 @@ export const updateLoginUser = async (userId, userIp, device) => {
     throw err
   }
 }
+
+export default updateLoginUser

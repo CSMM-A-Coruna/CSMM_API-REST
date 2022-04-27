@@ -356,7 +356,8 @@ export const sendCom = async (req, res) => {
             if (data2.message == '') {
               res
                 .status(200)
-                .json({ message: 'Comunicación enviada con éxito' })
+                .json({ message: 'Comunicación enviada con éxito',
+                        id: data.insertId })
             }
           })
         } else {
