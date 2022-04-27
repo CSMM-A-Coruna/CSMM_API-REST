@@ -28,7 +28,7 @@ router.post('/comms/update', auth.verifyToken, commsController.updateCom)
 
 // -- Subida de archivos --
 // Subir archivo
-router.post('/resources/upload', fileController.upload)
+router.post('/resources/upload', auth.verifyToken, fileController.upload)
 // Ver lista de archivos
 router.get('/resources/list', auth.verifyToken, fileController.getListFiles)
 // Descargar un archivo
