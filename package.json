@@ -1,6 +1,6 @@
 {
   "name": "csmm-api-rest",
-  "version": "1.0.0",
+  "version": "1.0.0a1",
   "description": "API-REST del CSMM",
   "main": "index.js",
   "scripts": {
