@@ -1,3 +1,6 @@
-import * as authJwt from './authJWT'
+import * as auth from './auth'
+import cacheFileMiddleware from './uploadFile'
+import updateLoginUser from './updateLoginUser'
+import cacheFile from './downloadFile'
 
-export { authJwt };
+export { auth, cacheFileMiddleware, updateLoginUser, cacheFile }

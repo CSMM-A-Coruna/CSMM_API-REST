@@ -1,9 +1,10 @@
 import { Router } from 'express'
 import * as authController from '../controllers/auth.controller'
 import * as commsController from '../controllers/comms.controller'
-import { authJwt } from '../middlewares/index'
-const router = Router()
+import * as fileController from '../controllers/files.controller'
+import { auth, cacheFile } from '../middlewares/index'
 
+const router = Router()
 
 // -- Autentificación --
 // Login
@@ -11,21 +12,28 @@ router.post('/auth/login', authController.signIn)
 // Registrar un usuario nuevo
 router.post('/auth/register', authController.signUp)
 // Verificar datos una vez ya está logeado
-router.post('/auth/update', authJwt.verifyToken, authController.compareData)
+router.post('/auth/update', auth.verifyToken, authController.compareData)
 
 // -- Comunicaciones (JWT Required) --
-// Todas las comunicaciones
-router.get('/comms', authJwt.verifyToken, commsController.getAllComms)
 // Comunicaciones recibidas
-router.get('/comms/received', authJwt.verifyToken, commsController.getAllCommsReceived)
+router.get('/comms/received', auth.verifyToken, commsController.getAllCommsReceived)
 // Comunicaciones enviadas
-router.get('/comms/sent', authJwt.verifyToken, commsController.getAllCommsSent)
+router.get('/comms/sent', auth.verifyToken, commsController.getAllCommsSent)
 // Comunicaciones borradas
-router.get('/comms/deleted', authJwt.verifyToken, commsController.getAllCommsDeleted)
+router.get('/comms/deleted', auth.verifyToken, commsController.getAllCommsDeleted)
 // Enviar comunicación
-router.post('/comms/send', authJwt.verifyToken, commsController.sendCom)
+router.post('/comms/send', auth.verifyToken, commsController.sendCom)
 // Actualizar comunicación
-router.post('/comms/update', authJwt.verifyToken, commsController.updateCom)
+router.post('/comms/update', auth.verifyToken, commsController.updateCom)
+// Usuario disponibles a los que enviar una comunicación (siendo usuario familia)
+router.get('/comms/senders', auth.verifyToken, commsController.getAllDispoSenders)
 
-    
+// -- Subida de archivos --
+// Subir archivo
+router.post('/resources/upload', auth.verifyToken, fileController.upload)
+// Ver lista de archivos
+router.get('/resources/list', auth.verifyToken, fileController.getListFiles)
+// Descargar un archivo
+router.get('/resources/download', auth.verifyAuthDownload, cacheFile, fileController.downloadFile)
+
 export default router
