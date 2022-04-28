@@ -160,7 +160,7 @@ export const getAllCommsDeleted = async (req, res) => {
                             FROM comunicaciones_generales
                             WHERE tipodestino = 2 AND iddestino = ${req.query.user_id} 
                             AND comunicaciones_generales.eliminado IS NOT NULL 
-                            ORDER BY comunicaciones_generales.fecha DESC`
+                            ORDER BY comunicaciones_generales.eliminado DESC`
       const result = await executeQuery(query)
       let comms = []
       if (result.length) {
