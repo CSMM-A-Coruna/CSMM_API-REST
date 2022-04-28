@@ -41,30 +41,18 @@ export const upload = async (req, res) => {
 }
 
 export const downloadFile = async (req, res) => {
-  if (req.query.file_name && req.query.id_comunicacion) {
-    const fileName = req.query.file_name
-    const directoryPath =
-      __basedir + '/resources/downloads/' + req.query.id_comunicacion
-
-    const ftp = new FTPClient()
-    const cacheFile = await ftp.cacheFile(
-      '/adjuntos/' + req.query.id_comunicacion + '/' + fileName,
-      fileName,
-      req.query.id_comunicacion
-    )
-
-    res.download(directoryPath + '/' + fileName, fileName, (err) => {
-      if (err) {
-        if (app.settings.env == 'production') {
-          res.status(500).json({ message: 'Error interno del servidor' })
-        } else {
-          res.status(500).json({ message: err })
-        }
+  const fileName = req.query.file_name
+  const directoryPath =
+    __basedir + '/resources/downloads/' + req.query.id_comunicacion
+  res.download(directoryPath + '/' + fileName, fileName, (err) => {
+    if (err) {
+      if (app.settings.env == 'production') {
+        res.status(500).json({ message: 'Error interno del servidor' })
+      } else {
+        res.status(500).json({ message: err })
       }
-    })
-  } else {
-    res.status(400)
-  }
+    }
+  })
 }
 
 export const getListFiles = async (req, res) => {

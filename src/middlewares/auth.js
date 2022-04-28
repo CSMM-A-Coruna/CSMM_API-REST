@@ -36,14 +36,22 @@ export const verifyAuthDownload = async (req, res, next) => {
   if(!auth) {
     return res.status(403).json({ message: 'Parece que no tienes permisos...'})
   }
-
-  let authToken = idCom + fileName
+  // Quitamos la palabra Bearer (que se pone por defecto)
+  auth = auth.replace('Bearer ', '')
+  // Comprobamos que la firma es correcta
+  try {
+    const decoded = jwt.verify(auth, config.jwtSecret)
+    next()
+  } catch (err) {
+    return res.status(401).json({ message: 'No tienes permiso para descargar este documento.' })
+  }
+  /*let authToken = idCom + fileName
 
   if(auth != reverseString(authToken)) {
     res.status(401).json({ message: 'Parece que no tienes permisos...'})
   } else {
     next()
-  }
+  }*/
 }
 
 function reverseString(str) {

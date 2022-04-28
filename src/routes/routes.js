@@ -2,7 +2,7 @@ import { Router } from 'express'
 import * as authController from '../controllers/auth.controller'
 import * as commsController from '../controllers/comms.controller'
 import * as fileController from '../controllers/files.controller'
-import { auth } from '../middlewares/index'
+import { auth, cacheFile } from '../middlewares/index'
 
 const router = Router()
 
@@ -34,6 +34,6 @@ router.post('/resources/upload', auth.verifyToken, fileController.upload)
 // Ver lista de archivos
 router.get('/resources/list', auth.verifyToken, fileController.getListFiles)
 // Descargar un archivo
-router.get('/resources/download', auth.verifyAuthDownload,fileController.downloadFile)
+router.get('/resources/download', auth.verifyAuthDownload, cacheFile, fileController.downloadFile)
 
 export default router
