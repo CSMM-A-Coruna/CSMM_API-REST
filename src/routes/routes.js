@@ -13,6 +13,8 @@ router.post('/auth/login', authController.signIn)
 router.post('/auth/register', authController.signUp)
 // Verificar datos una vez ya está logeado
 router.post('/auth/update', auth.verifyToken, authController.compareData)
+// Actualizar el token de Firebase Cloud Messaging
+router.post('/auth/update/firebase_token', auth.verifyToken, authController.saveFCMToken)
 
 // -- Comunicaciones (JWT Required) --
 // Comunicaciones recibidas

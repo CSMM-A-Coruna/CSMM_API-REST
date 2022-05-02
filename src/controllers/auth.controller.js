@@ -205,3 +205,32 @@ export const compareData = async (req, res) => {
     }
   }
 }
+
+
+export const saveFCMToken = async (req, res) => {
+  try {
+    if(req.body.id_usuario && req.body.fcm_token) {
+      const query = await executeQuery(`SELECT fcm_token FROM familias WHERE id = ${req.body.id_usuario}`)
+      if(query.length) {
+        const updateToken = await executeQuery(`UPDATE familias SET fcm_token = '${req.body.fcm_token}' WHERE id = ${req.body.id_usuario}`)
+        res.status(200).json({ message: updateToken })
+      } else {
+        throw '404'
+      }
+    } else {
+      throw '400'
+    }
+  } catch(err) {
+    if ((err = '400')) {
+      res.status(400).json({ message: 'Faltan parámetros' })
+    } else if ((err = '404')) {
+      res.status(404).json({ message: 'No se ha encontrado el usuario' })
+    } else {
+      if (app.settings.env == 'production') {
+        res.status(500).json({ message: 'Error interno del servidor' })
+      } else {
+        res.status(500).json({ message: err })
+      }
+    }
+  }
+}
