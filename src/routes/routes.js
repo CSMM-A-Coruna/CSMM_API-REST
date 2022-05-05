@@ -2,6 +2,7 @@ import { Router } from 'express'
 import * as authController from '../controllers/auth.controller'
 import * as commsController from '../controllers/comms.controller'
 import * as fileController from '../controllers/files.controller'
+import * as preferenceController from '../controllers/preferences.controller'
 import { auth, cacheFile } from '../middlewares/index'
 
 const router = Router()
@@ -37,5 +38,11 @@ router.post('/resources/upload', auth.verifyToken, fileController.upload)
 router.get('/resources/list', auth.verifyToken, fileController.getListFiles)
 // Descargar un archivo
 router.get('/resources/download', auth.verifyAuthDownload, cacheFile, fileController.downloadFile)
+
+// -- Preferencias del usuario --
+// Coger todas las preferencias definidas por el usuario
+router.get('/preferences', auth.verifyToken, preferenceController.getAllPreferences)
+// Actualizar las preferencias del usuario
+router.post('/preferences/update', auth.verifyToken, preferenceController.updatePreference)
 
 export default router
