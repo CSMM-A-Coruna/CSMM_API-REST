@@ -115,7 +115,11 @@ export const signIn = async (req, res) => {
                   expiresIn: jwtExpireDate,
                 }
               )
-              updateLoginUser(result[0].id, req.connection.remoteAddress.split(`:`).pop(), 'Android')
+              updateLoginUser(
+                result[0].id,
+                req.connection.remoteAddress.split(`:`).pop(),
+                'Android'
+              )
               res.status(200).json({ token: token })
             }
           })
@@ -148,7 +152,9 @@ export const compareData = async (req, res) => {
       const query = `SELECT * FROM ${token.tipoUsuario} WHERE id = ${token.id}`
       const result = await executeQuery(query)
       if (result.length) {
-        const alumnosResult = Usuario.calcularAlumnosAsociados(result[0].id).then((data) => {
+        const alumnosResult = Usuario.calcularAlumnosAsociados(
+          result[0].id
+        ).then((data) => {
           if (data.length) {
             let alumnos = []
             for (let index = 0; index < data.length; index++) {
@@ -181,7 +187,11 @@ export const compareData = async (req, res) => {
                 expiresIn: jwtExpireDate,
               }
             )
-            updateLoginUser(result[0].id, req.connection.remoteAddress.split(`:`).pop(), 'Android')
+            updateLoginUser(
+              result[0].id,
+              req.connection.remoteAddress.split(`:`).pop(),
+              'Android'
+            )
             res.status(200).json({ token: newToken })
           }
         })
@@ -192,9 +202,9 @@ export const compareData = async (req, res) => {
       throw '400'
     }
   } catch (err) {
-    if ((err == '400')) {
+    if (err == '400') {
       res.status(400).json({ message: 'Faltan parámetros' })
-    } else if ((err == '404')) {
+    } else if (err == '404') {
       res.status(404).json({ message: 'No se ha encontrado el usuario' })
     } else {
       if (app.settings.env == 'production') {
@@ -206,13 +216,16 @@ export const compareData = async (req, res) => {
   }
 }
 
-
 export const saveFCMToken = async (req, res) => {
   try {
-    if(req.body.id_usuario && req.body.fcm_token) {
-      const query = await executeQuery(`SELECT fcm_token FROM familias WHERE id = ${req.body.id_usuario}`)
-      if(query.length) {
-        const updateToken = await executeQuery(`UPDATE familias SET fcm_token = '${req.body.fcm_token}' WHERE id = ${req.body.id_usuario}`)
+    if (req.body.id_usuario && req.body.fcm_token) {
+      const query = await executeQuery(
+        `SELECT fcm_token FROM familias WHERE id = ${req.body.id_usuario}`
+      )
+      if (query.length) {
+        const updateToken = await executeQuery(
+          `UPDATE familias SET fcm_token = '${req.body.fcm_token}' WHERE id = ${req.body.id_usuario}`
+        )
         res.status(200).json({ message: updateToken })
       } else {
         throw '404'
@@ -220,10 +233,10 @@ export const saveFCMToken = async (req, res) => {
     } else {
       throw '400'
     }
-  } catch(err) {
-    if ((err == '400')) {
+  } catch (err) {
+    if (err == '400') {
       res.status(400).json({ message: 'Faltan parámetros' })
-    } else if ((err == '404')) {
+    } else if (err == '404') {
       res.status(404).json({ message: 'No se ha encontrado el usuario' })
     } else {
       if (app.settings.env == 'production') {
@@ -238,7 +251,7 @@ export const saveFCMToken = async (req, res) => {
 export const checkPassword = async (req, res) => {
   try {
     const { id_usuario, password } = req.body
-    if(id_usuario && password) {
+    if (id_usuario && password) {
       const result = await executeQuery(
         `SELECT * FROM familias WHERE id = '${id_usuario}'`
       )
@@ -248,9 +261,9 @@ export const checkPassword = async (req, res) => {
           result[0].password
         )
         if (verifyPassword) {
-          res.status(200).json({ "correct_password": true })
+          res.status(200).json({ correct_password: true })
         } else {
-          res.status(401).json({ "correct_password": false })
+          res.status(401).json({ correct_password: false })
         }
       } else {
         throw '404'
@@ -258,10 +271,10 @@ export const checkPassword = async (req, res) => {
     } else {
       throw '400'
     }
-  } catch(err) {
-    if ((err == '400')) {
+  } catch (err) {
+    if (err == '400') {
       res.status(400).json({ message: 'Faltan parámetros' })
-    } else if ((err == '404')) {
+    } else if (err == '404') {
       res.status(404).json({ message: 'No se ha encontrado el usuario' })
     } else {
       if (app.settings.env == 'production') {
@@ -276,17 +289,19 @@ export const checkPassword = async (req, res) => {
 export const changePassword = async (req, res) => {
   try {
     const { id_usuario, new_password } = req.body
-    if(id_usuario!=undefined && new_password!=undefined) {
+    if (id_usuario != undefined && new_password != undefined) {
       const encryptedPassword = await Usuario.encryptPassword(new_password)
-      const query = await executeQuery(`UPDATE familias SET password = '${encryptedPassword}' WHERE id = ${id_usuario}`)
+      const query = await executeQuery(
+        `UPDATE familias SET password = '${encryptedPassword}' WHERE id = ${id_usuario}`
+      )
       res.status(200).json({ message: 'Contraseña cambiada con éxito' })
     } else {
       throw '400'
     }
-  } catch(err) {
-    if ((err == '400')) {
+  } catch (err) {
+    if (err == '400') {
       res.status(400).json({ message: 'Faltan parámetros' })
-    } else if ((err == '404')) {
+    } else if (err == '404') {
       res.status(404).json({ message: 'No se ha encontrado el usuario' })
     } else {
       if (app.settings.env == 'production') {

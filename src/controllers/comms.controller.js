@@ -354,10 +354,10 @@ export const sendCom = async (req, res) => {
           const query2 = `INSERT INTO comunicaciones_destinos (idcomunicacion, tipodestino, iddestino, leida, eliminado, email, idAlumnoAsociado, importante) VALUES (${data.insertId}, ${com.tipoDestino}, ${com.idDestino}, ${com.leida}, ${com.eliminado}, ${com.email}, ${com.idAlumnoAsociado}, ${com.importante});`
           const result2 = executeQuery(query2).then((data2) => {
             if (data2.message == '') {
-              res
-                .status(200)
-                .json({ message: 'Comunicación enviada con éxito',
-                        id: data.insertId })
+              res.status(200).json({
+                message: 'Comunicación enviada con éxito',
+                id: data.insertId,
+              })
             }
           })
         } else {
@@ -384,18 +384,18 @@ export const sendCom = async (req, res) => {
 
 export const getAllDispoSenders = async (req, res) => {
   try {
-    if(req.query.id_alumno) {
+    if (req.query.id_alumno) {
       const result = await executeQuery(`SELECT id_profesor, profesor 
                                           FROM docencia_alumnos 
                                           WHERE docencia_alumnos.id_alumno = ${req.query.id_alumno}
                                           AND (docencia_alumnos.materia = 'Formación Humana' OR docencia_alumnos.materia = 'Globalizada')`)
-      if(result.length) {   
+      if (result.length) {
         let destinatarios = []
         for (let i = 0; i < result.length; i++) {
           const destinatario = {
             id: result[i].id_profesor,
             nombre: result[i].profesor,
-            tipo_usuario: 'tutor'
+            tipo_usuario: 'tutor',
           }
           destinatarios.push(destinatario)
         }
@@ -406,11 +406,14 @@ export const getAllDispoSenders = async (req, res) => {
     } else {
       throw '400'
     }
-  } catch(err) {
+  } catch (err) {
     if (err == '400') {
       res.status(400).json({ message: 'Faltan parámetros' })
-    } else if(err == '404') {
-      res.status(404).json({ message: 'No existe un usuario con ese ID o no tiene gente disponible para enviar'})
+    } else if (err == '404') {
+      res.status(404).json({
+        message:
+          'No existe un usuario con ese ID o no tiene gente disponible para enviar',
+      })
     } else {
       if (app.settings.env == 'production') {
         res.status(500).json({ message: 'Error interno del servidor' })
