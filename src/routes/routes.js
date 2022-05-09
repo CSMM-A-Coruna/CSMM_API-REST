@@ -14,6 +14,10 @@ router.post('/auth/login', authController.signIn)
 router.post('/auth/register', authController.signUp)
 // Verificar datos una vez ya está logeado
 router.post('/auth/update', auth.verifyToken, authController.compareData)
+// Comparar contraseña (uno de los pasos previos para cambiarla)
+router.post('/auth/check_pass', auth.verifyToken, authController.checkPassword)
+// Cambiar la contraseña
+router.post('/auth/change_password', auth.verifyToken, authController.changePassword)
 // Actualizar el token de Firebase Cloud Messaging
 router.post('/auth/update/firebase_token', auth.verifyToken, authController.saveFCMToken)
 
