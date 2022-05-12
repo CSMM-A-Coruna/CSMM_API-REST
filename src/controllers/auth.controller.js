@@ -87,11 +87,11 @@ export const signIn = async (req, res) => {
               let alumnos = []
               for (let index = 0; index < data.length; index++) {
                 const alumno = new Alumno(
-                  data[index].idAlumno,
-                  data[index].alumnoNombre,
-                  data[index].alumnoApellido1,
-                  data[index].alumnoApellido2,
-                  data[index].relacion
+                  data[index].id_alumno,
+                  data[index].nombre_alumno,
+                  data[index].apellido1_alumno,
+                  data[index].apellido2_alumno,
+                  data[index].grupo
                 )
                 alumnos.push(alumno)
               }
