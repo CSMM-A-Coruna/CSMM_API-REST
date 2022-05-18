@@ -62,7 +62,7 @@ class Usuario {
   }
 
   static calcularAlumnosAsociados = async (idUser) => {
-    const query = `SELECT * FROM familias_alumnos WHERE idFamiliar = ${idUser}`
+    const query = `SELECT grupo, id_alumno, nombre_alumno, apellido1_alumno, apellido2_alumno FROM asignaturas_alumnos_familias WHERE id_familia = ${idUser} GROUP BY id_alumno`
     return new Promise((resolve, reject) => {
       db.query(query, (error, results, fields) => {
         if (error) return reject(error)

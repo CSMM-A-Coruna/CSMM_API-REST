@@ -26,15 +26,15 @@ export const verifyToken = async (req, res, next) => {
 }
 
 export const verifyAuthDownload = async (req, res, next) => {
-  // Cogemos el query 
+  // Cogemos el query
   const { query } = req
 
   let auth = req.query.auth
   let fileName = req.query.file_name
   let idCom = req.query.id_comunicacion
 
-  if(!auth) {
-    return res.status(403).json({ message: 'Parece que no tienes permisos...'})
+  if (!auth) {
+    return res.status(403).json({ message: 'Parece que no tienes permisos...' })
   }
   // Quitamos la palabra Bearer (que se pone por defecto)
   auth = auth.replace('Bearer ', '')
@@ -43,7 +43,9 @@ export const verifyAuthDownload = async (req, res, next) => {
     const decoded = jwt.verify(auth, config.jwtSecret)
     next()
   } catch (err) {
-    return res.status(401).json({ message: 'No tienes permiso para descargar este documento.' })
+    return res
+      .status(401)
+      .json({ message: 'No tienes permiso para descargar este documento.' })
   }
   /*let authToken = idCom + fileName
 
@@ -55,5 +57,5 @@ export const verifyAuthDownload = async (req, res, next) => {
 }
 
 function reverseString(str) {
-  return (str === '') ? '' : reverseString(str.substr(1)) + str.charAt(0);
+  return str === '' ? '' : reverseString(str.substr(1)) + str.charAt(0)
 }
