@@ -59,12 +59,10 @@ router.get(
 
 // -- Subida de archivos --
 // Subir archivo
-router.post('/resources/upload', auth.verifyToken, fileController.upload)
-// Ver lista de archivos
-router.get('/resources/list', auth.verifyToken, fileController.getListFiles)
+router.post('/resources/adjunto/upload', auth.verifyToken, fileController.upload)
 // Descargar un archivo
 router.get(
-  '/resources/download',
+  '/resources/adjunto/download',
   auth.verifyAuthDownload,
   adjuntoUtil.downloadAdjuntoToAPI,
   fileController.downloadFile
