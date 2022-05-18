@@ -6,7 +6,7 @@ export const getHorarioByGrupo = async (req, res) => {
     const { grupo } = req.query
     if (grupo) {
       const horario = await executeQuery(
-        `SELECT diasemana, nombre, apellido1, apellido2, materia, inicio, fin from horario_marco_profesores WHERE grupo = "${grupo}" ORDER BY diasemana`
+        `SELECT diasemana, nombre, apellido1, apellido2, materia, inicio, fin from horario_marco_profesores WHERE grupo = "${grupo}" ORDER BY diasemana, inicio`
       )
       if (horario.length) {
         const horarioFinal = {
