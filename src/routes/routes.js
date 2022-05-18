@@ -84,6 +84,10 @@ router.post(
 )
 
 // -- Horarios --
-router.get('/horario', horarioController.getHorarioByGrupo)
+router.get('/horario', auth.verifyToken, horarioController.getHorarioByGrupo)
+
+// -- Documentos --
+router.get('/documentos', auth.verifyToken)
+router.get('/documentos/download', auth.verifyAuthDownload)
 
 export default router

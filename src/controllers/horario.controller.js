@@ -57,11 +57,9 @@ export const getHorarioByGrupo = async (req, res) => {
     if (err == '400') {
       res.status(400).json({ message: 'Faltan parámetros' })
     } else if (err == '404') {
-      res
-        .status(404)
-        .json({
-          message: 'No se ha encontrado el horario correspondiente a ese grupo',
-        })
+      res.status(404).json({
+        message: 'No se ha encontrado el horario correspondiente a ese grupo',
+      })
     } else {
       if (app.settings.env == 'production') {
         res.status(500).json({ message: 'Error interno del servidor' })

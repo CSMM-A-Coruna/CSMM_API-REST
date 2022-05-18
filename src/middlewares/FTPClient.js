@@ -70,7 +70,7 @@ class FTPClient {
         stream.once('close', function () {
           c.end()
         })
-        let dir = __basedir + '/resources/downloads/' + id_comunicacion
+        let dir = __basedir + '/resources/downloads/adjuntos/' + id_comunicacion
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir)
         }
