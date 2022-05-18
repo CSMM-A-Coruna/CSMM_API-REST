@@ -3,6 +3,7 @@ import * as authController from '../controllers/auth.controller'
 import * as commsController from '../controllers/comms.controller'
 import * as fileController from '../controllers/files.controller'
 import * as preferenceController from '../controllers/preferences.controller'
+import * as horarioController from '../controllers/horario.controller'
 import { auth, cacheFile } from '../middlewares/index'
 
 const router = Router()
@@ -81,5 +82,8 @@ router.post(
   auth.verifyToken,
   preferenceController.updatePreference
 )
+
+// -- Horarios --
+router.get('/horario', horarioController.getHorarioByGrupo)
 
 export default router
