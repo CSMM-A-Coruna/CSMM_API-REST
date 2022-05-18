@@ -62,7 +62,7 @@ class FTPClient {
     c.connect(this.settings)
   }
 
-  async cacheFile(path, fileName, id_comunicacion) {
+  async cacheAdjunto(path, fileName, id_comunicacion) {
     let c = this.client
     c.on('ready', function () {
       c.get(path, function (err, stream) {

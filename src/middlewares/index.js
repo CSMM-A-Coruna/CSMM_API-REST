@@ -1,6 +1,5 @@
 import * as auth from './auth'
-import cacheFileMiddleware from './uploadFile'
 import updateLoginUser from './updateLoginUser'
-import cacheFile from './downloadFile'
+import * as adjuntoUtil from './adjuntoUtils'
 
-export { auth, cacheFileMiddleware, updateLoginUser, cacheFile }
+export { auth, updateLoginUser, adjuntoUtil }

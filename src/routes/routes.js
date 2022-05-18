@@ -4,7 +4,8 @@ import * as commsController from '../controllers/comms.controller'
 import * as fileController from '../controllers/files.controller'
 import * as preferenceController from '../controllers/preferences.controller'
 import * as horarioController from '../controllers/horario.controller'
-import { auth, cacheFile } from '../middlewares/index'
+import * as documentController from '../controllers/documentos.controller'
+import { auth, adjuntoUtil } from '../middlewares/index'
 
 const router = Router()
 
@@ -65,7 +66,7 @@ router.get('/resources/list', auth.verifyToken, fileController.getListFiles)
 router.get(
   '/resources/download',
   auth.verifyAuthDownload,
-  cacheFile,
+  adjuntoUtil.downloadAdjuntoToAPI,
   fileController.downloadFile
 )
 
@@ -87,7 +88,7 @@ router.post(
 router.get('/horario', auth.verifyToken, horarioController.getHorarioByGrupo)
 
 // -- Documentos --
-router.get('/documentos', auth.verifyToken)
-router.get('/documentos/download', auth.verifyAuthDownload)
+router.get('/documentos', auth.verifyToken, documentController.getAllDocumentos)
+router.get('/documentos/download')
 
 export default router

@@ -1,11 +1,11 @@
-import { cacheFileMiddleware } from '../middlewares'
+import { adjuntoUtil } from '../middlewares'
 import FTPClient from '../middlewares/FTPClient'
 import { executeQuery } from '../database'
 import app from '../app'
 
 export const upload = async (req, res) => {
   try {
-    await cacheFileMiddleware(req, res)
+    await adjuntoUtil.uploadAdjuntoToAPI(req, res)
 
     if (req.file == undefined || req.query.id_comunicacion == undefined) {
       return res.status(400).json({
