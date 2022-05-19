@@ -4,7 +4,8 @@ import * as commsController from '../controllers/comms.controller'
 import * as fileController from '../controllers/files.controller'
 import * as preferenceController from '../controllers/preferences.controller'
 import * as horarioController from '../controllers/horario.controller'
-import { auth, cacheFile } from '../middlewares/index'
+import * as documentController from '../controllers/documentos.controller'
+import { auth, adjuntoUtil } from '../middlewares/index'
 
 const router = Router()
 
@@ -49,7 +50,7 @@ router.get(
 router.post('/comms/send', auth.verifyToken, commsController.sendCom)
 // Actualizar comunicación
 router.post('/comms/update', auth.verifyToken, commsController.updateCom)
-// Usuario disponibles a los que enviar una comunicación (siendo usuario familia)
+// Usuario disponibles a los que enviar una comunicannción (siendo usuario familia)
 router.get(
   '/comms/senders',
   auth.verifyToken,
@@ -58,14 +59,16 @@ router.get(
 
 // -- Subida de archivos --
 // Subir archivo
-router.post('/resources/upload', auth.verifyToken, fileController.upload)
-// Ver lista de archivos
-router.get('/resources/list', auth.verifyToken, fileController.getListFiles)
+router.post(
+  '/resources/adjunto/upload',
+  auth.verifyToken,
+  fileController.upload
+)
 // Descargar un archivo
 router.get(
-  '/resources/download',
+  '/resources/adjunto/download',
   auth.verifyAuthDownload,
-  cacheFile,
+  adjuntoUtil.downloadAdjuntoToAPI,
   fileController.downloadFile
 )
 
@@ -84,6 +87,11 @@ router.post(
 )
 
 // -- Horarios --
-router.get('/horario', horarioController.getHorarioByGrupo)
+router.get('/horario', auth.verifyToken, horarioController.getHorarioByGrupo)
+
+// -- Documentos --
+router.get('/documentos', auth.verifyToken, documentController.getAllDocumentos)
+router.get('/documentos/generales/download', auth.verifyAuthDownload, adjuntoUtil.downloadDocumentoGeneralToAPI, documentController.downloadDocumentoGeneral)
+router.get('/documentos/alumnos/download', auth.verifyAuthDownload, adjuntoUtil.downloadDocumentoAlumnoToAPI, documentController.downloadDocumentoAlumno)
 
 export default router
