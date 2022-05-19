@@ -1,4 +1,4 @@
-import config from './../config'
+import config from './../../config'
 const fs = require('fs')
 const Client = require('ftp')
 
@@ -78,6 +78,46 @@ class FTPClient {
       })
     })
     c.connect(this.settings)
+  }
+
+  async cacheDocumentoGeneral(path, fileName, grupo) {
+    let c = this.client
+    c.on('ready', function () {
+      c.get(path, function (err, stream) {
+        if (err) throw err
+        stream.once('close', function () {
+          c.end()
+        })
+        let dir = __basedir + '/resources/downloads/documentos/generales/' + grupo
+        if(!fs.existsSync(dir)) {
+          fs.mkdirSync(dir)
+        }
+        stream.pipe(fs.createWriteStream(dir + '/' + fileName))
+      })
+    })
+    c.connect(this.settings)
+  }
+
+  async cacheDocumentoAlumno(path, fileName, idAlumno) {
+    let c = this.client
+    try {
+      c.on('ready', function () {
+        c.get(path, function (err, stream) {
+          if (err) throw err
+          stream.once('close', function () {
+            c.end()
+          })
+          let dir = __basedir + '/resources/downloads/documentos/alumnos/' + idAlumno
+          if(!fs.existsSync(dir)) {
+            fs.mkdirSync(dir)
+          }
+          stream.pipe(fs.createWriteStream(dir + '/' + fileName))
+        })
+      })
+      c.connect(this.settings)
+    } catch(err) {
+      console.log(err)
+    }
   }
 }
 

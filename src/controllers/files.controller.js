@@ -1,5 +1,5 @@
 import { adjuntoUtil } from '../middlewares'
-import FTPClient from '../middlewares/FTPClient'
+import FTPClient from '../middlewares/files/FTPClient'
 import { executeQuery } from '../database'
 import app from '../app'
 

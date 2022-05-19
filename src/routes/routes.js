@@ -50,7 +50,7 @@ router.get(
 router.post('/comms/send', auth.verifyToken, commsController.sendCom)
 // Actualizar comunicación
 router.post('/comms/update', auth.verifyToken, commsController.updateCom)
-// Usuario disponibles a los que enviar una comunicación (siendo usuario familia)
+// Usuario disponibles a los que enviar una comunicannción (siendo usuario familia)
 router.get(
   '/comms/senders',
   auth.verifyToken,
@@ -59,7 +59,11 @@ router.get(
 
 // -- Subida de archivos --
 // Subir archivo
-router.post('/resources/adjunto/upload', auth.verifyToken, fileController.upload)
+router.post(
+  '/resources/adjunto/upload',
+  auth.verifyToken,
+  fileController.upload
+)
 // Descargar un archivo
 router.get(
   '/resources/adjunto/download',
@@ -87,6 +91,7 @@ router.get('/horario', auth.verifyToken, horarioController.getHorarioByGrupo)
 
 // -- Documentos --
 router.get('/documentos', auth.verifyToken, documentController.getAllDocumentos)
-router.get('/documentos/download')
+router.get('/documentos/generales/download', auth.verifyAuthDownload, adjuntoUtil.downloadDocumentoGeneralToAPI, documentController.downloadDocumentoGeneral)
+router.get('/documentos/alumnos/download', auth.verifyAuthDownload, adjuntoUtil.downloadDocumentoAlumnoToAPI, documentController.downloadDocumentoAlumno)
 
 export default router

@@ -1,4 +1,4 @@
-import { executeQuery } from '../database'
+import { executeQuery } from '../../database'
 
 const updateLoginUser = async (userId, userIp, device) => {
   try {

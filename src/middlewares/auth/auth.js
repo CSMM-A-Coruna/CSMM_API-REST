@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import config from '../config'
+import config from '../../config'
 
 // -- VERIFICAR EL JSON WEB TOKEN --
 export const verifyToken = async (req, res, next) => {
