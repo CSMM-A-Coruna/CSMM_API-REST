@@ -1,6 +1,5 @@
-import * as auth from './auth'
-import cacheFileMiddleware from './uploadFile'
-import updateLoginUser from './updateLoginUser'
-import cacheFile from './downloadFile'
+import * as auth from './auth/auth'
+import updateLoginUser from './dbUpdates/updateLoginUser'
+import * as adjuntoUtil from './files/filesUtils'
 
-export { auth, cacheFileMiddleware, updateLoginUser, cacheFile }
+export { auth, updateLoginUser, adjuntoUtil }

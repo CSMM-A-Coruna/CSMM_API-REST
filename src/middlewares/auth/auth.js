@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import config from '../config'
+import config from '../../config'
 
 // -- VERIFICAR EL JSON WEB TOKEN --
 export const verifyToken = async (req, res, next) => {
@@ -30,8 +30,6 @@ export const verifyAuthDownload = async (req, res, next) => {
   const { query } = req
 
   let auth = req.query.auth
-  let fileName = req.query.file_name
-  let idCom = req.query.id_comunicacion
 
   if (!auth) {
     return res.status(403).json({ message: 'Parece que no tienes permisos...' })
@@ -47,13 +45,6 @@ export const verifyAuthDownload = async (req, res, next) => {
       .status(401)
       .json({ message: 'No tienes permiso para descargar este documento.' })
   }
-  /*let authToken = idCom + fileName
-
-  if(auth != reverseString(authToken)) {
-    res.status(401).json({ message: 'Parece que no tienes permisos...'})
-  } else {
-    next()
-  }*/
 }
 
 function reverseString(str) {
