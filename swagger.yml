@@ -152,40 +152,32 @@ components:
     NuevaComunicacionCuerpoPeticion:
       type: object
       required:
-        - user_id
-        - title
-        - desc
-        - requested_date
-        - published_state
-        - images
-        - latitude
-        - longitude
+        - asunto
+        - texto
+        - id_remite
+        - tipo_destino
+        - id_destino
+        - id_alumnoAsociado
       properties:
-        user_id:
+        asunto:
           type: string
-          description: ID del usuario que crea la publicación
-        title:
+          description: Asunto de la comunicación
+        texto:
           type: string
-          description: Título del trabajador
-        desc:
-          type: string
-          description: Descripción del post
-        requested_date:
-          type: string
-          enum: [urgent, days, months]
-          description: Fecha de disponibilidad del cliente para realizar el trabajo publicado
-        images:
-          type: array
-          items:
-            type: string
-          description: Todas las imágenes de la publicación en un array encodeadas en base64
-          uniqueItems: true
-        latitude:
+          description: Cuerpo de la comunicación
+        id_remite:
           type: integer
-          description: Latitud de la publicación.
-        longitude:
+          description: ID del remite
+        tipo_destino:
           type: integer
-          description: Longitud de la publicación
+          enum: [1, 2, 2]
+          description: Tipo de destino, 1 (alumnos), 2 (profesores), 3 (familias)
+        id_destino:
+          type: integer
+          description: ID del destino
+        id_alumnoAsociado:
+          type: integer
+          description: ID del alumno asociado
 paths:
   /register:
     post:
@@ -472,7 +464,7 @@ paths:
       tags:
         - Comunicaciones - /comms
       description: |
-        Crea una comunicación
+        Crear y mandar una comunicación
       security:
         - BearerAuth: [read]
       parameters:
@@ -490,7 +482,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LoginUsuarioCuerpoPeticion"
+              $ref: "#/components/schemas/NuevaComunicacionCuerpoPeticion"
             example:
               asunto: Calificaciones 2º Trimestre
               texto: lorem ipsumdadas fasñdfsaj ñasldjff
@@ -500,44 +492,7 @@ paths:
               id_alumnoAsociado: 3
       responses:
         "200":
-          description: Lista de las comunicaciones del usuario
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/NuevaComunicacionCuerpoPeticion"
-              example:
-                - id_comunicacion: 3
-                  id_remite: 2
-                  id_destino: 2
-                  tipo_remite: 2
-                  tipo_destino: 3
-                  id_alumnoAsociado: 4
-                  asunto: Calificaciones 2º Trimestre
-                  texto: Prueba...
-                  importante: 0
-                  fecha: "2022-03-22 13:00:00"
-                  leida: null
-                  eliminado: null
-                  nombre_alumnoAsociado: Mario García Pérez
-                  nombre_remite: Juana María Pérez
-                  nombre_destino: Pedro López
-                - id_comunicacion: 3
-                  id_remite: 2
-                  id_destino: 2
-                  tipo_remite: 2
-                  tipo_destino: 3
-                  id_alumnoAsociado: 4
-                  asunto: Calificaciones 2º Trimestre
-                  texto: Prueba...
-                  importante: 0
-                  fecha: "2022-03-22 13:00:00"
-                  leida: null
-                  eliminado: null
-                  nombre_alumnoAsociado: Mario García Pérez
-                  nombre_remite: Juana María Pérez
-                  nombre_destino: Pedro López
+          description: Comunicación enviada con éxito
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
@@ -563,7 +518,7 @@ paths:
             type: string
           example: Bearer {token}
         - name: id_com
-          in: query
+          in: path
           description: ID de la comunicación
           required: true
           schema:

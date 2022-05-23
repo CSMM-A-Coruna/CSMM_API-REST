@@ -227,10 +227,10 @@ export const getAllCommsDeleted = async (req, res) => {
 
 export const updateCom = async (req, res) => {
   try {
-    if (req.query.state && req.path.id_com && req.query.id_destino) {
+    if (req.query.state && req.params.id_com && req.query.id_destino) {
       switch (req.query.state) {
         case 'importante':
-          const query = `UPDATE comunicaciones_destinos SET importante = 1 WHERE comunicaciones_destinos.idcomunicacion = ${req.query.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`
+          const query = `UPDATE comunicaciones_destinos SET importante = 1 WHERE comunicaciones_destinos.idcomunicacion = ${req.params.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`
           const result = await executeQuery(query)
           if (result.changedRows == 1) {
             res
@@ -245,7 +245,7 @@ export const updateCom = async (req, res) => {
           }
           break
         case 'no_importante':
-          const query1 = `UPDATE comunicaciones_destinos SET importante = 0 WHERE comunicaciones_destinos.idcomunicacion = ${req.query.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`
+          const query1 = `UPDATE comunicaciones_destinos SET importante = 0 WHERE comunicaciones_destinos.idcomunicacion = ${req.params.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`
           const result1 = await executeQuery(query1)
           if (result1.changedRows == 1) {
             res
@@ -262,7 +262,7 @@ export const updateCom = async (req, res) => {
         case 'leida':
           const currentDate = new Date()
           const date = currentDate.toISOString()
-          const query2 = `UPDATE comunicaciones_destinos SET leida = "${date}" WHERE comunicaciones_destinos.idcomunicacion = ${req.query.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`
+          const query2 = `UPDATE comunicaciones_destinos SET leida = "${date}" WHERE comunicaciones_destinos.idcomunicacion = ${req.params.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`
           const result2 = await executeQuery(query2)
           if (result2.changedRows == 1) {
             res
@@ -279,7 +279,7 @@ export const updateCom = async (req, res) => {
         case 'eliminado':
           const currentDate2 = new Date()
           const date2 = currentDate2.toISOString()
-          const query3 = `UPDATE comunicaciones_destinos SET eliminado = "${date2}" WHERE comunicaciones_destinos.idcomunicacion = ${req.query.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`
+          const query3 = `UPDATE comunicaciones_destinos SET eliminado = "${date2}" WHERE comunicaciones_destinos.idcomunicacion = ${req.params.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`
           const result3 = await executeQuery(query3)
           if (result3.changedRows == 1) {
             res
@@ -294,7 +294,7 @@ export const updateCom = async (req, res) => {
           }
           break
         case 'restaurar':
-          const query4 = `UPDATE comunicaciones_destinos SET eliminado = NULL WHERE comunicaciones_destinos.idcomunicacion = ${req.query.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`
+          const query4 = `UPDATE comunicaciones_destinos SET eliminado = NULL WHERE comunicaciones_destinos.idcomunicacion = ${req.params.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`
           const result4 = await executeQuery(query4)
           if (result4.changedRows == 1) {
             res
