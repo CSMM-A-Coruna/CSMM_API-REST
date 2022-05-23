@@ -196,6 +196,89 @@ components:
         tipo_usuario:
           type: string
           description: Tipo de usuario
+    HorarioCuerpoRespuesta:
+      type: object
+      properties:
+        lunes:
+          type: array          
+          items: 
+            type: object
+            properties:
+              profesor:
+                type: string
+              materia:
+                type: string
+              inicio: 
+                type: string
+                format: date
+              fin:
+                type: string
+                format: date
+          description: Array de las diferentes horas
+        martes:
+          type: array          
+          items: 
+            type: object
+            properties:
+              profesor:
+                type: string
+              materia:
+                type: string
+              inicio: 
+                type: string
+                format: date
+              fin:
+                type: string
+                format: date
+          description: Array de las diferentes horas
+        miercoles:
+          type: array          
+          items: 
+            type: object
+            properties:
+              profesor:
+                type: string
+              materia:
+                type: string
+              inicio: 
+                type: string
+                format: date
+              fin:
+                type: string
+                format: date
+          description: Array de las diferentes horas
+        jueves:
+          type: array          
+          items: 
+            type: object
+            properties:
+              profesor:
+                type: string
+              materia:
+                type: string
+              inicio: 
+                type: string
+                format: date
+              fin:
+                type: string
+                format: date
+          description: Array de las diferentes horas
+        viernes:
+          type: array          
+          items: 
+            type: object
+            properties:
+              profesor:
+                type: string
+              materia:
+                type: string
+              inicio: 
+                type: string
+                format: date
+              fin:
+                type: string
+                format: date
+          description: Array de las diferentes horas
 paths:
   /auth/register:
     post:
@@ -991,37 +1074,95 @@ paths:
           description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
         "403":
           description: La petición ha fallado porque el token de autenticación no es válido
-  /horario/{id_alumno}:
+  /horario/{grupo}:
     get:
       tags:
         - Horario
       description: |
-        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+        Petición que devuelve el horario de un alumno según su ID.
       security:
         - BearerAuth: [read]
-      requestBody:
-        description: |
-          JWT token antiguo.
-        required: true
-        content:
-          application/json:
-            schema:
-                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
-            example:
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      parameters:
+        - name: grupo
+          in: path
+          description: Grupo (1º Primaria, 2º ESO...etc)
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
       responses:
         "200":
           description: |
-            Datos actualizados con éxito, se devuelvo un nuevo token.
+            JSON con el horario, divido en días
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+                $ref: "#/components/schemas/HorarioCuerpoRespuesta"
               example:
-                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+                lunes:
+                  - profesor: Sara Docampo Darriba
+                    materia: Historia Contemporánea
+                    inicio: "10:10:00"
+                    fin: "11:00:00"
+                  - profesor: Ivan Gonzalez Teijido
+                    materia: Matemáticas
+                    inicio: "11:00:00"
+                    fin: "11:30:00"
+                  - profesor: Sara Docampo Darriba
+                    materia: Historia Contemporánea
+                    inicio: "11:30:00"
+                    fin: "12:20:00"
+                  - profesor: Ivan Gonzalez Teijido
+                    materia: Matemáticas
+                    inicio: "12:20:00"
+                    fin: "13:10:00"
+                  - profesor: Sara Docampo Darriba
+                    materia: Historia Contemporánea
+                    inicio: "13:10:00"
+                    fin: "14:00:00"
+                  - profesor: Ivan Gonzalez Teijido
+                    materia: Matemáticas
+                    inicio: "14:00:00"
+                    fin: "14:50:00"
+                martes:                   
+                  - profesor: Sara Docampo Darriba
+                    materia: Historia Contemporánea
+                    inicio: "10:10:00"
+                    fin: "11:00:00"
+                  - profesor: Ivan Gonzalez Teijido
+                    materia: Matemáticas
+                    inicio: "11:00:00"
+                    fin: "11:30:00"
+                  - profesor: Sara Docampo Darriba
+                    materia: Historia Contemporánea
+                    inicio: "11:30:00"
+                    fin: "12:20:00"
+                  - profesor: Ivan Gonzalez Teijido
+                    materia: Matemáticas
+                    inicio: "12:20:00"
+                    fin: "13:10:00"
+                  - profesor: Sara Docampo Darriba
+                    materia: Historia Contemporánea
+                    inicio: "13:10:00"
+                    fin: "14:00:00"
+                  - profesor: Ivan Gonzalez Teijido
+                    materia: Matemáticas
+                    inicio: "14:00:00"
+                    fin: "14:50:00"
+                miercoles: []
+                jueves: []
+                viernes: []
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
           description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
         "403":
           description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque no se ha encontrado ese grupo
