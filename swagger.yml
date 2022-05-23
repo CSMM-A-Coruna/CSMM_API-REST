@@ -341,6 +341,35 @@ components:
           type: integer
           enum: [0, 1]
           description: Notificaciones por mail de la enfermería
+    DocumentoCuerpoRespuesta:
+      type: object
+      properties:
+        id_documento:
+          type: integer
+          description: ID del documento
+        documento: 
+          type: string
+          description: Nombre del documento (no es el mismo que el del archivo, Entrevista Padres 2022/2023)
+        enlace:
+          type: string
+          description: Nombre completo del archivo (entrevista_22_23.pdf)
+        categoria:
+          type: string
+          description: Categoría del documento 
+        fecha:
+          type: string
+          format: date
+          description: Fecha de publicación 
+        protegido: 
+          type: string
+          enum: ['Si', 'No']
+          description: Defino si el documento es protegido o no 
+        id_alumno:
+          type: integer
+          description: ID del alumno 
+        grupo:
+          type: string
+          description: Grupo (clase), si es 0 se considera un documento general
 paths:
   /auth/register:
     post:
@@ -903,63 +932,64 @@ paths:
       tags:
         - Resources
       description: |
-        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+        Subida de archivo al FTP, se subirá como multipart/form-data
       security:
         - BearerAuth: [read]
-      requestBody:
-        description: |
-          JWT token antiguo.
-        required: true
-        content:
-          application/json:
-            schema:
-                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
-            example:
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      parameters:
+        - name: id_comunicacion
+          in: query
+          description: ID de la comunicacion
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
       responses:
         "200":
-          description: |
-            Datos actualizados con éxito, se devuelvo un nuevo token.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
-              example:
-                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+          description: Archivo subido con éxito
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
           description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
         "403":
           description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallada porque el ID de comunicación no existe
   /resources/adjuntos/download:
     get:
       tags:
         - Resources
       description: |
-        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+        Descarga de un archivo adjunto según el nombre del archivo y el ID de la comunicación
       security:
         - BearerAuth: [read]
-      requestBody:
-        description: |
-          JWT token antiguo.
-        required: true
-        content:
-          application/json:
-            schema:
-                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
-            example:
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      parameters:
+        - name: auth
+          in: query
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+        - name: file_name
+          in: query
+          description: Nombre del archivo
+          required: true
+          schema:
+            type: string
+        - name: id_comunicacion
+          in: query
+          description: ID de la comunicación
+          required: true
+          schema:
+            type: integer
       responses:
         "200":
-          description: |
-            Datos actualizados con éxito, se devuelvo un nuevo token.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
-              example:
-                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+          description: Descarga del archivo*
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
@@ -971,19 +1001,29 @@ paths:
       tags:
         - Resources
       description: |
-        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+        Devuelve todos los documentos relacionados con un grupo y un ID de alumno. (Ataca a tablas diferentes en la BBDD, por eso son necesarios ambos valores)
       security:
         - BearerAuth: [read]
-      requestBody:
-        description: |
-          JWT token antiguo.
-        required: true
-        content:
-          application/json:
-            schema:
-                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
-            example:
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      parameters:
+        - name: grupo
+          in: query
+          description: Grupo
+          required: true
+          schema:
+            type: string
+        - name: id_alumno
+          in: query
+          description: ID del alumno
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
       responses:
         "200":
           description: |
@@ -991,9 +1031,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+                $ref: "#/components/schemas/DocumentoCuerpoRespuesta"
               example:
-                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+                - id_documento: 2
+                  documento: Matrícula Curso 2022/2023
+                  enlace: matricula-22_23.pdf
+                  categoria: dirección
+                  fecha: 2022-05-18
+                  protegido: No
+                  id_alumno: 2
+                  grupo: 2º ESO
+                - id_documento: 5
+                  documento: Matrícula Curso 2022/2023
+                  enlace: matricula-22_23.pdf
+                  categoria: dirección
+                  fecha: 2022-05-18
+                  protegido: Si
+                  id_alumno: 2
+                  grupo: 2º Primaria
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
@@ -1008,66 +1063,74 @@ paths:
         Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
       security:
         - BearerAuth: [read]
-      requestBody:
-        description: |
-          JWT token antiguo.
-        required: true
-        content:
-          application/json:
-            schema:
-                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
-            example:
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      parameters:
+        - name: auth
+          in: query
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+        - name: file_name
+          in: query
+          description: Nombre del archivo
+          required: true
+          schema:
+            type: string
+        - name: grupo
+          in: query
+          description: Grupo (1º Primaria, 2ºEso...etc)
+          required: true
+          schema:
+            type: integer
       responses:
         "200":
-          description: |
-            Datos actualizados con éxito, se devuelvo un nuevo token.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
-              example:
-                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+          description: Descarga del archivo*
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
           description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
         "403":
           description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque no se ha encontrado el archivo o el usuario.
   /resources/documentos/alumnos/download:
     get:
       tags:
         - Resources
       description: |
-        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+        Descarga un documento.
       security:
         - BearerAuth: [read]
-      requestBody:
-        description: |
-          JWT token antiguo.
-        required: true
-        content:
-          application/json:
-            schema:
-                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
-            example:
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      parameters:
+        - name: auth
+          in: query
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+        - name: file_name
+          in: query
+          description: Nombre del archivo
+          required: true
+          schema:
+            type: string
+        - name: id_alumno
+          in: query
+          description: ID del alumno
+          required: true
+          schema:
+            type: integer
       responses:
         "200":
-          description: |
-            Datos actualizados con éxito, se devuelvo un nuevo token.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
-              example:
-                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+          description: Descarga del archivo*
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
           description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
         "403":
           description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque no se ha encontrado el archivo o el usuario.
   /preferences/{user_id}:
     get:
       tags:
@@ -1174,7 +1237,7 @@ paths:
         - BearerAuth: [read]
       parameters:
         - name: grupo
-          in: path
+          in: query
           description: Grupo (1º Primaria, 2º ESO...etc)
           required: true
           schema:
