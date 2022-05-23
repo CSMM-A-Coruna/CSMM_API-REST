@@ -2,10 +2,10 @@ import { executeQuery } from '../database'
 
 export const getAllPreferences = async (req, res) => {
   try {
-    const { id_usuario } = req.query
-    if (id_usuario) {
+    const { user_id } = req.params
+    if (user_id) {
       const query = await executeQuery(
-        `SELECT * FROM familias_app_ajustes WHERE id_usuario = ${id_usuario}`
+        `SELECT * FROM familias_app_ajustes WHERE id_usuario = ${user_id}`
       )
       if (query.length > 0) {
         res.status(200).json(query[0])
@@ -32,12 +32,13 @@ export const getAllPreferences = async (req, res) => {
 
 export const updatePreference = async (req, res) => {
   try {
-    const { id_usuario, tipo_preferencia, value } = req.body
+    const { tipo_preferencia, value } = req.body
+    const id_usuario = req.params.user_id
     if (id_usuario && tipo_preferencia && value != undefined) {
       const query = await executeQuery(
-        `UPDATE familias_app_ajustes SET ${req.body.tipo_preferencia} = ${req.body.value} WHERE id_usuario = ${req.body.id_usuario}`
+        `UPDATE familias_app_ajustes SET ${tipo_preferencia} = ${value} WHERE id_usuario = ${id_usuario}`
       )
-      res.status(200).json(query)
+      res.status(200).json({ message: 'Preferencia actualizada con éxito' })
     } else {
       throw '400'
     }

@@ -279,6 +279,68 @@ components:
                 type: string
                 format: date
           description: Array de las diferentes horas
+    UpdatePrefenciaCuerpoPeticion:
+      type: object
+      properties:
+        tipo_preferencia:
+          type: string
+          description: Tipo de preferencia
+        value: 
+          type: boolean
+          description: Valor de la preferncia (true, false)
+    GetPreferenciasCuerpoRespuesta:
+      type: object
+      properties:
+        id_usuario: 
+          type: integer
+        autentificacion_dos_fases:
+          type: integer
+          enum: [0, 1]
+          description: Autentificación en dos fases a través de SMS 
+        proteccion_restablecimiento: 
+          type: integer
+          enum: [0, 1]
+          description: Mandar un SMS de verificación al restaurar la contraseña
+        not_comunicaciones_push:
+          type: integer          
+          enum: [0, 1]
+          description: Notificaciones push de las comunicaciones 
+        not_calificaciones_push:
+          type: integer
+          enum: [0, 1]
+          description: Notificaciones push de las calificaciones
+        not_entrevistas_push:
+          type: integer
+          enum: [0, 1]
+          description: Notificaciones push de las entrevistas 
+        not_extraescolares_push:
+          type: integer
+          enum: [0, 1]
+          description: Notificaciones push de las actividades extraescolares 
+        not_enfermeria_push: 
+          type: integer
+          enum: [0, 1]
+          description: Notificaciones push de la enfermería
+        not_comunicaciones_email:
+          type: integer
+          enum: [0, 1]
+          description: Notificaciones por mail de las comunicaciones
+        not_calificaciones_email:
+          type: integer
+          enum: [0, 1]
+          description: Notificaciones por mail de las calificaciones
+        not_entrevistas_email:
+          type: integer 
+          enum: [0, 1]
+          description: Notificaciones por mail de las entrevistas
+        not_extraescolares_email:
+          type: integer
+          enum: [0, 1]
+          description: Notificaciones por mail de las actividades extraescolares
+        not_enfermeria_email:
+          type: integer
+          enum: [0, 1]
+          description: Notificaciones por mail de la enfermería
 paths:
   /auth/register:
     post:
@@ -1011,69 +1073,97 @@ paths:
       tags:
         - Ajustes/Preferencias
       description: |
-        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+        Petición que devuelve las preferencias de un usuario
       security:
         - BearerAuth: [read]
-      requestBody:
-        description: |
-          JWT token antiguo.
-        required: true
-        content:
-          application/json:
-            schema:
-                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
-            example:
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      parameters:
+        - name: user_id
+          in: path
+          description: ID del usuario
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
       responses:
         "200":
           description: |
-            Datos actualizados con éxito, se devuelvo un nuevo token.
+            Las preferencias del usuario
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+                $ref: "#/components/schemas/GetPreferenciasCuerpoRespuesta"
               example:
-                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+                id_usuario: 1
+                autentificacion_dos_fases: 0
+                proteccion_restablecimiento: 1
+                not_comunicaciones_push: 1
+                not_calificaciones_push: 1
+                not_entrevistas_push: 1
+                not_extraescolares_push: 1
+                not_enfermeria_push: 1
+                not_comunicaciones_email: 0
+                not_calificaciones_email: 0
+                not_entrevistas_email: 0
+                not_extraescolares_email: 0
+                not_enfermeria_email: 0
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
           description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
         "403":
           description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque el id del usuario no existe
   /preferences/{id_user}:
     put:
       tags:
         - Ajustes/Preferencias
       description: |
-        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+        Actualizar las preferencias de un usuario
       security:
         - BearerAuth: [read]
+      parameters:
+        - name: id_user
+          in: path
+          description: ID del usuario
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
       requestBody:
         description: |
-          JWT token antiguo.
+          Preferencia para actualizar
         required: true
         content:
           application/json:
             schema:
-                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+                $ref: "#/components/schemas/UpdatePrefenciaCuerpoPeticion"
             example:
-              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+              tipo_preferencia: autentificacion_dos_fases
+              value: true
       responses:
         "200":
-          description: |
-            Datos actualizados con éxito, se devuelvo un nuevo token.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
-              example:
-                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+          description: Preferencia actualizada con éxito
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
           description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
         "403":
           description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallada porque no se ha encontrado un usuario con ese ID
   /horario/{grupo}:
     get:
       tags:

@@ -99,13 +99,13 @@ router.get(
 // -- Preferencias del usuario --
 // Coger todas las preferencias definidas por el usuario
 router.get(
-  '/preferences',
+  '/preferences/:user_id',
   auth.verifyToken,
   preferenceController.getAllPreferences
 )
 // Actualizar las preferencias del usuario
-router.post(
-  '/preferences/update',
+router.put(
+  '/preferences/:user_id',
   auth.verifyToken,
   preferenceController.updatePreference
 )
