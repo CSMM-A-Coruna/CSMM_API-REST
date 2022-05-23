@@ -6,10 +6,16 @@ info:
 servers:
   - url: https://api.csmm.es/v1
 tags:
-  - name: Auth - /auth
+  - name: Auth
     description: Todo lo relacionado con autentificación
-  - name: Comunicaciones - /comms
+  - name: Comunicaciones
     description: Todo lo relacionado con las comunicaciones
+  - name: Resources
+    description: Sistema de archivos unidos a un FTP
+  - name: Ajustes/Preferencias
+    description: Ajustes y preferencias del usuario (guardado y persistencia en BBDD)
+  - name: Horario
+    description: Horario de un alumno
 components:
   securitySchemes:
     BearerAuth:
@@ -178,11 +184,23 @@ components:
         id_alumnoAsociado:
           type: integer
           description: ID del alumno asociado
+    DestinoCuerpoRespuesta:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID del usuario
+        nombre:
+          type: string
+          description: Nombre del usuario
+        tipo_usuario:
+          type: string
+          description: Tipo de usuario
 paths:
-  /register:
+  /auth/register:
     post:
       tags:
-        - Auth - /auth
+        - Auth
       description: |
         Registra un nuevo usuario
       parameters:
@@ -219,10 +237,10 @@ paths:
           description: La petición ha fallado porque alguno de los parámetros falta o no es válido
         "409":
           description: La petición ha fallado porque ya existe un usuario registrado con ese email o teléfono
-  /login:
+  /auth/login:
     post:      
       tags:
-        - Auth - /auth
+        - Auth
       description: |
         Permite a un usuario hacer login. Se recibe la contraseña y se devuelve un token de acceso.
 
@@ -254,10 +272,148 @@ paths:
           description: La petición ha fallado porque la contraseña es incorrecta
         "404":
           description: La petición ha fallado porque el usuario no existe
-  /received/{user_id}:
+  /auth/reload:
+    post:
+      tags:
+        - Auth
+      description: |
+        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+      security:
+        - BearerAuth: [read]
+      requestBody:
+        description: |
+          JWT token antiguo.
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+            example:
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      responses:
+        "200":
+          description: |
+            Datos actualizados con éxito, se devuelvo un nuevo token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+  /auth/check_pass:
+    post:
+      tags:
+        - Auth
+      description: |
+        Petición que comprueba si la contraseña es correcta.
+      security:
+        - BearerAuth: [read]
+      requestBody:
+        description: |
+          ID del usuario y la contraseña a comprobar.
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+            example:
+              id_usuario: 2
+              password: '1234'
+      responses:
+        "200":
+          description: |
+            Contraseña correcta
+          content:
+            application/json:
+              example:
+                correct_password: true 
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: Contraseña incorrecta
+          content:
+            application/json:
+              example: 
+                correct_password: false
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+  /auth/change_password:
+    put:
+      tags:
+        - Auth
+      description: |
+        Cambia la contraseña de un usuario.
+      security:
+        - BearerAuth: [read]
+      requestBody:
+        description: |
+          ID del usuario y nueva contraseña.
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+            example:
+              id_usuario: 2
+              new_password: '12345'
+      responses:
+        "200":
+          description: Contraseña cambiada con éxito
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque no se ha podido encontrar el usuario
+  /auth/firebase_token:
+    put:
+      tags:
+        - Auth
+      description: |
+        Petición que guarda el token de Firebase del dispositivo para hacer uso después de las notificaciones push.
+      security:
+        - BearerAuth: [read]
+      requestBody:
+        description: |
+          ID del usuario y su token.
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+            example:
+              id_usuario: 2
+              fcm_token: asdfñjlh23phiahifd
+      responses:
+        "200":
+          description: |
+            Token actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+              example:
+                message: Token actualizado
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque no se ha encontrado un usuario con ese ID
+  /comms/received/{user_id}:
     get:
       tags:
-        - Comunicaciones - /comms
+        - Comunicaciones
       description: |
         Devuelve una lista de todas las comunicaciones recibidas de la familia
       security:
@@ -311,10 +467,10 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el ID de usuario no tiene ninguna comunicación.
-  /sent/{user_id}:
+  /comms/sent/{user_id}:
     get:
       tags:
-        - Comunicaciones - /comms
+        - Comunicaciones
       description: |
         Devuelve una lista de todas las comunicaciones enviados por el usuario
       security:
@@ -385,10 +541,10 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el user_id no existe
-  /deleted/{user_id}:
+  /comms/deleted/{user_id}:
     get:
       tags:
-        - Comunicaciones - /comms
+        - Comunicaciones
       description: |
         Devuelve una lista de todas las comunicaciones enviados por el usuario
       security:
@@ -459,10 +615,10 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el user_id no existe
-  /send:
+  /comms/send:
     post:
       tags:
-        - Comunicaciones - /comms
+        - Comunicaciones
       description: |
         Crear y mandar una comunicación
       security:
@@ -501,10 +657,10 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el user_id no existe
-  /update/:id_com:
-    post:
+  /comms/update/:id_com:
+    put:
       tags:
-        - Comunicaciones - /comms
+        - Comunicaciones
       description: |
         Actualiza el estado de una comunicación
       security:
@@ -551,3 +707,321 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque la comunicación no existe
+  /comms/senders/{id_alumno}:
+    get:
+      tags:
+        - Comunicaciones
+      description: |
+        Devuelvo una lista con las personas a las que se le puede enviar una comunicación asociada a este id de alumno
+      security:
+        - BearerAuth: [read]
+      parameters:
+        - name: id_alumno
+          in: path
+          description: ID del alumno
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
+      responses:
+        "200":
+          description: Lista de destinos disponibles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DestinoCuerpoRespuesta"
+              example:
+                - id: 3
+                  nombre: Elena
+                  tipo_usuario: tutor
+                - id: 4
+                  nombre: Juana
+                  tipo_usuario: profesor
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque el user_id no existe
+  /resources/adjuntos/upload:
+    post:
+      tags:
+        - Resources
+      description: |
+        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+      security:
+        - BearerAuth: [read]
+      requestBody:
+        description: |
+          JWT token antiguo.
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+            example:
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      responses:
+        "200":
+          description: |
+            Datos actualizados con éxito, se devuelvo un nuevo token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+  /resources/adjuntos/download:
+    get:
+      tags:
+        - Resources
+      description: |
+        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+      security:
+        - BearerAuth: [read]
+      requestBody:
+        description: |
+          JWT token antiguo.
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+            example:
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      responses:
+        "200":
+          description: |
+            Datos actualizados con éxito, se devuelvo un nuevo token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+  /resources/documentos:
+    get:
+      tags:
+        - Resources
+      description: |
+        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+      security:
+        - BearerAuth: [read]
+      requestBody:
+        description: |
+          JWT token antiguo.
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+            example:
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      responses:
+        "200":
+          description: |
+            Datos actualizados con éxito, se devuelvo un nuevo token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+  /resources/documentos/generales/download:
+    get:
+      tags:
+        - Resources
+      description: |
+        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+      security:
+        - BearerAuth: [read]
+      requestBody:
+        description: |
+          JWT token antiguo.
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+            example:
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      responses:
+        "200":
+          description: |
+            Datos actualizados con éxito, se devuelvo un nuevo token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+  /resources/documentos/alumnos/download:
+    get:
+      tags:
+        - Resources
+      description: |
+        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+      security:
+        - BearerAuth: [read]
+      requestBody:
+        description: |
+          JWT token antiguo.
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+            example:
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      responses:
+        "200":
+          description: |
+            Datos actualizados con éxito, se devuelvo un nuevo token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+  /preferences/{user_id}:
+    get:
+      tags:
+        - Ajustes/Preferencias
+      description: |
+        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+      security:
+        - BearerAuth: [read]
+      requestBody:
+        description: |
+          JWT token antiguo.
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+            example:
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      responses:
+        "200":
+          description: |
+            Datos actualizados con éxito, se devuelvo un nuevo token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+  /preferences/{id_user}:
+    put:
+      tags:
+        - Ajustes/Preferencias
+      description: |
+        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+      security:
+        - BearerAuth: [read]
+      requestBody:
+        description: |
+          JWT token antiguo.
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+            example:
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      responses:
+        "200":
+          description: |
+            Datos actualizados con éxito, se devuelvo un nuevo token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+  /horario/{id_alumno}:
+    get:
+      tags:
+        - Horario
+      description: |
+        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+      security:
+        - BearerAuth: [read]
+      requestBody:
+        description: |
+          JWT token antiguo.
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+            example:
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      responses:
+        "200":
+          description: |
+            Datos actualizados con éxito, se devuelvo un nuevo token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido

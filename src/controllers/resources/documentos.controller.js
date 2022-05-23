@@ -1,7 +1,6 @@
-import { doc } from 'prettier'
-import app from '../app'
-import { executeQuery } from '../database'
-import { updateDocumentDownload } from '../middlewares/dbUpdates/updateDocumentDownload'
+import app from '../../app'
+import { executeQuery } from '../../database'
+import { updateDocumentDownload } from '../../middlewares/dbUpdates/updateDocumentDownload'
 
 export const getAllDocumentos = async (req, res) => {
   try {

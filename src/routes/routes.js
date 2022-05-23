@@ -1,10 +1,10 @@
 import { Router } from 'express'
 import * as authController from '../controllers/auth.controller'
 import * as commsController from '../controllers/comms.controller'
-import * as fileController from '../controllers/files.controller'
+import * as adjuntosController from '../controllers/resources/adjuntos.controller'
 import * as preferenceController from '../controllers/preferences.controller'
 import * as horarioController from '../controllers/horario.controller'
-import * as documentController from '../controllers/documentos.controller'
+import * as documentController from '../controllers/resources/documentos.controller'
 import { auth, adjuntoUtil } from '../middlewares/index'
 
 const router = Router()
@@ -15,18 +15,18 @@ router.post('/auth/login', authController.signIn)
 // Registrar un usuario nuevo
 router.post('/auth/register', authController.signUp)
 // Verificar datos una vez ya está logeado
-router.post('/auth/update', auth.verifyToken, authController.compareData)
+router.post('/auth/reload', auth.verifyToken, authController.reloadToken)
 // Comparar contraseña (uno de los pasos previos para cambiarla)
 router.post('/auth/check_pass', auth.verifyToken, authController.checkPassword)
 // Cambiar la contraseña
-router.post(
+router.put(
   '/auth/change_password',
   auth.verifyToken,
   authController.changePassword
 )
 // Actualizar el token de Firebase Cloud Messaging
-router.post(
-  '/auth/update/firebase_token',
+router.put(
+  '/auth/firebase_token',
   auth.verifyToken,
   authController.saveFCMToken
 )
@@ -53,31 +53,47 @@ router.get(
 // Enviar comunicación
 router.post('/comms/send/:user_id', auth.verifyToken, commsController.sendCom)
 // Actualizar comunicación
-router.post(
+router.put(
   '/comms/update/:id_com',
   auth.verifyToken,
   commsController.updateCom
 )
 // Usuario disponibles a los que enviar una comunicannción (siendo usuario familia)
 router.get(
-  '/comms/senders',
+  '/comms/senders/:id_alumno',
   auth.verifyToken,
   commsController.getAllDispoSenders
 )
 
-// -- Subida de archivos --
-// Subir archivo
+// -- Todo lo relacionado con los archivos y FTP --
+// Subir un adjunto
 router.post(
-  '/resources/adjunto/upload',
+  '/resources/adjuntos/upload',
   auth.verifyToken,
-  fileController.upload
+  adjuntosController.upload
 )
-// Descargar un archivo
+// Descargar un adjunto
 router.get(
-  '/resources/adjunto/download',
+  '/resources/adjuntos/download',
   auth.verifyAuthDownload,
   adjuntoUtil.downloadAdjuntoToAPI,
-  fileController.downloadFile
+  adjuntosController.downloadFile
+)
+// Coger todos los documentos
+router.get('/resources/documentos', auth.verifyToken, documentController.getAllDocumentos)
+// Descargar un documento general
+router.get(
+  '/resources/documentos/generales/download',
+  auth.verifyAuthDownload,
+  adjuntoUtil.downloadDocumentoGeneralToAPI,
+  documentController.downloadDocumentoGeneral
+)
+// Descargar un documento de un alumno concreto
+router.get(
+  '/resources/documentos/alumnos/download',
+  auth.verifyAuthDownload,
+  adjuntoUtil.downloadDocumentoAlumnoToAPI,
+  documentController.downloadDocumentoAlumno
 )
 
 // -- Preferencias del usuario --
@@ -97,19 +113,5 @@ router.post(
 // -- Horarios --
 router.get('/horario', auth.verifyToken, horarioController.getHorarioByGrupo)
 
-// -- Documentos --
-router.get('/documentos', auth.verifyToken, documentController.getAllDocumentos)
-router.get(
-  '/documentos/generales/download',
-  auth.verifyAuthDownload,
-  adjuntoUtil.downloadDocumentoGeneralToAPI,
-  documentController.downloadDocumentoGeneral
-)
-router.get(
-  '/documentos/alumnos/download',
-  auth.verifyAuthDownload,
-  adjuntoUtil.downloadDocumentoAlumnoToAPI,
-  documentController.downloadDocumentoAlumno
-)
 
 export default router

@@ -384,10 +384,10 @@ export const sendCom = async (req, res) => {
 
 export const getAllDispoSenders = async (req, res) => {
   try {
-    if (req.query.id_alumno) {
+    if (req.params.id_alumno) {
       const result = await executeQuery(`SELECT id_profesor, profesor 
                                           FROM docencia_alumnos 
-                                          WHERE docencia_alumnos.id_alumno = ${req.query.id_alumno}
+                                          WHERE docencia_alumnos.id_alumno = ${req.params.id_alumno}
                                           AND (docencia_alumnos.materia = 'Formación Humana' OR docencia_alumnos.materia = 'Globalizada')`)
       if (result.length) {
         let destinatarios = []

@@ -1,7 +1,7 @@
-import { adjuntoUtil } from '../middlewares'
-import FTPClient from '../middlewares/files/FTPClient'
-import { executeQuery } from '../database'
-import app from '../app'
+import { adjuntoUtil } from '../../middlewares'
+import FTPClient from '../../middlewares/files/FTPClient'
+import { executeQuery } from '../../database'
+import app from '../../app'
 
 export const upload = async (req, res) => {
   try {

@@ -145,7 +145,7 @@ export const signIn = async (req, res) => {
   }
 }
 
-export const compareData = async (req, res) => {
+export const reloadToken = async (req, res) => {
   try {
     const token = jwt.decode(req.body.token)
     if (token) {
@@ -226,7 +226,7 @@ export const saveFCMToken = async (req, res) => {
         const updateToken = await executeQuery(
           `UPDATE familias SET fcm_token = '${req.body.fcm_token}' WHERE id = ${req.body.id_usuario}`
         )
-        res.status(200).json({ message: updateToken })
+        res.status(200).json({ message: 'Token actualizado' })
       } else {
         throw '404'
       }
