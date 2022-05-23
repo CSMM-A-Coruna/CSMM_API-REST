@@ -34,22 +34,30 @@ router.post(
 // -- Comunicaciones (JWT Required) --
 // Comunicaciones recibidas
 router.get(
-  '/comms/received',
+  '/comms/received/:user_id',
   auth.verifyToken,
   commsController.getAllCommsReceived
 )
 // Comunicaciones enviadas
-router.get('/comms/sent', auth.verifyToken, commsController.getAllCommsSent)
+router.get(
+  '/comms/sent/:user_id',
+  auth.verifyToken,
+  commsController.getAllCommsSent
+)
 // Comunicaciones borradas
 router.get(
-  '/comms/deleted',
+  '/comms/deleted/:user_id',
   auth.verifyToken,
   commsController.getAllCommsDeleted
 )
 // Enviar comunicación
-router.post('/comms/send', auth.verifyToken, commsController.sendCom)
+router.post('/comms/send/:user_id', auth.verifyToken, commsController.sendCom)
 // Actualizar comunicación
-router.post('/comms/update', auth.verifyToken, commsController.updateCom)
+router.post(
+  '/comms/update/:id_com',
+  auth.verifyToken,
+  commsController.updateCom
+)
 // Usuario disponibles a los que enviar una comunicannción (siendo usuario familia)
 router.get(
   '/comms/senders',
@@ -91,7 +99,17 @@ router.get('/horario', auth.verifyToken, horarioController.getHorarioByGrupo)
 
 // -- Documentos --
 router.get('/documentos', auth.verifyToken, documentController.getAllDocumentos)
-router.get('/documentos/generales/download', auth.verifyAuthDownload, adjuntoUtil.downloadDocumentoGeneralToAPI, documentController.downloadDocumentoGeneral)
-router.get('/documentos/alumnos/download', auth.verifyAuthDownload, adjuntoUtil.downloadDocumentoAlumnoToAPI, documentController.downloadDocumentoAlumno)
+router.get(
+  '/documentos/generales/download',
+  auth.verifyAuthDownload,
+  adjuntoUtil.downloadDocumentoGeneralToAPI,
+  documentController.downloadDocumentoGeneral
+)
+router.get(
+  '/documentos/alumnos/download',
+  auth.verifyAuthDownload,
+  adjuntoUtil.downloadDocumentoAlumnoToAPI,
+  documentController.downloadDocumentoAlumno
+)
 
 export default router

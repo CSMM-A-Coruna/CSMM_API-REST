@@ -6,20 +6,28 @@ const fs = require('fs')
 const maxSize = 10 * 1024 * 1024
 const snooze = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-
 export const downloadDocumentoGeneralToAPI = async (req, res, next) => {
-  if(req.query.file_name && req.query.grupo) {
+  if (req.query.file_name && req.query.grupo) {
     let grupo = req.query.grupo.replace(/\s/g, '')
-    if(grupo.includes('º')) {
+    if (grupo.includes('º')) {
       grupo = grupo.replace('º', '')
     } else {
       grupo = grupo.replace('ª', '')
     }
     const fileName = req.query.file_name
-    let apiDir = __basedir + '/resources/downloads/documentos/generales/' + grupo + '/' +  fileName
+    let apiDir =
+      __basedir +
+      '/resources/downloads/documentos/generales/' +
+      grupo +
+      '/' +
+      fileName
     const ftp = new FTPClient()
-    const cacheFile = await ftp.cacheDocumentoGeneral('/documentos/generales/' + grupo + '/' +  fileName, fileName, grupo)
-    while(!fs.existsSync(apiDir)) {
+    const cacheFile = await ftp.cacheDocumentoGeneral(
+      '/documentos/generales/' + grupo + '/' + fileName,
+      fileName,
+      grupo
+    )
+    while (!fs.existsSync(apiDir)) {
       await snooze(1)
     }
     next()
@@ -29,13 +37,22 @@ export const downloadDocumentoGeneralToAPI = async (req, res, next) => {
 }
 
 export const downloadDocumentoAlumnoToAPI = async (req, res, next) => {
-  if(req.query.file_name && req.query.id_alumno) {
+  if (req.query.file_name && req.query.id_alumno) {
     const idAlumno = req.query.id_alumno
     const fileName = req.query.file_name
-    let apiDir = __basedir + '/resources/downloads/documentos/alumnos/' + idAlumno + '/' +  fileName
+    let apiDir =
+      __basedir +
+      '/resources/downloads/documentos/alumnos/' +
+      idAlumno +
+      '/' +
+      fileName
     const ftp = new FTPClient()
-    const cacheFile = await ftp.cacheDocumentoAlumno('/documentos/alumnos/' + idAlumno + '/' +  fileName, fileName, idAlumno)
-    while(!fs.existsSync(apiDir)) {
+    const cacheFile = await ftp.cacheDocumentoAlumno(
+      '/documentos/alumnos/' + idAlumno + '/' + fileName,
+      fileName,
+      idAlumno
+    )
+    while (!fs.existsSync(apiDir)) {
       await snooze(1)
     }
     next()

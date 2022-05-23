@@ -11,7 +11,7 @@ export const getAllDocumentos = async (req, res) => {
       if (grupo == 0) {
         const query = `SELECT id_documento, documento, enlace, categoria, fecha FROM documentos WHERE id_grupo = 0`
         const documentosColegio = executeQuery(query).then((docColegio) => {
-          for(let i=0; i<docColegio.length; i++) {
+          for (let i = 0; i < docColegio.length; i++) {
             docColegio[i].protegido = 'No'
             docColegio[i].grupo = grupo
             docColegio[i].id_alumno = id_alumno
@@ -80,7 +80,7 @@ export const downloadDocumentoAlumno = async (req, res) => {
   const fileName = req.query.file_name
   const idAlumno = req.query.id_alumno
   const directoryPath =
-    __basedir + '/resources/downloads/documentos/alumnos/' + idAlumno 
+    __basedir + '/resources/downloads/documentos/alumnos/' + idAlumno
   updateDocumentDownload(fileName, idAlumno, req.ip)
   res.download(directoryPath + '/' + fileName, fileName, (err) => {
     if (err) {

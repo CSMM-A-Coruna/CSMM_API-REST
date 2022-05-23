@@ -88,8 +88,9 @@ class FTPClient {
         stream.once('close', function () {
           c.end()
         })
-        let dir = __basedir + '/resources/downloads/documentos/generales/' + grupo
-        if(!fs.existsSync(dir)) {
+        let dir =
+          __basedir + '/resources/downloads/documentos/generales/' + grupo
+        if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir)
         }
         stream.pipe(fs.createWriteStream(dir + '/' + fileName))
@@ -107,15 +108,16 @@ class FTPClient {
           stream.once('close', function () {
             c.end()
           })
-          let dir = __basedir + '/resources/downloads/documentos/alumnos/' + idAlumno
-          if(!fs.existsSync(dir)) {
+          let dir =
+            __basedir + '/resources/downloads/documentos/alumnos/' + idAlumno
+          if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir)
           }
           stream.pipe(fs.createWriteStream(dir + '/' + fileName))
         })
       })
       c.connect(this.settings)
-    } catch(err) {
+    } catch (err) {
       console.log(err)
     }
   }

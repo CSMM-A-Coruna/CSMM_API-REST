@@ -5,12 +5,12 @@ import app from '../app'
 
 export const getAllCommsReceived = async (req, res) => {
   try {
-    if (req.query.user_id) {
+    if (req.params.user_id) {
       const query = `SELECT *, nombreRemite(comunicaciones_generales.tiporemite, comunicaciones_generales.idremite) AS nombreRemite, 
                             nombreDestino(comunicaciones_generales.tipodestino, comunicaciones_generales.iddestino) AS nombreDestino,
                             calculoAdjuntos(comunicaciones_generales.idcomunicacion) AS adjuntos
                             FROM comunicaciones_generales
-                            WHERE tipodestino = 2 AND iddestino = ${req.query.user_id} 
+                            WHERE tipodestino = 2 AND iddestino = ${req.params.user_id} 
                             AND comunicaciones_generales.eliminado IS NULL 
                             ORDER BY comunicaciones_generales.fecha DESC`
       const result = await executeQuery(query)
@@ -79,12 +79,12 @@ export const getAllCommsReceived = async (req, res) => {
 
 export const getAllCommsSent = async (req, res) => {
   try {
-    if (req.query.user_id) {
+    if (req.params.user_id) {
       const query = `SELECT *, nombreRemite(comunicaciones_generales.tiporemite, comunicaciones_generales.idremite) AS nombreRemite, 
                             nombreDestino(comunicaciones_generales.tipodestino, comunicaciones_generales.iddestino) AS nombreDestino,
                             calculoAdjuntos(comunicaciones_generales.idcomunicacion) AS adjuntos
                             FROM comunicaciones_generales
-                            WHERE tiporemite = 2 AND idremite = ${req.query.user_id} 
+                            WHERE tiporemite = 2 AND idremite = ${req.params.user_id} 
                             AND comunicaciones_generales.eliminado IS NULL 
                             ORDER BY comunicaciones_generales.fecha DESC`
       const result = await executeQuery(query)
@@ -153,12 +153,12 @@ export const getAllCommsSent = async (req, res) => {
 
 export const getAllCommsDeleted = async (req, res) => {
   try {
-    if (req.query.user_id) {
+    if (req.params.user_id) {
       const query = `SELECT *, nombreRemite(comunicaciones_generales.tiporemite, comunicaciones_generales.idremite) AS nombreRemite, 
                             nombreDestino(comunicaciones_generales.tipodestino, comunicaciones_generales.iddestino) AS nombreDestino,
                             calculoAdjuntos(comunicaciones_generales.idcomunicacion) AS adjuntos
                             FROM comunicaciones_generales
-                            WHERE tipodestino = 2 AND iddestino = ${req.query.user_id} 
+                            WHERE tipodestino = 2 AND iddestino = ${req.params.user_id} 
                             AND comunicaciones_generales.eliminado IS NOT NULL 
                             ORDER BY comunicaciones_generales.eliminado DESC`
       const result = await executeQuery(query)
@@ -227,7 +227,7 @@ export const getAllCommsDeleted = async (req, res) => {
 
 export const updateCom = async (req, res) => {
   try {
-    if (req.query.state && req.query.id_com && req.query.id_destino) {
+    if (req.query.state && req.path.id_com && req.query.id_destino) {
       switch (req.query.state) {
         case 'importante':
           const query = `UPDATE comunicaciones_destinos SET importante = 1 WHERE comunicaciones_destinos.idcomunicacion = ${req.query.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`

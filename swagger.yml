@@ -84,9 +84,12 @@ components:
         - texto
         - importante
         - fecha 
+        - eliminado
+        - estado
         - nombre_alumnoAsociado
         - nombre_remite
         - nombre_destino
+        - adjuntos
       properties:
         id_comunicacion:
           type: integer
@@ -99,7 +102,7 @@ components:
           description: ID del destino
         tipo_remite:
           type: string
-          enum: [alumno, familia, profesor]
+          enum: [alumnos, familias, profesores]
           description: Tipo de remite
         tipo_destino:
           type: string
@@ -129,6 +132,9 @@ components:
           type: string
           format: date
           description: Fecha de eliminado
+        estado:
+          type: string
+          enum: [recibida, enviada, borrada]
         nombre_alumnoAsociado:
           type: string
           description: Nombre del alumno asociado
@@ -138,6 +144,11 @@ components:
         nombre_destino: 
           type: string
           description: Nombre del destino
+        adjuntos:
+          type: array
+          items: 
+            type: string
+          description: Array de los documentos adjuntos
     NuevaComunicacionCuerpoPeticion:
       type: object
       required:
@@ -251,7 +262,7 @@ paths:
           description: La petición ha fallado porque la contraseña es incorrecta
         "404":
           description: La petición ha fallado porque el usuario no existe
-  /received:
+  /received/{user_id}:
     get:
       tags:
         - Comunicaciones - /comms
@@ -286,8 +297,8 @@ paths:
                 - id_comunicacion: 3
                   id_remite: 2
                   id_destino: 2
-                  tipo_remite: 2
-                  tipo_destino: 3
+                  tipo_remite: familias
+                  tipo_destino: profesores
                   id_alumnoAsociado: 4
                   asunto: Calificaciones 2º Trimestre
                   texto: Prueba...
@@ -295,9 +306,11 @@ paths:
                   fecha: "2022-03-22 13:00:00"
                   leida: null
                   eliminado: null
+                  estado: recibida
                   nombre_alumnoAsociado: Mario García Pérez
                   nombre_remite: Juana María Pérez
                   nombre_destino: Pedro López
+                  adjuntos: []
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
@@ -305,8 +318,8 @@ paths:
         "403":
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
-          description: La petición ha fallado porque el user_id no existe
-  /sent:
+          description: La petición ha fallado porque el ID de usuario no tiene ninguna comunicación.
+  /sent/{user_id}:
     get:
       tags:
         - Comunicaciones - /comms
@@ -341,8 +354,8 @@ paths:
                 - id_comunicacion: 3
                   id_remite: 2
                   id_destino: 2
-                  tipo_remite: 2
-                  tipo_destino: 3
+                  tipo_remite: familias
+                  tipo_destino: profesores
                   id_alumnoAsociado: 4
                   asunto: Calificaciones 2º Trimestre
                   texto: Prueba...
@@ -350,14 +363,16 @@ paths:
                   fecha: "2022-03-22 13:00:00"
                   leida: null
                   eliminado: null
+                  estado: enviada
                   nombre_alumnoAsociado: Mario García Pérez
                   nombre_remite: Juana María Pérez
                   nombre_destino: Pedro López
+                  adjuntos: []
                 - id_comunicacion: 3
                   id_remite: 2
                   id_destino: 2
-                  tipo_remite: 2
-                  tipo_destino: 3
+                  tipo_remite: familias
+                  tipo_destino: profesores
                   id_alumnoAsociado: 4
                   asunto: Calificaciones 2º Trimestre
                   texto: Prueba...
@@ -365,9 +380,11 @@ paths:
                   fecha: "2022-03-22 13:00:00"
                   leida: null
                   eliminado: null
+                  estado: enviada
                   nombre_alumnoAsociado: Mario García Pérez
                   nombre_remite: Juana María Pérez
                   nombre_destino: Pedro López
+                  adjuntos: []
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
@@ -376,7 +393,7 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el user_id no existe
-  /deleted:
+  /deleted/{user_id}:
     get:
       tags:
         - Comunicaciones - /comms
@@ -411,8 +428,8 @@ paths:
                 - id_comunicacion: 3
                   id_remite: 2
                   id_destino: 2
-                  tipo_remite: 2
-                  tipo_destino: 3
+                  tipo_remite: familias
+                  tipo_destino: profesores
                   id_alumnoAsociado: 4
                   asunto: Calificaciones 2º Trimestre
                   texto: Prueba...
@@ -420,14 +437,16 @@ paths:
                   fecha: "2022-03-22 13:00:00"
                   leida: null
                   eliminado: null
+                  estado: borrada
                   nombre_alumnoAsociado: Mario García Pérez
                   nombre_remite: Juana María Pérez
                   nombre_destino: Pedro López
+                  adjuntos: []
                 - id_comunicacion: 3
                   id_remite: 2
                   id_destino: 2
-                  tipo_remite: 2
-                  tipo_destino: 3
+                  tipo_remite: familias
+                  tipo_destino: profesores
                   id_alumnoAsociado: 4
                   asunto: Calificaciones 2º Trimestre
                   texto: Prueba...
@@ -435,9 +454,11 @@ paths:
                   fecha: "2022-03-22 13:00:00"
                   leida: null
                   eliminado: null
+                  estado: borrada
                   nombre_alumnoAsociado: Mario García Pérez
                   nombre_remite: Juana María Pérez
                   nombre_destino: Pedro López
+                  adjuntos: []
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
@@ -525,7 +546,7 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el user_id no existe
-  /update:
+  /update/:id_com:
     post:
       tags:
         - Comunicaciones - /comms
