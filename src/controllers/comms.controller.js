@@ -1,69 +1,17 @@
-import { executeQuery } from '../database'
-import Comunicacion from '../models/Comunicacion'
 import NuevaComunicacion from '../models/NuevaComunicacion'
+import * as commsService from '../services/comms.service'
 import app from '../app'
 
 export const getAllCommsReceived = async (req, res) => {
   try {
-    if (req.query.user_id) {
-      const query = `SELECT *, nombreRemite(comunicaciones_generales.tiporemite, comunicaciones_generales.idremite) AS nombreRemite, 
-                            nombreDestino(comunicaciones_generales.tipodestino, comunicaciones_generales.iddestino) AS nombreDestino,
-                            calculoAdjuntos(comunicaciones_generales.idcomunicacion) AS adjuntos
-                            FROM comunicaciones_generales
-                            WHERE tipodestino = 2 AND iddestino = ${req.query.user_id} 
-                            AND comunicaciones_generales.eliminado IS NULL 
-                            ORDER BY comunicaciones_generales.fecha DESC`
-      const result = await executeQuery(query)
-      if (result.length) {
-        let comms = []
-        for (let index = 0; index < result.length; index++) {
-          let adjuntos = []
-          if (result[index].adjuntos != 0) {
-            const result1 = await executeQuery(
-              `SELECT adjunto FROM comunicaciones_adjuntos WHERE idcomunicacion = ${result[index].idcomunicacion}`
-            )
-            if (result1.length == 1) {
-              adjuntos.push(result1[0].adjunto)
-            } else {
-              for (let i = 0; i < result1.length; i++) {
-                adjuntos.push(result1[i].adjunto)
-              }
-            }
-          }
-          const com = new Comunicacion(
-            result[index].idcomunicacion,
-            result[index].idremite,
-            result[index].iddestino,
-            result[index].idAlumnoAsociado,
-            result[index].asunto,
-            result[index].texto,
-            result[index].importante,
-            result[index].fecha,
-            result[index].leida,
-            result[index].eliminado,
-            'recibida',
-            result[index].alumnoAsociado,
-            result[index].nombreRemite,
-            result[index].nombreDestino,
-            adjuntos
-          )
-          com.calcularTipoDestino(result[index].tipodestino)
-          com.calcularTipoRemite(result[index].tiporemite)
-          comms.push(com)
-          if (!result[index + 1]) {
-            res.status(200).json(comms)
-          }
-        }
-      } else {
-        throw '404'
-      }
+    const comms = await commsService.getAllCommsReceived(req.params.user_id)
+    if (comms === '404') {
+      throw '404'
     } else {
-      throw '400'
+      res.status(200).json(comms)
     }
   } catch (err) {
-    if (err == '400') {
-      res.status(400).json({ message: 'Faltan parámetros' })
-    } else if ((err = '404')) {
+    if (err == '404') {
       res
         .status(404)
         .json({ message: 'No se han encontrado comunicaciones recibidas' })
@@ -79,68 +27,17 @@ export const getAllCommsReceived = async (req, res) => {
 
 export const getAllCommsSent = async (req, res) => {
   try {
-    if (req.query.user_id) {
-      const query = `SELECT *, nombreRemite(comunicaciones_generales.tiporemite, comunicaciones_generales.idremite) AS nombreRemite, 
-                            nombreDestino(comunicaciones_generales.tipodestino, comunicaciones_generales.iddestino) AS nombreDestino,
-                            calculoAdjuntos(comunicaciones_generales.idcomunicacion) AS adjuntos
-                            FROM comunicaciones_generales
-                            WHERE tiporemite = 2 AND idremite = ${req.query.user_id} 
-                            AND comunicaciones_generales.eliminado IS NULL 
-                            ORDER BY comunicaciones_generales.fecha DESC`
-      const result = await executeQuery(query)
-      if (result.length) {
-        let comms = []
-        for (let index = 0; index < result.length; index++) {
-          let adjuntos = []
-          if (result[index].adjuntos != 0) {
-            const result1 = await executeQuery(
-              `SELECT adjunto FROM comunicaciones_adjuntos WHERE idcomunicacion = ${result[index].idcomunicacion}`
-            )
-            if (result1.length == 1) {
-              adjuntos.push(result1[0].adjunto)
-            } else {
-              for (let i = 0; i < result1.length; i++) {
-                adjuntos.push(result1[i].adjunto)
-              }
-            }
-          }
-          const com = new Comunicacion(
-            result[index].idcomunicacion,
-            result[index].idremite,
-            result[index].iddestino,
-            result[index].idAlumnoAsociado,
-            result[index].asunto,
-            result[index].texto,
-            result[index].importante,
-            result[index].fecha,
-            result[index].leida,
-            result[index].eliminado,
-            'enviada',
-            result[index].alumnoAsociado,
-            result[index].nombreRemite,
-            result[index].nombreDestino,
-            adjuntos
-          )
-          com.calcularTipoDestino(result[index].tipodestino)
-          com.calcularTipoRemite(result[index].tiporemite)
-          comms.push(com)
-          if (!result[index + 1]) {
-            res.status(200).json(comms)
-          }
-        }
-      } else {
-        throw '404'
-      }
+    const comms = await commsService.getAllCommsSent(req.params.user_id)
+    if (comms === '404') {
+      throw '404'
     } else {
-      throw '400'
+      res.status(200).json(comms)
     }
   } catch (err) {
     if (err == '404') {
-      res.status(404).json({
-        message: 'No hay comunicaciones enviadas asociadas a este usuario',
-      })
-    } else if (err == '400') {
-      res.status(400).json({ message: 'Faltan parámetros' })
+      res
+        .status(404)
+        .json({ message: 'No se han encontrado comunicaciones enviadas' })
     } else {
       if (app.settings.env == 'production') {
         res.status(500).json({ message: 'Error interno del servidor' })
@@ -153,68 +50,17 @@ export const getAllCommsSent = async (req, res) => {
 
 export const getAllCommsDeleted = async (req, res) => {
   try {
-    if (req.query.user_id) {
-      const query = `SELECT *, nombreRemite(comunicaciones_generales.tiporemite, comunicaciones_generales.idremite) AS nombreRemite, 
-                            nombreDestino(comunicaciones_generales.tipodestino, comunicaciones_generales.iddestino) AS nombreDestino,
-                            calculoAdjuntos(comunicaciones_generales.idcomunicacion) AS adjuntos
-                            FROM comunicaciones_generales
-                            WHERE tipodestino = 2 AND iddestino = ${req.query.user_id} 
-                            AND comunicaciones_generales.eliminado IS NOT NULL 
-                            ORDER BY comunicaciones_generales.eliminado DESC`
-      const result = await executeQuery(query)
-      let comms = []
-      if (result.length) {
-        for (let index = 0; index < result.length; index++) {
-          let adjuntos = []
-          if (result[index].adjuntos != 0) {
-            const result1 = await executeQuery(
-              `SELECT adjunto FROM comunicaciones_adjuntos WHERE idcomunicacion = ${result[index].idcomunicacion}`
-            )
-            if (result1.length == 1) {
-              adjuntos.push(result1[0].adjunto)
-            } else {
-              for (let i = 0; i < result1.length; i++) {
-                adjuntos.push(result1[i].adjunto)
-              }
-            }
-          }
-          const com = new Comunicacion(
-            result[index].idcomunicacion,
-            result[index].idremite,
-            result[index].iddestino,
-            result[index].idAlumnoAsociado,
-            result[index].asunto,
-            result[index].texto,
-            result[index].importante,
-            result[index].fecha,
-            result[index].leida,
-            result[index].eliminado,
-            'borrada',
-            result[index].alumnoAsociado,
-            result[index].nombreRemite,
-            result[index].nombreDestino,
-            adjuntos
-          )
-          com.calcularTipoDestino(result[index].tipodestino)
-          com.calcularTipoRemite(result[index].tiporemite)
-          comms.push(com)
-          if (!result[index + 1]) {
-            res.status(200).json(comms)
-          }
-        }
-      } else {
-        throw '404'
-      }
+    const comms = await commsService.getAllCommsDeleted(req.params.user_id)
+    if (comms === '404') {
+      throw '404'
     } else {
-      throw '400'
+      res.status(200).json(comms)
     }
   } catch (err) {
-    if (err == '400') {
-      res.status(400).json({ message: 'Faltan parámetros' })
-    } else if ((err = '404')) {
+    if (err == '404') {
       res
         .status(404)
-        .json({ message: 'No se han encontrado comunicaciones recibidas' })
+        .json({ message: 'No se han encontrado comunicaciones eliminadas' })
     } else {
       if (app.settings.env == 'production') {
         res.status(500).json({ message: 'Error interno del servidor' })
@@ -227,86 +73,46 @@ export const getAllCommsDeleted = async (req, res) => {
 
 export const updateCom = async (req, res) => {
   try {
-    if (req.query.state && req.query.id_com && req.query.id_destino) {
+    if (req.query.state && req.query.id_destino) {
+      let result
       switch (req.query.state) {
         case 'importante':
-          const query = `UPDATE comunicaciones_destinos SET importante = 1 WHERE comunicaciones_destinos.idcomunicacion = ${req.query.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`
-          const result = await executeQuery(query)
-          if (result.changedRows == 1) {
-            res
-              .status(200)
-              .json({ message: 'Estado de la comunicación actualizado' })
-          } else if (result.affectedRows == 0) {
-            throw '409'
-          } else if (result.affectedRows == 1 && result.changedRows == 0) {
-            throw '409'
-          } else {
-            throw '500'
-          }
+          result = commsService.setImportant(
+            req.params.id_com,
+            req.query.id_destino
+          )
           break
         case 'no_importante':
-          const query1 = `UPDATE comunicaciones_destinos SET importante = 0 WHERE comunicaciones_destinos.idcomunicacion = ${req.query.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`
-          const result1 = await executeQuery(query1)
-          if (result1.changedRows == 1) {
-            res
-              .status(200)
-              .json({ message: 'Estado de la comunicación actualizado' })
-          } else if (result1.affectedRows == 0) {
-            throw '404'
-          } else if (result1.affectedRows == 1 && result1.changedRows == 0) {
-            throw '409'
-          } else {
-            throw '500'
-          }
+          result = commsService.setNotImportant(
+            req.params.id_com,
+            req.query.id_destino
+          )
           break
         case 'leida':
-          const currentDate = new Date()
-          const date = currentDate.toISOString()
-          const query2 = `UPDATE comunicaciones_destinos SET leida = "${date}" WHERE comunicaciones_destinos.idcomunicacion = ${req.query.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`
-          const result2 = await executeQuery(query2)
-          if (result2.changedRows == 1) {
-            res
-              .status(200)
-              .json({ message: 'Estado de la comunicación actualizado' })
-          } else if (result2.affectedRows == 0) {
-            throw '404'
-          } else if (result2.affectedRows == 1 && result2.changedRows == 0) {
-            throw '409'
-          } else {
-            throw '500'
-          }
+          result = commsService.setLeida(
+            req.params.id_com,
+            req.query.id_destino
+          )
           break
         case 'eliminado':
-          const currentDate2 = new Date()
-          const date2 = currentDate2.toISOString()
-          const query3 = `UPDATE comunicaciones_destinos SET eliminado = "${date2}" WHERE comunicaciones_destinos.idcomunicacion = ${req.query.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`
-          const result3 = await executeQuery(query3)
-          if (result3.changedRows == 1) {
-            res
-              .status(200)
-              .json({ message: 'Estado de la comunicación actualizado' })
-          } else if (result3.affectedRows == 0) {
-            throw '404'
-          } else if (result3.affectedRows == 1 && result3.changedRows == 0) {
-            throw '409'
-          } else {
-            throw '500'
-          }
+          result = commsService.setEliminada(
+            req.params.id_com,
+            req.query.id_destino
+          )
           break
         case 'restaurar':
-          const query4 = `UPDATE comunicaciones_destinos SET eliminado = NULL WHERE comunicaciones_destinos.idcomunicacion = ${req.query.id_com} AND comunicaciones_destinos.iddestino = ${req.query.id_destino} AND comunicaciones_destinos.tipodestino = 2`
-          const result4 = await executeQuery(query4)
-          if (result4.changedRows == 1) {
-            res
-              .status(200)
-              .json({ message: 'Estado de la comunicación actualizado' })
-          } else if (result4.affectedRows == 0) {
-            throw '404'
-          } else if (result4.affectedRows == 1 && result4.changedRows == 0) {
-            throw '409'
-          } else {
-            throw '500'
-          }
+          result = commsService.setNotEliminada(
+            req.params.id_com,
+            req.query.id_destino
+          )
+          break
+      }
+      if (result === '200') {
+        res
+          .status(200)
+          .json({ message: 'Estado de la comunicación actualizado con éxito' })
+      } else {
+        throw result
       }
     } else {
       throw '400'
@@ -348,22 +154,14 @@ export const sendCom = async (req, res) => {
         req.body.id_destino,
         req.body.id_alumnoAsociado
       )
-      const query = `INSERT INTO comunicaciones (tiporemite, idremite, fecha, asunto, texto) VALUES (${com.tipoRemite}, ${com.idRemite}, "${com.fecha}", "${com.asunto}", "${com.texto}");`
-      const result = executeQuery(query).then((data) => {
-        if (data.message == '') {
-          const query2 = `INSERT INTO comunicaciones_destinos (idcomunicacion, tipodestino, iddestino, leida, eliminado, email, idAlumnoAsociado, importante) VALUES (${data.insertId}, ${com.tipoDestino}, ${com.idDestino}, ${com.leida}, ${com.eliminado}, ${com.email}, ${com.idAlumnoAsociado}, ${com.importante});`
-          const result2 = executeQuery(query2).then((data2) => {
-            if (data2.message == '') {
-              res.status(200).json({
-                message: 'Comunicación enviada con éxito',
-                id: data.insertId,
-              })
-            }
-          })
-        } else {
-          throw '500'
-        }
-      })
+      const result = await commsService.createNewCom(com)
+      if (result == '500') {
+        throw '500'
+      } else {
+        res
+          .status(201)
+          .json({ message: 'Comunicación enviada con éxito', id: result })
+      }
     } else {
       throw '400'
     }
@@ -384,32 +182,14 @@ export const sendCom = async (req, res) => {
 
 export const getAllDispoSenders = async (req, res) => {
   try {
-    if (req.query.id_alumno) {
-      const result = await executeQuery(`SELECT id_profesor, profesor 
-                                          FROM docencia_alumnos 
-                                          WHERE docencia_alumnos.id_alumno = ${req.query.id_alumno}
-                                          AND (docencia_alumnos.materia = 'Formación Humana' OR docencia_alumnos.materia = 'Globalizada')`)
-      if (result.length) {
-        let destinatarios = []
-        for (let i = 0; i < result.length; i++) {
-          const destinatario = {
-            id: result[i].id_profesor,
-            nombre: result[i].profesor,
-            tipo_usuario: 'tutor',
-          }
-          destinatarios.push(destinatario)
-        }
-        res.status(200).json(destinatarios)
-      } else {
-        throw '404'
-      }
+    const senders = await commsService.getAllDispoSenders(req.params.id_alumno)
+    if (senders === '404') {
+      throw '404'
     } else {
-      throw '400'
+      res.status(200).json(senders)
     }
   } catch (err) {
-    if (err == '400') {
-      res.status(400).json({ message: 'Faltan parámetros' })
-    } else if (err == '404') {
+    if (err == '404') {
       res.status(404).json({
         message:
           'No existe un usuario con ese ID o no tiene gente disponible para enviar',
