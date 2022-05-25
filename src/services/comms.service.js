@@ -246,11 +246,11 @@ export const createNewCom = async (com) => {
   const query = `INSERT INTO comunicaciones (tiporemite, idremite, fecha, asunto, texto) VALUES (${com.tipoRemite}, ${com.idRemite}, "${com.fecha}", "${com.asunto}", "${com.texto}");`
   const result = await executeQuery(query)
   if (result.message == '') {
-      const query2 = `INSERT INTO comunicaciones_destinos (idcomunicacion, tipodestino, iddestino, leida, eliminado, email, idAlumnoAsociado, importante) VALUES (${result.insertId}, ${com.tipoDestino}, ${com.idDestino}, ${com.leida}, ${com.eliminado}, ${com.email}, ${com.idAlumnoAsociado}, ${com.importante});`
-      const result2 = await executeQuery(query2)
-      if (result2.message == '') {
-        return result.insertId
-      }    
+    const query2 = `INSERT INTO comunicaciones_destinos (idcomunicacion, tipodestino, iddestino, leida, eliminado, email, idAlumnoAsociado, importante) VALUES (${result.insertId}, ${com.tipoDestino}, ${com.idDestino}, ${com.leida}, ${com.eliminado}, ${com.email}, ${com.idAlumnoAsociado}, ${com.importante});`
+    const result2 = await executeQuery(query2)
+    if (result2.message == '') {
+      return result.insertId
+    }
   } else {
     return '500'
   }

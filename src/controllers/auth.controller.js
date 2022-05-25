@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import config from '../config'
 import app from '../app'
 import { updateLoginUser } from '../middlewares/index'
+import * as authService from '../services/auth.service'
 
 const jwtExpireDate = '30d'
 
@@ -71,9 +72,7 @@ export const signUp = async (req, res) => {
 export const signIn = async (req, res) => {
   try {
     if (req.body.usuario && req.body.password) {
-      const result = await executeQuery(
-        `SELECT * FROM familias WHERE usuario = '${req.body.usuario}'`
-      )
+      const result = await authService.searchByUsuario(req.body.usuario)
       if (result.length) {
         const verifyPassword = Usuario.compareSyncPassword(
           req.body.password,
@@ -149,8 +148,7 @@ export const reloadToken = async (req, res) => {
   try {
     const token = jwt.decode(req.body.token)
     if (token) {
-      const query = `SELECT * FROM ${token.tipoUsuario} WHERE id = ${token.id}`
-      const result = await executeQuery(query)
+      const result = await authService.searchById(token.tipoUsuario, token.id)
       if (result.length) {
         const alumnosResult = Usuario.calcularAlumnosAsociados(
           result[0].id
@@ -219,16 +217,11 @@ export const reloadToken = async (req, res) => {
 export const saveFCMToken = async (req, res) => {
   try {
     if (req.body.id_usuario && req.body.fcm_token) {
-      const query = await executeQuery(
-        `SELECT fcm_token FROM familias WHERE id = ${req.body.id_usuario}`
-      )
-      if (query.length) {
-        const updateToken = await executeQuery(
-          `UPDATE familias SET fcm_token = '${req.body.fcm_token}' WHERE id = ${req.body.id_usuario}`
-        )
-        res.status(200).json({ message: 'Token actualizado' })
+      const update = await authService.updateFCMToken(req.body.id_usuario, req.body.fcm_token)
+      if(update == '200') {
+        res.status(200).json({ message: 'Token actualizado con éxito' })
       } else {
-        throw '404'
+        throw update
       }
     } else {
       throw '400'
@@ -252,21 +245,11 @@ export const checkPassword = async (req, res) => {
   try {
     const { id_usuario, password } = req.body
     if (id_usuario && password) {
-      const result = await executeQuery(
-        `SELECT * FROM familias WHERE id = '${id_usuario}'`
-      )
-      if (result.length) {
-        const verifyPassword = Usuario.compareSyncPassword(
-          password,
-          result[0].password
-        )
-        if (verifyPassword) {
-          res.status(200).json({ correct_password: true })
-        } else {
-          res.status(401).json({ correct_password: false })
-        }
+      const verifyPassword = await authService.checkPassword(id_usuario, password)
+      if (verifyPassword) {
+        res.status(200).json({ correct_password: true })
       } else {
-        throw '404'
+        res.status(401).json({ correct_password: false })
       }
     } else {
       throw '400'
@@ -290,11 +273,8 @@ export const changePassword = async (req, res) => {
   try {
     const { id_usuario, new_password } = req.body
     if (id_usuario != undefined && new_password != undefined) {
-      const encryptedPassword = await Usuario.encryptPassword(new_password)
-      const query = await executeQuery(
-        `UPDATE familias SET password = '${encryptedPassword}' WHERE id = ${id_usuario}`
-      )
-      res.status(200).json({ message: 'Contraseña cambiada con éxito' })
+      await authService.changePassword(id_usuario, new_password)
+      res.status(200).json({ message: 'Contraseña actualizada con éxito' })
     } else {
       throw '400'
     }

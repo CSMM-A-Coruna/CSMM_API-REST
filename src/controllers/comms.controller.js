@@ -158,7 +158,9 @@ export const sendCom = async (req, res) => {
       if (result == '500') {
         throw '500'
       } else {
-        res.status(201).json({ message: 'Comunicación enviada con éxito', id: result })
+        res
+          .status(201)
+          .json({ message: 'Comunicación enviada con éxito', id: result })
       }
     } else {
       throw '400'
@@ -181,7 +183,7 @@ export const sendCom = async (req, res) => {
 export const getAllDispoSenders = async (req, res) => {
   try {
     const senders = await commsService.getAllDispoSenders(req.params.id_alumno)
-    if(senders === '404') {
+    if (senders === '404') {
       throw '404'
     } else {
       res.status(200).json(senders)
