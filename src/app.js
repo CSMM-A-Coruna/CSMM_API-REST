@@ -7,6 +7,7 @@ import cors from 'cors'
 import RoutesV1 from './routes/v1/routes'
 import RoutesV2 from './routes/v2/routes'
 import { useTreblle } from 'treblle'
+import apicache from 'apicache'
 
 // Definimos la ruta base, para el sistema de descarga y subida de archivos
 global.__basedir = __dirname
@@ -37,6 +38,10 @@ if (app.settings.env == 'production') {
   // Le decimos que utilice morgan como logger
   app.use(morgan('dev'))
 }
+
+// API Cache para más performance
+const cache = apicache.middleware
+app.use(cache('2 minutes'))
 
 // Desactivamos response 304
 app.disable('etag')

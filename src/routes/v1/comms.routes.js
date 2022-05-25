@@ -12,11 +12,7 @@ router.get(
   commsController.getAllCommsReceived
 )
 // Comunicaciones enviadas
-router.get(
-  '/sent/:user_id',
-  auth.verifyToken,
-  commsController.getAllCommsSent
-)
+router.get('/sent/:user_id', auth.verifyToken, commsController.getAllCommsSent)
 // Comunicaciones borradas
 router.get(
   '/deleted/:user_id',
@@ -24,7 +20,7 @@ router.get(
   commsController.getAllCommsDeleted
 )
 // Enviar comunicación
-router.post('/send/:user_id', auth.verifyToken, commsController.sendCom)
+router.post('/send', auth.verifyToken, commsController.sendCom)
 // Actualizar comunicación
 router.put('/update/:id_com', auth.verifyToken, commsController.updateCom)
 // Usuario disponibles a los que enviar una comunicannción (siendo usuario familia)
