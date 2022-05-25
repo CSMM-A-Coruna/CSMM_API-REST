@@ -1,43 +1,17 @@
 import app from '../../app'
-import { executeQuery } from '../../database'
 import { updateDocumentDownload } from '../../middlewares/dbUpdates/updateDocumentDownload'
+import * as documentosServices from '../../services/resources/documentos.service'
 
 export const getAllDocumentos = async (req, res) => {
   try {
     const { grupo, id_alumno } = req.query
     if (grupo && id_alumno) {
-      let documentos = []
       if (grupo == 0) {
-        const query = `SELECT id_documento, documento, enlace, categoria, fecha FROM documentos WHERE id_grupo = 0`
-        const documentosColegio = executeQuery(query).then((docColegio) => {
-          for (let i = 0; i < docColegio.length; i++) {
-            docColegio[i].protegido = 'No'
-            docColegio[i].grupo = grupo
-            docColegio[i].id_alumno = id_alumno
-            documentos.push(docColegio[i])
-          }
-          res.status(200).json(documentos)
-        })
+        const documentos = await documentosServices.getDocumentosGenerales(grupo, id_alumno)
+        res.status(200).json(documentos)  
       } else {
-        const query = `SELECT id_documento, documento, enlace, categoria, fecha FROM documentos, grupos WHERE documentos.id_grupo = grupos.id AND grupos.grupo = "${grupo}" ORDER BY fecha`
-        const documentosGrupo = executeQuery(query).then((docGrupo) => {
-          for (let i = 0; i < docGrupo.length; i++) {
-            docGrupo[i].protegido = 'No'
-            docGrupo[i].grupo = grupo
-            docGrupo[i].id_alumno = id_alumno
-            documentos.push(docGrupo[i])
-          }
-          const query2 = `SELECT id_documento, documento, enlace, categoria, fecha, id_alumno FROM documentos_alumno WHERE id_alumno = ${id_alumno}`
-          const documentosAlumno = executeQuery(query2).then((docAlumno) => {
-            for (let i = 0; i < docAlumno.length; i++) {
-              docAlumno[i].protegido = 'Si'
-              docAlumno[i].grupo = grupo
-              docAlumno[i].id_alumno = id_alumno
-              documentos.push(docAlumno[i])
-            }
-            res.status(200).json(documentos)
-          })
-        })
+        const documentos = await documentosServices.getDocumentosByGrupo(grupo, id_alumno)
+        res.status(200).json(documentos)
       }
     } else {
       throw '400'

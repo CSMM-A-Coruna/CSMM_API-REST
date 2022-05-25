@@ -2,6 +2,8 @@ import { adjuntoUtil } from '../../middlewares'
 import FTPClient from '../../middlewares/files/FTPClient'
 import { executeQuery } from '../../database'
 import app from '../../app'
+import * as adjuntosServices from '../../services/resources/adjuntos.service'
+
 
 export const upload = async (req, res) => {
   try {
@@ -21,10 +23,8 @@ export const upload = async (req, res) => {
       req.file.originalname
     )
 
-    const result = await executeQuery(
-      `INSERT INTO comunicaciones_adjuntos (idcomunicacion, adjunto) VALUES (${req.query.id_comunicacion}, '${req.file.originalname}')`
-    )
-
+    const updateToDB = await adjuntosServices.uploadAdjuntoToDB(req.query.id_comunicacion, req.file.originalname)
+    
     res.status(200).json({ message: 'Archivo subido con éxito' })
   } catch (err) {
     if (err.code == 'LIMIT_FILE_SIZE') {
