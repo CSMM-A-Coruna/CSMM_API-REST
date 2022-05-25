@@ -7,10 +7,16 @@ export const getAllDocumentos = async (req, res) => {
     const { grupo, id_alumno } = req.query
     if (grupo && id_alumno) {
       if (grupo == 0) {
-        const documentos = await documentosServices.getDocumentosGenerales(grupo, id_alumno)
-        res.status(200).json(documentos)  
+        const documentos = await documentosServices.getDocumentosGenerales(
+          grupo,
+          id_alumno
+        )
+        res.status(200).json(documentos)
       } else {
-        const documentos = await documentosServices.getDocumentosByGrupo(grupo, id_alumno)
+        const documentos = await documentosServices.getDocumentosByGrupo(
+          grupo,
+          id_alumno
+        )
         res.status(200).json(documentos)
       }
     } else {
