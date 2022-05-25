@@ -6,10 +6,16 @@ info:
 servers:
   - url: https://api.csmm.es/v1
 tags:
-  - name: Auth - /auth
+  - name: Auth
     description: Todo lo relacionado con autentificación
-  - name: Comunicaciones - /comms
+  - name: Comunicaciones
     description: Todo lo relacionado con las comunicaciones
+  - name: Resources
+    description: Sistema de archivos unidos a un FTP
+  - name: Ajustes/Preferencias
+    description: Ajustes y preferencias del usuario (guardado y persistencia en BBDD)
+  - name: Horario
+    description: Horario de un alumno
 components:
   securitySchemes:
     BearerAuth:
@@ -84,9 +90,12 @@ components:
         - texto
         - importante
         - fecha 
+        - eliminado
+        - estado
         - nombre_alumnoAsociado
         - nombre_remite
         - nombre_destino
+        - adjuntos
       properties:
         id_comunicacion:
           type: integer
@@ -99,7 +108,7 @@ components:
           description: ID del destino
         tipo_remite:
           type: string
-          enum: [alumno, familia, profesor]
+          enum: [alumnos, familias, profesores]
           description: Tipo de remite
         tipo_destino:
           type: string
@@ -129,6 +138,9 @@ components:
           type: string
           format: date
           description: Fecha de eliminado
+        estado:
+          type: string
+          enum: [recibida, enviada, borrada]
         nombre_alumnoAsociado:
           type: string
           description: Nombre del alumno asociado
@@ -138,48 +150,231 @@ components:
         nombre_destino: 
           type: string
           description: Nombre del destino
+        adjuntos:
+          type: array
+          items: 
+            type: string
+          description: Array de los documentos adjuntos
     NuevaComunicacionCuerpoPeticion:
       type: object
       required:
-        - user_id
-        - title
-        - desc
-        - requested_date
-        - published_state
-        - images
-        - latitude
-        - longitude
+        - asunto
+        - texto
+        - id_remite
+        - tipo_destino
+        - id_destino
+        - id_alumnoAsociado
       properties:
-        user_id:
+        asunto:
           type: string
-          description: ID del usuario que crea la publicación
-        title:
+          description: Asunto de la comunicación
+        texto:
           type: string
-          description: Título del trabajador
-        desc:
-          type: string
-          description: Descripción del post
-        requested_date:
-          type: string
-          enum: [urgent, days, months]
-          description: Fecha de disponibilidad del cliente para realizar el trabajo publicado
-        images:
-          type: array
-          items:
-            type: string
-          description: Todas las imágenes de la publicación en un array encodeadas en base64
-          uniqueItems: true
-        latitude:
+          description: Cuerpo de la comunicación
+        id_remite:
           type: integer
-          description: Latitud de la publicación.
-        longitude:
+          description: ID del remite
+        tipo_destino:
           type: integer
-          description: Longitud de la publicación
+          enum: [1, 2, 2]
+          description: Tipo de destino, 1 (alumnos), 2 (profesores), 3 (familias)
+        id_destino:
+          type: integer
+          description: ID del destino
+        id_alumnoAsociado:
+          type: integer
+          description: ID del alumno asociado
+    DestinoCuerpoRespuesta:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID del usuario
+        nombre:
+          type: string
+          description: Nombre del usuario
+        tipo_usuario:
+          type: string
+          description: Tipo de usuario
+    HorarioCuerpoRespuesta:
+      type: object
+      properties:
+        lunes:
+          type: array          
+          items: 
+            type: object
+            properties:
+              profesor:
+                type: string
+              materia:
+                type: string
+              inicio: 
+                type: string
+                format: date
+              fin:
+                type: string
+                format: date
+          description: Array de las diferentes horas
+        martes:
+          type: array          
+          items: 
+            type: object
+            properties:
+              profesor:
+                type: string
+              materia:
+                type: string
+              inicio: 
+                type: string
+                format: date
+              fin:
+                type: string
+                format: date
+          description: Array de las diferentes horas
+        miercoles:
+          type: array          
+          items: 
+            type: object
+            properties:
+              profesor:
+                type: string
+              materia:
+                type: string
+              inicio: 
+                type: string
+                format: date
+              fin:
+                type: string
+                format: date
+          description: Array de las diferentes horas
+        jueves:
+          type: array          
+          items: 
+            type: object
+            properties:
+              profesor:
+                type: string
+              materia:
+                type: string
+              inicio: 
+                type: string
+                format: date
+              fin:
+                type: string
+                format: date
+          description: Array de las diferentes horas
+        viernes:
+          type: array          
+          items: 
+            type: object
+            properties:
+              profesor:
+                type: string
+              materia:
+                type: string
+              inicio: 
+                type: string
+                format: date
+              fin:
+                type: string
+                format: date
+          description: Array de las diferentes horas
+    UpdatePrefenciaCuerpoPeticion:
+      type: object
+      properties:
+        tipo_preferencia:
+          type: string
+          description: Tipo de preferencia
+        value: 
+          type: boolean
+          description: Valor de la preferncia (true, false)
+    GetPreferenciasCuerpoRespuesta:
+      type: object
+      properties:
+        id_usuario: 
+          type: integer
+        autentificacion_dos_fases:
+          type: integer
+          enum: [0, 1]
+          description: Autentificación en dos fases a través de SMS 
+        proteccion_restablecimiento: 
+          type: integer
+          enum: [0, 1]
+          description: Mandar un SMS de verificación al restaurar la contraseña
+        not_comunicaciones_push:
+          type: integer          
+          enum: [0, 1]
+          description: Notificaciones push de las comunicaciones 
+        not_calificaciones_push:
+          type: integer
+          enum: [0, 1]
+          description: Notificaciones push de las calificaciones
+        not_entrevistas_push:
+          type: integer
+          enum: [0, 1]
+          description: Notificaciones push de las entrevistas 
+        not_extraescolares_push:
+          type: integer
+          enum: [0, 1]
+          description: Notificaciones push de las actividades extraescolares 
+        not_enfermeria_push: 
+          type: integer
+          enum: [0, 1]
+          description: Notificaciones push de la enfermería
+        not_comunicaciones_email:
+          type: integer
+          enum: [0, 1]
+          description: Notificaciones por mail de las comunicaciones
+        not_calificaciones_email:
+          type: integer
+          enum: [0, 1]
+          description: Notificaciones por mail de las calificaciones
+        not_entrevistas_email:
+          type: integer 
+          enum: [0, 1]
+          description: Notificaciones por mail de las entrevistas
+        not_extraescolares_email:
+          type: integer
+          enum: [0, 1]
+          description: Notificaciones por mail de las actividades extraescolares
+        not_enfermeria_email:
+          type: integer
+          enum: [0, 1]
+          description: Notificaciones por mail de la enfermería
+    DocumentoCuerpoRespuesta:
+      type: object
+      properties:
+        id_documento:
+          type: integer
+          description: ID del documento
+        documento: 
+          type: string
+          description: Nombre del documento (no es el mismo que el del archivo, Entrevista Padres 2022/2023)
+        enlace:
+          type: string
+          description: Nombre completo del archivo (entrevista_22_23.pdf)
+        categoria:
+          type: string
+          description: Categoría del documento 
+        fecha:
+          type: string
+          format: date
+          description: Fecha de publicación 
+        protegido: 
+          type: string
+          enum: ['Si', 'No']
+          description: Defino si el documento es protegido o no 
+        id_alumno:
+          type: integer
+          description: ID del alumno 
+        grupo:
+          type: string
+          description: Grupo (clase), si es 0 se considera un documento general
 paths:
-  /register:
+  /auth/register:
     post:
       tags:
-        - Auth - /auth
+        - Auth
       description: |
         Registra un nuevo usuario
       parameters:
@@ -216,10 +411,10 @@ paths:
           description: La petición ha fallado porque alguno de los parámetros falta o no es válido
         "409":
           description: La petición ha fallado porque ya existe un usuario registrado con ese email o teléfono
-  /login:
+  /auth/login:
     post:      
       tags:
-        - Auth - /auth
+        - Auth
       description: |
         Permite a un usuario hacer login. Se recibe la contraseña y se devuelve un token de acceso.
 
@@ -251,10 +446,148 @@ paths:
           description: La petición ha fallado porque la contraseña es incorrecta
         "404":
           description: La petición ha fallado porque el usuario no existe
-  /received:
+  /auth/reload:
+    post:
+      tags:
+        - Auth
+      description: |
+        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+      security:
+        - BearerAuth: [read]
+      requestBody:
+        description: |
+          JWT token antiguo.
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+            example:
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      responses:
+        "200":
+          description: |
+            Datos actualizados con éxito, se devuelvo un nuevo token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjIzMzJhYzFkYmFkOGQ4YjQ3YzAwNDg5IiwibmFtZSI6IkphdmllciIsInN1cm5hbWUiOiJNaXJhbGxlcyBSYW5jYcOxbyIsImVtYWlsIjoiamF2aW1yMjAwMUBnbWFpbC5jb20iLCJwaG9uZV9wcmVmaXgiOjM0LCJwaG9uZSI6NjY2LCJiaXJ0aGRheSI6IjIwMjAtMDgtMDhUMjI6MDA6MDAuMDAwWiIsInByb2ZpbGVfcGljdHVyZSI6ImltYWdlbiBkZSBwZXJmaWwiLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJpYXQiOjE2NDc1NDM1NTcsImV4cCI6MTY0NzYyODE1N30.zvFzV_m72C4rSjxDFjS5TS_kknNA7F0RlmmCvVQuUI
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+  /auth/check_pass:
+    post:
+      tags:
+        - Auth
+      description: |
+        Petición que comprueba si la contraseña es correcta.
+      security:
+        - BearerAuth: [read]
+      requestBody:
+        description: |
+          ID del usuario y la contraseña a comprobar.
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+            example:
+              id_usuario: 2
+              password: '1234'
+      responses:
+        "200":
+          description: |
+            Contraseña correcta
+          content:
+            application/json:
+              example:
+                correct_password: true 
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: Contraseña incorrecta
+          content:
+            application/json:
+              example: 
+                correct_password: false
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+  /auth/change_password:
+    put:
+      tags:
+        - Auth
+      description: |
+        Cambia la contraseña de un usuario.
+      security:
+        - BearerAuth: [read]
+      requestBody:
+        description: |
+          ID del usuario y nueva contraseña.
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+            example:
+              id_usuario: 2
+              new_password: '12345'
+      responses:
+        "200":
+          description: Contraseña cambiada con éxito
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque no se ha podido encontrar el usuario
+  /auth/firebase_token:
+    put:
+      tags:
+        - Auth
+      description: |
+        Petición que guarda el token de Firebase del dispositivo para hacer uso después de las notificaciones push.
+      security:
+        - BearerAuth: [read]
+      requestBody:
+        description: |
+          ID del usuario y su token.
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+            example:
+              id_usuario: 2
+              fcm_token: asdfñjlh23phiahifd
+      responses:
+        "200":
+          description: |
+            Token actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginUsuarioCuerpoRespuesta"
+              example:
+                message: Token actualizado
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque no se ha encontrado un usuario con ese ID
+  /comms/received/{user_id}:
     get:
       tags:
-        - Comunicaciones - /comms
+        - Comunicaciones
       description: |
         Devuelve una lista de todas las comunicaciones recibidas de la familia
       security:
@@ -286,8 +619,8 @@ paths:
                 - id_comunicacion: 3
                   id_remite: 2
                   id_destino: 2
-                  tipo_remite: 2
-                  tipo_destino: 3
+                  tipo_remite: familias
+                  tipo_destino: profesores
                   id_alumnoAsociado: 4
                   asunto: Calificaciones 2º Trimestre
                   texto: Prueba...
@@ -295,9 +628,11 @@ paths:
                   fecha: "2022-03-22 13:00:00"
                   leida: null
                   eliminado: null
+                  estado: recibida
                   nombre_alumnoAsociado: Mario García Pérez
                   nombre_remite: Juana María Pérez
                   nombre_destino: Pedro López
+                  adjuntos: []
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
@@ -305,11 +640,11 @@ paths:
         "403":
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
-          description: La petición ha fallado porque el user_id no existe
-  /sent:
+          description: La petición ha fallado porque el ID de usuario no tiene ninguna comunicación.
+  /comms/sent/{user_id}:
     get:
       tags:
-        - Comunicaciones - /comms
+        - Comunicaciones
       description: |
         Devuelve una lista de todas las comunicaciones enviados por el usuario
       security:
@@ -341,8 +676,8 @@ paths:
                 - id_comunicacion: 3
                   id_remite: 2
                   id_destino: 2
-                  tipo_remite: 2
-                  tipo_destino: 3
+                  tipo_remite: familias
+                  tipo_destino: profesores
                   id_alumnoAsociado: 4
                   asunto: Calificaciones 2º Trimestre
                   texto: Prueba...
@@ -350,14 +685,16 @@ paths:
                   fecha: "2022-03-22 13:00:00"
                   leida: null
                   eliminado: null
+                  estado: enviada
                   nombre_alumnoAsociado: Mario García Pérez
                   nombre_remite: Juana María Pérez
                   nombre_destino: Pedro López
+                  adjuntos: []
                 - id_comunicacion: 3
                   id_remite: 2
                   id_destino: 2
-                  tipo_remite: 2
-                  tipo_destino: 3
+                  tipo_remite: familias
+                  tipo_destino: profesores
                   id_alumnoAsociado: 4
                   asunto: Calificaciones 2º Trimestre
                   texto: Prueba...
@@ -365,9 +702,11 @@ paths:
                   fecha: "2022-03-22 13:00:00"
                   leida: null
                   eliminado: null
+                  estado: enviada
                   nombre_alumnoAsociado: Mario García Pérez
                   nombre_remite: Juana María Pérez
                   nombre_destino: Pedro López
+                  adjuntos: []
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
@@ -376,10 +715,10 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el user_id no existe
-  /deleted:
+  /comms/deleted/{user_id}:
     get:
       tags:
-        - Comunicaciones - /comms
+        - Comunicaciones
       description: |
         Devuelve una lista de todas las comunicaciones enviados por el usuario
       security:
@@ -411,8 +750,8 @@ paths:
                 - id_comunicacion: 3
                   id_remite: 2
                   id_destino: 2
-                  tipo_remite: 2
-                  tipo_destino: 3
+                  tipo_remite: familias
+                  tipo_destino: profesores
                   id_alumnoAsociado: 4
                   asunto: Calificaciones 2º Trimestre
                   texto: Prueba...
@@ -420,14 +759,16 @@ paths:
                   fecha: "2022-03-22 13:00:00"
                   leida: null
                   eliminado: null
+                  estado: borrada
                   nombre_alumnoAsociado: Mario García Pérez
                   nombre_remite: Juana María Pérez
                   nombre_destino: Pedro López
+                  adjuntos: []
                 - id_comunicacion: 3
                   id_remite: 2
                   id_destino: 2
-                  tipo_remite: 2
-                  tipo_destino: 3
+                  tipo_remite: familias
+                  tipo_destino: profesores
                   id_alumnoAsociado: 4
                   asunto: Calificaciones 2º Trimestre
                   texto: Prueba...
@@ -435,9 +776,11 @@ paths:
                   fecha: "2022-03-22 13:00:00"
                   leida: null
                   eliminado: null
+                  estado: borrada
                   nombre_alumnoAsociado: Mario García Pérez
                   nombre_remite: Juana María Pérez
                   nombre_destino: Pedro López
+                  adjuntos: []
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
@@ -446,12 +789,12 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el user_id no existe
-  /send:
+  /comms/send:
     post:
       tags:
-        - Comunicaciones - /comms
+        - Comunicaciones
       description: |
-        Crea una comunicación
+        Crear y mandar una comunicación
       security:
         - BearerAuth: [read]
       parameters:
@@ -469,7 +812,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LoginUsuarioCuerpoPeticion"
+              $ref: "#/components/schemas/NuevaComunicacionCuerpoPeticion"
             example:
               asunto: Calificaciones 2º Trimestre
               texto: lorem ipsumdadas fasñdfsaj ñasldjff
@@ -479,44 +822,7 @@ paths:
               id_alumnoAsociado: 3
       responses:
         "200":
-          description: Lista de las comunicaciones del usuario
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/NuevaComunicacionCuerpoPeticion"
-              example:
-                - id_comunicacion: 3
-                  id_remite: 2
-                  id_destino: 2
-                  tipo_remite: 2
-                  tipo_destino: 3
-                  id_alumnoAsociado: 4
-                  asunto: Calificaciones 2º Trimestre
-                  texto: Prueba...
-                  importante: 0
-                  fecha: "2022-03-22 13:00:00"
-                  leida: null
-                  eliminado: null
-                  nombre_alumnoAsociado: Mario García Pérez
-                  nombre_remite: Juana María Pérez
-                  nombre_destino: Pedro López
-                - id_comunicacion: 3
-                  id_remite: 2
-                  id_destino: 2
-                  tipo_remite: 2
-                  tipo_destino: 3
-                  id_alumnoAsociado: 4
-                  asunto: Calificaciones 2º Trimestre
-                  texto: Prueba...
-                  importante: 0
-                  fecha: "2022-03-22 13:00:00"
-                  leida: null
-                  eliminado: null
-                  nombre_alumnoAsociado: Mario García Pérez
-                  nombre_remite: Juana María Pérez
-                  nombre_destino: Pedro López
+          description: Comunicación enviada con éxito
         "400":
           description: La petición ha fallado porque falta alguno de los parámetros o es inválido
         "401":
@@ -525,10 +831,10 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque el user_id no existe
-  /update:
-    post:
+  /comms/update/:id_com:
+    put:
       tags:
-        - Comunicaciones - /comms
+        - Comunicaciones
       description: |
         Actualiza el estado de una comunicación
       security:
@@ -542,7 +848,7 @@ paths:
             type: string
           example: Bearer {token}
         - name: id_com
-          in: query
+          in: path
           description: ID de la comunicación
           required: true
           schema:
@@ -575,3 +881,441 @@ paths:
           description: La petición ha fallado porque el token de autenticación no es válido
         "404":
           description: La petición ha fallado porque la comunicación no existe
+  /comms/senders/{id_alumno}:
+    get:
+      tags:
+        - Comunicaciones
+      description: |
+        Devuelvo una lista con las personas a las que se le puede enviar una comunicación asociada a este id de alumno
+      security:
+        - BearerAuth: [read]
+      parameters:
+        - name: id_alumno
+          in: path
+          description: ID del alumno
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
+      responses:
+        "200":
+          description: Lista de destinos disponibles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DestinoCuerpoRespuesta"
+              example:
+                - id: 3
+                  nombre: Elena
+                  tipo_usuario: tutor
+                - id: 4
+                  nombre: Juana
+                  tipo_usuario: profesor
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque el user_id no existe
+  /resources/adjuntos/upload:
+    post:
+      tags:
+        - Resources
+      description: |
+        Subida de archivo al FTP, se subirá como multipart/form-data
+      security:
+        - BearerAuth: [read]
+      parameters:
+        - name: id_comunicacion
+          in: query
+          description: ID de la comunicacion
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
+      responses:
+        "200":
+          description: Archivo subido con éxito
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallada porque el ID de comunicación no existe
+  /resources/adjuntos/download:
+    get:
+      tags:
+        - Resources
+      description: |
+        Descarga de un archivo adjunto según el nombre del archivo y el ID de la comunicación
+      security:
+        - BearerAuth: [read]
+      parameters:
+        - name: auth
+          in: query
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+        - name: file_name
+          in: query
+          description: Nombre del archivo
+          required: true
+          schema:
+            type: string
+        - name: id_comunicacion
+          in: query
+          description: ID de la comunicación
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Descarga del archivo*
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+  /resources/documentos:
+    get:
+      tags:
+        - Resources
+      description: |
+        Devuelve todos los documentos relacionados con un grupo y un ID de alumno. (Ataca a tablas diferentes en la BBDD, por eso son necesarios ambos valores)
+      security:
+        - BearerAuth: [read]
+      parameters:
+        - name: grupo
+          in: query
+          description: Grupo
+          required: true
+          schema:
+            type: string
+        - name: id_alumno
+          in: query
+          description: ID del alumno
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
+      responses:
+        "200":
+          description: |
+            Datos actualizados con éxito, se devuelvo un nuevo token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentoCuerpoRespuesta"
+              example:
+                - id_documento: 2
+                  documento: Matrícula Curso 2022/2023
+                  enlace: matricula-22_23.pdf
+                  categoria: dirección
+                  fecha: 2022-05-18
+                  protegido: No
+                  id_alumno: 2
+                  grupo: 2º ESO
+                - id_documento: 5
+                  documento: Matrícula Curso 2022/2023
+                  enlace: matricula-22_23.pdf
+                  categoria: dirección
+                  fecha: 2022-05-18
+                  protegido: Si
+                  id_alumno: 2
+                  grupo: 2º Primaria
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+  /resources/documentos/generales/download:
+    get:
+      tags:
+        - Resources
+      description: |
+        Petición que manda un nuevo JWT con datos actualizados (si procede). Petición hecha para cada vez que si inicia la app y ya está logueado.
+      security:
+        - BearerAuth: [read]
+      parameters:
+        - name: auth
+          in: query
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+        - name: file_name
+          in: query
+          description: Nombre del archivo
+          required: true
+          schema:
+            type: string
+        - name: grupo
+          in: query
+          description: Grupo (1º Primaria, 2ºEso...etc)
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Descarga del archivo*
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque no se ha encontrado el archivo o el usuario.
+  /resources/documentos/alumnos/download:
+    get:
+      tags:
+        - Resources
+      description: |
+        Descarga un documento.
+      security:
+        - BearerAuth: [read]
+      parameters:
+        - name: auth
+          in: query
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+        - name: file_name
+          in: query
+          description: Nombre del archivo
+          required: true
+          schema:
+            type: string
+        - name: id_alumno
+          in: query
+          description: ID del alumno
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Descarga del archivo*
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque no se ha encontrado el archivo o el usuario.
+  /preferences/{user_id}:
+    get:
+      tags:
+        - Ajustes/Preferencias
+      description: |
+        Petición que devuelve las preferencias de un usuario
+      security:
+        - BearerAuth: [read]
+      parameters:
+        - name: user_id
+          in: path
+          description: ID del usuario
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
+      responses:
+        "200":
+          description: |
+            Las preferencias del usuario
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetPreferenciasCuerpoRespuesta"
+              example:
+                id_usuario: 1
+                autentificacion_dos_fases: 0
+                proteccion_restablecimiento: 1
+                not_comunicaciones_push: 1
+                not_calificaciones_push: 1
+                not_entrevistas_push: 1
+                not_extraescolares_push: 1
+                not_enfermeria_push: 1
+                not_comunicaciones_email: 0
+                not_calificaciones_email: 0
+                not_entrevistas_email: 0
+                not_extraescolares_email: 0
+                not_enfermeria_email: 0
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque el id del usuario no existe
+  /preferences/{id_user}:
+    put:
+      tags:
+        - Ajustes/Preferencias
+      description: |
+        Actualizar las preferencias de un usuario
+      security:
+        - BearerAuth: [read]
+      parameters:
+        - name: id_user
+          in: path
+          description: ID del usuario
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
+      requestBody:
+        description: |
+          Preferencia para actualizar
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/UpdatePrefenciaCuerpoPeticion"
+            example:
+              tipo_preferencia: autentificacion_dos_fases
+              value: true
+      responses:
+        "200":
+          description: Preferencia actualizada con éxito
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallada porque no se ha encontrado un usuario con ese ID
+  /horario/{grupo}:
+    get:
+      tags:
+        - Horario
+      description: |
+        Petición que devuelve el horario de un alumno según su ID.
+      security:
+        - BearerAuth: [read]
+      parameters:
+        - name: grupo
+          in: query
+          description: Grupo (1º Primaria, 2º ESO...etc)
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: JWT (JsonWebToken) de autenticación del usuario. Debe ser un token válido devuelto por una petición de login.
+          required: true
+          schema:
+            type: string
+          example: Bearer {token}
+      responses:
+        "200":
+          description: |
+            JSON con el horario, divido en días
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HorarioCuerpoRespuesta"
+              example:
+                lunes:
+                  - profesor: Sara Docampo Darriba
+                    materia: Historia Contemporánea
+                    inicio: "10:10:00"
+                    fin: "11:00:00"
+                  - profesor: Ivan Gonzalez Teijido
+                    materia: Matemáticas
+                    inicio: "11:00:00"
+                    fin: "11:30:00"
+                  - profesor: Sara Docampo Darriba
+                    materia: Historia Contemporánea
+                    inicio: "11:30:00"
+                    fin: "12:20:00"
+                  - profesor: Ivan Gonzalez Teijido
+                    materia: Matemáticas
+                    inicio: "12:20:00"
+                    fin: "13:10:00"
+                  - profesor: Sara Docampo Darriba
+                    materia: Historia Contemporánea
+                    inicio: "13:10:00"
+                    fin: "14:00:00"
+                  - profesor: Ivan Gonzalez Teijido
+                    materia: Matemáticas
+                    inicio: "14:00:00"
+                    fin: "14:50:00"
+                martes:                   
+                  - profesor: Sara Docampo Darriba
+                    materia: Historia Contemporánea
+                    inicio: "10:10:00"
+                    fin: "11:00:00"
+                  - profesor: Ivan Gonzalez Teijido
+                    materia: Matemáticas
+                    inicio: "11:00:00"
+                    fin: "11:30:00"
+                  - profesor: Sara Docampo Darriba
+                    materia: Historia Contemporánea
+                    inicio: "11:30:00"
+                    fin: "12:20:00"
+                  - profesor: Ivan Gonzalez Teijido
+                    materia: Matemáticas
+                    inicio: "12:20:00"
+                    fin: "13:10:00"
+                  - profesor: Sara Docampo Darriba
+                    materia: Historia Contemporánea
+                    inicio: "13:10:00"
+                    fin: "14:00:00"
+                  - profesor: Ivan Gonzalez Teijido
+                    materia: Matemáticas
+                    inicio: "14:00:00"
+                    fin: "14:50:00"
+                miercoles: []
+                jueves: []
+                viernes: []
+        "400":
+          description: La petición ha fallado porque falta alguno de los parámetros o es inválido
+        "401":
+          description: La petición ha fallado porque no se ha enviado el token de autenticación en las cabeceras
+        "403":
+          description: La petición ha fallado porque el token de autenticación no es válido
+        "404":
+          description: La petición ha fallado porque no se ha encontrado ese grupo

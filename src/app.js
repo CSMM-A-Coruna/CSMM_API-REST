@@ -4,8 +4,10 @@ import config from './config'
 import morgan from 'morgan'
 import helmet from 'helmet'
 import cors from 'cors'
-import Routes from './routes/routes'
+import RoutesV1 from './routes/v1/routes'
+import RoutesV2 from './routes/v2/routes'
 import { useTreblle } from 'treblle'
+import apicache from 'apicache'
 
 // Definimos la ruta base, para el sistema de descarga y subida de archivos
 global.__basedir = __dirname
@@ -37,6 +39,10 @@ if (app.settings.env == 'production') {
   app.use(morgan('dev'))
 }
 
+// API Cache para más performance
+const cache = apicache.middleware
+app.use(cache('2 minutes'))
+
 // Desactivamos response 304
 app.disable('etag')
 
@@ -49,11 +55,15 @@ app.use(
 )
 
 // ---- RUTAS ----
-// Ruta base
+// Ruta base - V1
 app.get('/v1', (req, res) => {
-  res.json({ message: 'CSMM Gestor Escolar API REST' })
+  res.json({ message: 'CSMM Gestor Escolar API REST - V1' })
+})
+app.get('/v2', (req, res) => {
+  res.json({ message: 'CSMM Gestor Escolar API REST - V2' })
 })
 
-app.use('/v1', Routes)
+app.use('/v1', RoutesV1)
+app.use('/v2', RoutesV2)
 
 export default app
