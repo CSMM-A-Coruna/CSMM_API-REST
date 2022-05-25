@@ -6,7 +6,7 @@ export const getHorarioByGrupo = async (req, res) => {
     const { grupo } = req.query
     if (grupo) {
       const horario = await horarioService.calcularHorarioByGrupo(grupo)
-      if(horario == '404') {
+      if (horario == '404') {
         throw '404'
       } else {
         res.status(200).json(horario)

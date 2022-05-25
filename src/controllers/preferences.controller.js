@@ -1,16 +1,15 @@
-import { executeQuery } from '../database'
+import * as preferencesServices from '../services/preferences.service'
 
 export const getAllPreferences = async (req, res) => {
   try {
     const { user_id } = req.params
     if (user_id) {
-      const query = await executeQuery(
-        `SELECT * FROM familias_app_ajustes WHERE id_usuario = ${user_id}`
-      )
-      if (query.length > 0) {
-        res.status(200).json(query[0])
-      } else {
+      const preferences =
+        await preferencesServices.getAllPreferencesByIdUsuario(user_id)
+      if (preferences == '404') {
         throw '404'
+      } else {
+        res.status(200).json(preferences)
       }
     } else {
       throw '400'
@@ -35,8 +34,10 @@ export const updatePreference = async (req, res) => {
     const { tipo_preferencia, value } = req.body
     const id_usuario = req.params.user_id
     if (id_usuario && tipo_preferencia && value != undefined) {
-      const query = await executeQuery(
-        `UPDATE familias_app_ajustes SET ${tipo_preferencia} = ${value} WHERE id_usuario = ${id_usuario}`
+      await preferencesServices.updatePreference(
+        id_usuario,
+        tipo_preferencia,
+        value
       )
       res.status(200).json({ message: 'Preferencia actualizada con éxito' })
     } else {

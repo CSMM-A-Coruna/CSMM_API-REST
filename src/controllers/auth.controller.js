@@ -217,8 +217,11 @@ export const reloadToken = async (req, res) => {
 export const saveFCMToken = async (req, res) => {
   try {
     if (req.body.id_usuario && req.body.fcm_token) {
-      const update = await authService.updateFCMToken(req.body.id_usuario, req.body.fcm_token)
-      if(update == '200') {
+      const update = await authService.updateFCMToken(
+        req.body.id_usuario,
+        req.body.fcm_token
+      )
+      if (update == '200') {
         res.status(200).json({ message: 'Token actualizado con éxito' })
       } else {
         throw update
@@ -245,7 +248,10 @@ export const checkPassword = async (req, res) => {
   try {
     const { id_usuario, password } = req.body
     if (id_usuario && password) {
-      const verifyPassword = await authService.checkPassword(id_usuario, password)
+      const verifyPassword = await authService.checkPassword(
+        id_usuario,
+        password
+      )
       if (verifyPassword) {
         res.status(200).json({ correct_password: true })
       } else {
