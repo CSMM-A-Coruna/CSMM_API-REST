@@ -1,9 +1,7 @@
 import Usuario from '../models/Usuario'
-import { executeQuery } from '../database'
 import Alumno from '../models/Alumno'
 import jwt from 'jsonwebtoken'
 import config from '../config'
-import app from '../app'
 import { updateLoginUser } from '../middlewares/index'
 import * as authService from '../services/auth.service'
 
@@ -50,21 +48,16 @@ export const signUp = async (req, res) => {
       nuevoUsuario.navegador = req.headers['user-agent']
       nuevoUsuario.accesos = 1
       // Creamos el usuario en la base de datos
-      nuevoUsuario.crearUsuario()
+      await nuevoUsuario.crearUsuario()
       res.status(200).json({ message: 'Usuario creado con éxito' })
     } else {
-      throw '400'
+      next({
+        statusCode: 400,
+        msg: 'Faltan parámetros'
+      })
     }
   } catch (err) {
-    if (err == '400') {
-      res.status(400).json({ message: 'Faltan parámetros' })
-    } else {
-      if (app.settings.env == 'production') {
-        res.status(500).json({ message: 'Error interno del servidor' })
-      } else {
-        res.status(500).json({ message: err })
-      }
-    }
+    next(err)
   }
 }
 
@@ -116,7 +109,7 @@ export const signIn = async (req, res) => {
                 expiresIn: jwtExpireDate,
               }
             )
-            updateLoginUser(
+            await updateLoginUser(
               result[0].id,
               req.connection.remoteAddress.split(`:`).pop(),
               'Android'
@@ -124,28 +117,26 @@ export const signIn = async (req, res) => {
             res.status(200).json({ token: token })
           }
         } else {
-          throw '401'
+          next({
+            statusCode: 401,
+            msg: 'Contraseña incorrecta'
+          })
         }
       } else {
-        throw '404'
+        next({
+          statusCode: 404,
+          msg: 'Usuario no encontrado'
+        })
       }
     } else {
-      throw '400'
+      next({
+        statusCode: 400,
+        msg: 'Faltan parámetros'
+      })
+
     }
   } catch (err) {
-    if (err == '400') {
-      res.status(400).json({ message: 'Faltan parámetros' })
-    } else if (err == '401') {
-      res.status(401).json({ message: 'Contraseña incorrecta' })
-    } else if (err == '404') {
-      res.status(404).json({ message: 'Usuario no encontrado' })
-    } else {
-      if (app.settings.env == 'production') {
-        res.status(500).json({ message: 'Error interno del servidor' })
-      } else {
-        res.status(500).json({ message: err })
-      }
-    }
+    next(err)
   }
 }
 
@@ -155,7 +146,7 @@ export const reloadToken = async (req, res) => {
     if (token) {
       const result = await authService.searchById(token.tipoUsuario, token.id)
       if (result.length) {
-        const alumnosResult = Usuario.calcularAlumnosAsociados(
+        Usuario.calcularAlumnosAsociados(
           result[0].id
         ).then((data) => {
           if (data.length) {
@@ -199,23 +190,19 @@ export const reloadToken = async (req, res) => {
           }
         })
       } else {
-        throw '404'
+        next({
+          statusCode: 404,
+          msg: 'No se ha encontrado el usuario'
+        })
       }
     } else {
-      throw '400'
+      next({
+        statusCode: 400,
+        msg: 'Faltan parámetros'
+      })
     }
   } catch (err) {
-    if (err == '400') {
-      res.status(400).json({ message: 'Faltan parámetros' })
-    } else if (err == '404') {
-      res.status(404).json({ message: 'No se ha encontrado el usuario' })
-    } else {
-      if (app.settings.env == 'production') {
-        res.status(500).json({ message: 'Error interno del servidor' })
-      } else {
-        res.status(500).json({ message: err })
-      }
-    }
+    next(err)
   }
 }
 
@@ -226,26 +213,23 @@ export const saveFCMToken = async (req, res) => {
         req.body.id_usuario,
         req.body.fcm_token
       )
-      if (update == '200') {
+      if (update === '200') {
         res.status(200).json({ message: 'Token actualizado con éxito' })
       } else {
-        throw update
+        next({
+          statusCode: 404,
+          msg: 'No se ha encontrado el usuario'
+        })
       }
     } else {
-      throw '400'
+      next({
+        statusCode: 400,
+        msg: 'Faltan parámetros'
+      })
+
     }
   } catch (err) {
-    if (err == '400') {
-      res.status(400).json({ message: 'Faltan parámetros' })
-    } else if (err == '404') {
-      res.status(404).json({ message: 'No se ha encontrado el usuario' })
-    } else {
-      if (app.settings.env == 'production') {
-        res.status(500).json({ message: 'Error interno del servidor' })
-      } else {
-        res.status(500).json({ message: err })
-      }
-    }
+    next(err)
   }
 }
 
@@ -263,44 +247,31 @@ export const checkPassword = async (req, res) => {
         res.status(401).json({ correct_password: false })
       }
     } else {
-      throw '400'
+      next({
+        statusCode: 400,
+        msg: 'Faltan parámetros'
+      })
+
     }
   } catch (err) {
-    if (err == '400') {
-      res.status(400).json({ message: 'Faltan parámetros' })
-    } else if (err == '404') {
-      res.status(404).json({ message: 'No se ha encontrado el usuario' })
-    } else {
-      if (app.settings.env == 'production') {
-        res.status(500).json({ message: 'Error interno del servidor' })
-      } else {
-        res.status(500).json({ message: err })
-      }
-    }
+    next(err)
   }
 }
 
 export const changePassword = async (req, res) => {
   try {
     const { id_usuario, new_password } = req.body
-    if (id_usuario != undefined && new_password != undefined) {
+    if (id_usuario !== undefined && new_password !== undefined) {
       await authService.changePassword(id_usuario, new_password)
       res.status(200).json({ message: 'Contraseña actualizada con éxito' })
     } else {
-      throw '400'
+      next({
+        statusCode: 400,
+        msg: 'Faltan parámetros'
+      })
+
     }
   } catch (err) {
-    if (err == '400') {
-      res.status(400).json({ message: 'Faltan parámetros' })
-    } else if (err == '404') {
-      res.status(404).json({ message: 'No se ha encontrado el usuario' })
-    } else {
-      if (app.settings.env == 'production') {
-        res.status(500).json({ message: 'Error interno del servidor' })
-      } else {
-        console.log(err)
-        res.status(500).json({ message: err })
-      }
-    }
+    next(err)
   }
 }

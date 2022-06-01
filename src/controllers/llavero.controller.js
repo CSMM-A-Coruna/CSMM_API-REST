@@ -6,23 +6,14 @@ export const getLlaveroByIdAlumno = async (req, res) => {
       req.params.id_alumno
     )
     if (llavero == '404') {
-      throw llavero
+      next({
+        statusCode: 404,
+        msg: 'No se ha encontrado el llavero correspondiente a ese alumno'
+      })
     }
     res.status(200).json(llavero)
   } catch (err) {
-    if (err == '400') {
-      res.status(400).json({ message: 'Faltan parámetros' })
-    } else if (err == '404') {
-      res.status(404).json({
-        message: 'No se ha encontrado el llavero correspondiente a ese alumno',
-      })
-    } else {
-      if (app.settings.env == 'production') {
-        res.status(500).json({ message: 'Error interno del servidor' })
-      } else {
-        res.status(500).json({ message: err })
-      }
-    }
+    next(err)
   }
 }
 
@@ -38,26 +29,21 @@ export const nuevoLlavero = async (req, res) => {
         contraseña
       )
       if (nuevoLlavero == '500') {
-        throw '500'
+        next({
+          statusCode: 500,
+          msg: 'Error interno del servidor'
+        })
+
       }
       res.status(201).json({ message: 'Registro creado con éxito' })
     } else {
-      throw '400'
+      next({
+        statusCode: 400,
+        msg: 'Faltan parámetros'
+      })
     }
   } catch (err) {
-    if (err == '400') {
-      res.status(400).json({ message: 'Faltan parámetros' })
-    } else if (err == '404') {
-      res.status(404).json({
-        message: 'No se ha encontrado el llavero correspondiente a ese alumno',
-      })
-    } else {
-      if (app.settings.env == 'production') {
-        res.status(500).json({ message: 'Error interno del servidor' })
-      } else {
-        res.status(500).json({ message: err })
-      }
-    }
+    next(err)
   }
 }
 
@@ -65,31 +51,28 @@ export const actualizarLlavero = async (req, res) => {
   try {
     const llavero = await llaveroService.getLlaveroById(req.params.id_llavero)
     if (llavero == '404') {
-      throw '404'
+      next({
+        statusCode: 404,
+        msg: 'No se ha encontrado el llavero correspondiente a ese alumno'
+      })
     } else if (llavero == '401') {
-      throw '401'
+      next({
+        statusCode: 401,
+        msg: 'No tienes permiso para editar este llavero'
+      })
     }
     const actualizarLlavero = await llaveroService.actualizarLlavero(
       req.params.id_llavero,
       req.body
     )
     if (actualizarLlavero == '500') {
-      throw '500'
+      next({
+        statusCode: 500,
+        msg: 'Error interno del servidor'
+      })
     }
     res.status(200).json({ message: 'Llavero modificado con éxito' })
   } catch (err) {
-    if (err == '400') {
-      res.status(400).json({ message: 'Faltan parámetros' })
-    } else if (err == '404') {
-      res.status(404).json({
-        message: 'No se ha encontrado el llavero correspondiente a ese alumno',
-      })
-    } else {
-      if (app.settings.env == 'production') {
-        res.status(500).json({ message: 'Error interno del servidor' })
-      } else {
-        res.status(500).json({ message: err })
-      }
-    }
+    next(err)
   }
 }

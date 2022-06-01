@@ -22,11 +22,11 @@ export const downloadDocumentoGeneralToAPI = async (req, res, next) => {
       '/' +
       fileName
     const ftp = new FTPClient()
-    const cacheFile = await ftp.cacheDocumentoGeneral(
-      '/documentos/generales/' + grupo + '/' + fileName,
-      fileName,
-      grupo
-    )
+    await ftp.cacheDocumentoGeneral(
+        '/documentos/generales/' + grupo + '/' + fileName,
+        fileName,
+        grupo
+    );
     while (!fs.existsSync(apiDir)) {
       await snooze(1)
     }
@@ -47,11 +47,11 @@ export const downloadDocumentoAlumnoToAPI = async (req, res, next) => {
       '/' +
       fileName
     const ftp = new FTPClient()
-    const cacheFile = await ftp.cacheDocumentoAlumno(
-      '/documentos/alumnos/' + idAlumno + '/' + fileName,
-      fileName,
-      idAlumno
-    )
+    await ftp.cacheDocumentoAlumno(
+        '/documentos/alumnos/' + idAlumno + '/' + fileName,
+        fileName,
+        idAlumno
+    );
     while (!fs.existsSync(apiDir)) {
       await snooze(1)
     }
@@ -71,11 +71,11 @@ export const downloadAdjuntoToAPI = async (req, res, next) => {
       '/' +
       fileName
     const ftp = new FTPClient()
-    const cacheFile = await ftp.cacheAdjunto(
-      '/adjuntos/' + req.query.id_comunicacion + '/' + fileName,
-      fileName,
-      req.query.id_comunicacion
-    )
+    await ftp.cacheAdjunto(
+        '/adjuntos/' + req.query.id_comunicacion + '/' + fileName,
+        fileName,
+        req.query.id_comunicacion
+    );
     while (!fs.existsSync(apiDir)) {
       await snooze(1)
     }

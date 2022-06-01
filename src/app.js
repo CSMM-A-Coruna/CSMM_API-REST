@@ -8,6 +8,8 @@ import RoutesV1 from './routes/v1/routes'
 import RoutesV2 from './routes/v2/routes'
 import { useTreblle } from 'treblle'
 import apicache from 'apicache'
+import { errorLogger, errorResponder, invalidPathHandler } from './middlewares/errorHandling'
+
 
 // Definimos la ruta base, para el sistema de descarga y subida de archivos
 global.__basedir = __dirname
@@ -18,7 +20,7 @@ const app = express()
 app.set('port', config.port)
 
 // Real time logs with treblle
-if (app.settings.env == 'production') {
+if (app.settings.env === 'production') {
   useTreblle(app, {
     apiKey: 'jjPNsgfxz6qFFjUksixnWR1kVS45AcrN',
     projectId: '7bHOBENbeXSgaXvs',
@@ -65,5 +67,11 @@ app.get('/v2', (req, res) => {
 
 app.use('/v1', RoutesV1)
 app.use('/v2', RoutesV2)
+
+// Gestión de errores
+app.use(errorLogger)
+app.use(errorResponder)
+app.use(invalidPathHandler)
+
 
 export default app

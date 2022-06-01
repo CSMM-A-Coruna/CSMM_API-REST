@@ -16,13 +16,11 @@ export const createNewLlavero = async (
   aplicacion,
   usuario,
   email,
-  contraseña
+  contrasena
 ) => {
-  const query = `INSERT INTO llavero (id_alumno, aplicacion, usuario, email, contraseña, modificable) VALUES (${idAlumno}, ${aplicacion}, "${usuario}", "${email}", "${contraseña}", 1);`
+  const query = `INSERT INTO llavero (id_alumno, aplicacion, usuario, email, contraseña, modificable) VALUES (${idAlumno}, ${aplicacion}, "${usuario}", "${email}", "${contrasena}", 1);`
   const result = await executeQuery(query)
-  if (result.message == '') {
-    return
-  } else {
+  if (result.message !== '') {
     return '500'
   }
 }
@@ -32,7 +30,7 @@ export const getLlaveroById = async (idLlavero) => {
     `SELECT * FROM llavero WHERE id = ${idLlavero}`
   )
   if (llavero.length) {
-    if (llavero[0].modificable == 1) {
+    if (llavero[0].modificable === 1) {
       return llavero
     } else {
       return '401'
@@ -45,23 +43,23 @@ export const getLlaveroById = async (idLlavero) => {
 export const actualizarLlavero = async (id, body) => {
   const { aplicacion, usuario, email, contraseña } = body
   if (aplicacion != null) {
-    const updateAplicacion = await executeQuery(
-      `UPDATE llavero SET aplicacion = "${aplicacion}" WHERE id = ${id}`
-    )
+    await executeQuery(
+        `UPDATE llavero SET aplicacion = "${aplicacion}" WHERE id = ${id}`
+    );
   }
   if (usuario != null) {
-    const updateUsuario = await executeQuery(
-      `UPDATE llavero SET usuario = "${usuario}" WHERE id = ${id}`
-    )
+    await executeQuery(
+        `UPDATE llavero SET usuario = "${usuario}" WHERE id = ${id}`
+    );
   }
   if (email != null) {
-    const updateEmail = await executeQuery(
-      `UPDATE llavero SET email = "${email}" WHERE id = ${id}`
-    )
+    await executeQuery(
+        `UPDATE llavero SET email = "${email}" WHERE id = ${id}`
+    );
   }
   if (contraseña != null) {
-    const updateContraseña = await executeQuery(
-      `UPDATE llavero SET contraseña = "${contraseña}" WHERE id = ${id}`
-    )
+    await executeQuery(
+        `UPDATE llavero SET contraseña = "${contraseña}" WHERE id = ${id}`
+    );
   }
 }
