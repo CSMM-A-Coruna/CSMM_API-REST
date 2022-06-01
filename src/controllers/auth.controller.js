@@ -68,65 +68,66 @@ export const signUp = async (req, res) => {
   }
 }
 
-// Login
+// Login with services
 export const signIn = async (req, res) => {
   try {
     if (req.body.usuario && req.body.password) {
       const result = await authService.searchByUsuario(req.body.usuario)
+      console.log(result.length)
       if (result.length) {
-        const verifyPassword = Usuario.compareSyncPassword(
+        const verifyPassword = await Usuario.comparePassword(
           req.body.password,
           result[0].password
         )
+        console.log(verifyPassword)
         if (verifyPassword) {
-          const alumnosResult = Usuario.calcularAlumnosAsociados(
+          const alumnosResult = await Usuario.calcularAlumnosAsociados(
             result[0].id
-          ).then((data) => {
-            if (data.length) {
-              let alumnos = []
-              for (let index = 0; index < data.length; index++) {
-                const alumno = new Alumno(
-                  data[index].id_alumno,
-                  data[index].nombre_alumno,
-                  data[index].apellido1_alumno,
-                  data[index].apellido2_alumno,
-                  data[index].grupo
-                )
-                alumnos.push(alumno)
-              }
-              // Creamos y firmamos el token de autentificación
-              const token = jwt.sign(
-                {
-                  id: result[0].id,
-                  usuario: result[0].usuario,
-                  nombre: result[0].nombre,
-                  apellido1: result[0].apellido1,
-                  apellido2: result[0].apellido2,
-                  nacimiento: result[0].nacimiento,
-                  dni: result[0].dni,
-                  oa: result[0].oa,
-                  accesos: result[0].accesos,
-                  tipoUsuario: 'familias',
-                  alumnosAsociados: alumnos,
-                },
-                config.jwtSecret,
-                {
-                  expiresIn: jwtExpireDate,
-                }
+          )
+          if (alumnosResult.length) {
+            let alumnos = []
+            for (let index = 0; index < alumnosResult.length; index++) {
+              const alumno = new Alumno(
+                alumnosResult[index].id_alumno,
+                alumnosResult[index].nombre_alumno,
+                alumnosResult[index].apellido1_alumno,
+                alumnosResult[index].apellido2_alumno,
+                alumnosResult[index].grupo
               )
-              updateLoginUser(
-                result[0].id,
-                req.connection.remoteAddress.split(`:`).pop(),
-                'Android'
-              )
-              res.status(200).json({ token: token })
+              alumnos.push(alumno)
             }
-          })
+            // Creamos y firmamos el token de autentificación
+            const token = jwt.sign(
+              {
+                id: result[0].id,
+                usuario: result[0].usuario,
+                nombre: result[0].nombre,
+                apellido1: result[0].apellido1,
+                apellido2: result[0].apellido2,
+                nacimiento: result[0].nacimiento,
+                dni: result[0].dni,
+                oa: result[0].oa,
+                accesos: result[0].accesos,
+                tipoUsuario: 'familias',
+                alumnosAsociados: alumnos,
+              },
+              config.jwtSecret,
+              {
+                expiresIn: jwtExpireDate,
+              }
+            )
+            updateLoginUser(
+              result[0].id,
+              req.connection.remoteAddress.split(`:`).pop(),
+              'Android'
+            )
+            res.status(200).json({ token: token })
+          }
         } else {
-          res.status(401).json({ message: 'Contraseña incorrecta' })
+          throw '401'
         }
       } else {
-        res.status(404).json({ message: 'Usuario no encontrado' })
+        throw '404'
       }
     } else {
       throw '400'
@@ -134,6 +135,10 @@ export const signIn = async (req, res) => {
   } catch (err) {
     if (err == '400') {
       res.status(400).json({ message: 'Faltan parámetros' })
+    } else if (err == '401') {
+      res.status(401).json({ message: 'Contraseña incorrecta' })
+    } else if (err == '404') {
+      res.status(404).json({ message: 'Usuario no encontrado' })
     } else {
       if (app.settings.env == 'production') {
         res.status(500).json({ message: 'Error interno del servidor' })

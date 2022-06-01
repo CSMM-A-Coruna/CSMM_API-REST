@@ -40,8 +40,8 @@ if (app.settings.env == 'production') {
 }
 
 // API Cache para más performance
-const cache = apicache.middleware
-app.use(cache('2 minutes'))
+//const cache = apicache.middleware
+//app.use(cache('2 minutes'))
 
 // Desactivamos response 304
 app.disable('etag')
