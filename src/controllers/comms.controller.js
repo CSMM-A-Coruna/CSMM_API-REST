@@ -6,22 +6,15 @@ export const getAllCommsReceived = async (req, res) => {
   try {
     const comms = await commsService.getAllCommsReceived(req.params.user_id)
     if (comms === '404') {
-      throw '404'
+      next({
+        statusCode: 404,
+        msg: 'No se han encontrado comunicaciones recibidas'
+      })
     } else {
       res.status(200).json(comms)
     }
   } catch (err) {
-    if (err == '404') {
-      res
-        .status(404)
-        .json({ message: 'No se han encontrado comunicaciones recibidas' })
-    } else {
-      if (app.settings.env == 'production') {
-        res.status(500).json({ message: 'Error interno del servidor' })
-      } else {
-        res.status(500).json({ message: err })
-      }
-    }
+    next(err)
   }
 }
 
@@ -29,22 +22,15 @@ export const getAllCommsSent = async (req, res) => {
   try {
     const comms = await commsService.getAllCommsSent(req.params.user_id)
     if (comms === '404') {
-      throw '404'
+      next({
+        statusCode: 404,
+        msg: 'No se han encontrado comunicaciones enviadas'
+      })
     } else {
       res.status(200).json(comms)
     }
   } catch (err) {
-    if (err == '404') {
-      res
-        .status(404)
-        .json({ message: 'No se han encontrado comunicaciones enviadas' })
-    } else {
-      if (app.settings.env == 'production') {
-        res.status(500).json({ message: 'Error interno del servidor' })
-      } else {
-        res.status(500).json({ message: err })
-      }
-    }
+    next(err)
   }
 }
 
@@ -52,22 +38,15 @@ export const getAllCommsDeleted = async (req, res) => {
   try {
     const comms = await commsService.getAllCommsDeleted(req.params.user_id)
     if (comms === '404') {
-      throw '404'
+      next({
+        statusCode: 404,
+        msg: 'No se han encontrado comunicaciones eliminadas'
+      })
     } else {
       res.status(200).json(comms)
     }
   } catch (err) {
-    if (err == '404') {
-      res
-        .status(404)
-        .json({ message: 'No se han encontrado comunicaciones eliminadas' })
-    } else {
-      if (app.settings.env == 'production') {
-        res.status(500).json({ message: 'Error interno del servidor' })
-      } else {
-        res.status(500).json({ message: err })
-      }
-    }
+    next(err)
   }
 }
 
@@ -112,27 +91,19 @@ export const updateCom = async (req, res) => {
           .status(200)
           .json({ message: 'Estado de la comunicación actualizado con éxito' })
       } else {
-        throw result
+        next({
+          statusCode: result,
+          msg: 'No se ha encontrado una comunicación con ese ID o hay conflictos'
+        })
       }
     } else {
-      throw '400'
+      next({
+        statusCode: 400,
+        msg: 'Faltán parámetros'
+      })
     }
   } catch (err) {
-    if (err == '404') {
-      res
-        .status(404)
-        .json({ message: 'No se ha encontrado una comunicación con ese ID' })
-    } else if (err == '400') {
-      res.status(400).json({ message: 'Faltan parámetros' })
-    } else if (err == '409') {
-      res.status(409).send()
-    } else {
-      if (app.settings.env == 'production') {
-        res.status(500).json({ message: 'Error interno del servidor' })
-      } else {
-        res.status(500).json({ message: err })
-      }
-    }
+    next(err)
   }
 }
 
@@ -156,27 +127,24 @@ export const sendCom = async (req, res) => {
       )
       const result = await commsService.createNewCom(com)
       if (result == '500') {
-        throw '500'
+        next({
+          statusCode: 500,
+          msg: 'Error interno del servidor'
+        })
       } else {
         res
           .status(201)
           .json({ message: 'Comunicación enviada con éxito', id: result })
       }
     } else {
-      throw '400'
+      next({
+        statusCode: 400,
+        msg: 'Faltan parámetros'
+      })
+
     }
   } catch (err) {
-    if (err == '400') {
-      res.status(400).json({ message: 'Faltan parámetros' })
-    } else if (err == '409') {
-      res.status(409).send()
-    } else {
-      if (app.settings.env == 'production') {
-        res.status(500).json({ message: 'Error interno del servidor' })
-      } else {
-        res.status(500).json({ message: err })
-      }
-    }
+    next(err)
   }
 }
 
@@ -184,22 +152,14 @@ export const getAllDispoSenders = async (req, res) => {
   try {
     const senders = await commsService.getAllDispoSenders(req.params.id_alumno)
     if (senders === '404') {
-      throw '404'
+      next({
+        statusCode: 404,
+        msg: 'No existe un usuario con ese ID o no tiene gente disponible para enviar'
+      })
     } else {
       res.status(200).json(senders)
     }
   } catch (err) {
-    if (err == '404') {
-      res.status(404).json({
-        message:
-          'No existe un usuario con ese ID o no tiene gente disponible para enviar',
-      })
-    } else {
-      if (app.settings.env == 'production') {
-        res.status(500).json({ message: 'Error interno del servidor' })
-      } else {
-        res.status(500).json({ message: err })
-      }
-    }
+    next(err)
   }
 }

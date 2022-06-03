@@ -14,11 +14,11 @@ export const getAllCommsReceived = async (userId) => {
     let comms = []
     for (let index = 0; index < result.length; index++) {
       let adjuntos = []
-      if (result[index].adjuntos != 0) {
+      if (result[index].adjuntos !== 0) {
         const result1 = await executeQuery(
           `SELECT adjunto FROM comunicaciones_adjuntos WHERE idcomunicacion = ${result[index].idcomunicacion}`
         )
-        if (result1.length == 1) {
+        if (result1.length === 1) {
           adjuntos.push(result1[0].adjunto)
         } else {
           for (let i = 0; i < result1.length; i++) {
@@ -68,11 +68,11 @@ export const getAllCommsSent = async (userId) => {
     let comms = []
     for (let index = 0; index < result.length; index++) {
       let adjuntos = []
-      if (result[index].adjuntos != 0) {
+      if (result[index].adjuntos !== 0) {
         const result1 = await executeQuery(
           `SELECT adjunto FROM comunicaciones_adjuntos WHERE idcomunicacion = ${result[index].idcomunicacion}`
         )
-        if (result1.length == 1) {
+        if (result1.length === 1) {
           adjuntos.push(result1[0].adjunto)
         } else {
           for (let i = 0; i < result1.length; i++) {
@@ -122,11 +122,11 @@ export const getAllCommsDeleted = async (userId) => {
   if (result.length) {
     for (let index = 0; index < result.length; index++) {
       let adjuntos = []
-      if (result[index].adjuntos != 0) {
+      if (result[index].adjuntos !== 0) {
         const result1 = await executeQuery(
           `SELECT adjunto FROM comunicaciones_adjuntos WHERE idcomunicacion = ${result[index].idcomunicacion}`
         )
-        if (result1.length == 1) {
+        if (result1.length === 1) {
           adjuntos.push(result1[0].adjunto)
         } else {
           for (let i = 0; i < result1.length; i++) {
@@ -166,11 +166,11 @@ export const getAllCommsDeleted = async (userId) => {
 export const setImportant = async (idCom, idDestino) => {
   const query = `UPDATE comunicaciones_destinos SET importante = 1 WHERE comunicaciones_destinos.idcomunicacion = ${idCom} AND comunicaciones_destinos.iddestino = ${idDestino} AND comunicaciones_destinos.tipodestino = 2`
   const result = await executeQuery(query)
-  if (result.changedRows == 1) {
+  if (result.changedRows === 1) {
     return '200'
   } else if (
-    result.affectedRows == 0 ||
-    (result.affectedRows == 1 && result.changedRows == 0)
+    result.affectedRows === 0 ||
+    (result.affectedRows === 1 && result.changedRows === 0)
   ) {
     return '409'
   } else {
@@ -181,11 +181,11 @@ export const setImportant = async (idCom, idDestino) => {
 export const setNotImportant = async (idCom, idDestino) => {
   const query = `UPDATE comunicaciones_destinos SET importante = 0 WHERE comunicaciones_destinos.idcomunicacion = ${idCom} AND comunicaciones_destinos.iddestino = ${idDestino} AND comunicaciones_destinos.tipodestino = 2`
   const result = await executeQuery(query)
-  if (result.changedRows == 1) {
+  if (result.changedRows === 1) {
     return '200'
   } else if (
-    result.affectedRows == 0 ||
-    (result.affectedRows == 1 && result.changedRows == 0)
+    result.affectedRows === 0 ||
+    (result.affectedRows === 1 && result.changedRows === 0)
   ) {
     return '409'
   } else {
@@ -198,11 +198,11 @@ export const setLeida = async (idCom, idDestino) => {
   const date = currentDate.toISOString()
   const query = `UPDATE comunicaciones_destinos SET leida = "${date}" WHERE comunicaciones_destinos.idcomunicacion = ${idCom} AND comunicaciones_destinos.iddestino = ${idDestino} AND comunicaciones_destinos.tipodestino = 2`
   const result = await executeQuery(query)
-  if (result.changedRows == 1) {
+  if (result.changedRows === 1) {
     return '200'
   } else if (
-    result.affectedRows == 0 ||
-    (result.affectedRows == 1 && result.changedRows == 0)
+    result.affectedRows === 0 ||
+    (result.affectedRows === 1 && result.changedRows === 0)
   ) {
     return '409'
   } else {
@@ -215,11 +215,11 @@ export const setEliminada = async (idCom, idDestino) => {
   const date = currentDate.toISOString()
   const query = `UPDATE comunicaciones_destinos SET eliminado = "${date}" WHERE comunicaciones_destinos.idcomunicacion = ${idCom} AND comunicaciones_destinos.iddestino = ${idDestino} AND comunicaciones_destinos.tipodestino = 2`
   const result = await executeQuery(query)
-  if (result.changedRows == 1) {
+  if (result.changedRows === 1) {
     return '200'
   } else if (
-    result.affectedRows == 0 ||
-    (result.affectedRows == 1 && result.changedRows == 0)
+    result.affectedRows === 0 ||
+    (result.affectedRows === 1 && result.changedRows === 0)
   ) {
     return '409'
   } else {
@@ -230,11 +230,11 @@ export const setEliminada = async (idCom, idDestino) => {
 export const setNotEliminada = async (idCom, idDestino) => {
   const query = `UPDATE comunicaciones_destinos SET eliminado = NULL WHERE comunicaciones_destinos.idcomunicacion = ${idCom} AND comunicaciones_destinos.iddestino = ${idDestino} AND comunicaciones_destinos.tipodestino = 2`
   const result = await executeQuery(query)
-  if (result.changedRows == 1) {
+  if (result.changedRows === 1) {
     return '200'
   } else if (
-    result.affectedRows == 0 ||
-    (result.affectedRows == 1 && result.changedRows == 0)
+    result.affectedRows === 0 ||
+    (result.affectedRows === 1 && result.changedRows === 0)
   ) {
     return '409'
   } else {
@@ -245,10 +245,10 @@ export const setNotEliminada = async (idCom, idDestino) => {
 export const createNewCom = async (com) => {
   const query = `INSERT INTO comunicaciones (tiporemite, idremite, fecha, asunto, texto) VALUES (${com.tipoRemite}, ${com.idRemite}, "${com.fecha}", "${com.asunto}", "${com.texto}");`
   const result = await executeQuery(query)
-  if (result.message == '') {
+  if (result.message === '') {
     const query2 = `INSERT INTO comunicaciones_destinos (idcomunicacion, tipodestino, iddestino, leida, eliminado, email, idAlumnoAsociado, importante) VALUES (${result.insertId}, ${com.tipoDestino}, ${com.idDestino}, ${com.leida}, ${com.eliminado}, ${com.email}, ${com.idAlumnoAsociado}, ${com.importante});`
     const result2 = await executeQuery(query2)
-    if (result2.message == '') {
+    if (result2.message === '') {
       return result.insertId
     }
   } else {

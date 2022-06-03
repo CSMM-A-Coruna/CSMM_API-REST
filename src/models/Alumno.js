@@ -1,6 +1,3 @@
-import { db } from '../database'
-import bcrypt from 'bcryptjs'
-
 class Alumno {
   constructor(id, nombre, apellido1, apellido2, grupo) {
     ;(this.id = id),
