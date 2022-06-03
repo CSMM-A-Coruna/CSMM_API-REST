@@ -2,7 +2,7 @@ import app from '../../app'
 import { updateDocumentDownload } from '../../middlewares/dbUpdates/updateDocumentDownload'
 import * as documentosServices from '../../services/resources/documentos.service'
 
-export const getAllDocumentos = async (req, res) => {
+export const getAllDocumentos = async (req, res, next) => {
   try {
     const { grupo, id_alumno } = req.query
     if (grupo && id_alumno) {
@@ -39,7 +39,7 @@ export const getAllDocumentos = async (req, res) => {
   }
 }
 
-export const downloadDocumentoGeneral = async (req, res) => {
+export const downloadDocumentoGeneral = async (req, res, next) => {
   const fileName = req.query.file_name
   const grupo = req.query.grupo.replace(/\s/g, '')
   const directoryPath =
@@ -55,7 +55,7 @@ export const downloadDocumentoGeneral = async (req, res) => {
   })
 }
 
-export const downloadDocumentoAlumno = async (req, res) => {
+export const downloadDocumentoAlumno = async (req, res, next) => {
   const fileName = req.query.file_name
   const idAlumno = req.query.id_alumno
   const directoryPath =

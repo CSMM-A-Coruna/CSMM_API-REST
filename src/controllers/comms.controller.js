@@ -2,7 +2,7 @@ import NuevaComunicacion from '../models/NuevaComunicacion'
 import * as commsService from '../services/comms.service'
 import app from '../app'
 
-export const getAllCommsReceived = async (req, res) => {
+export const getAllCommsReceived = async (req, res, next) => {
   try {
     const comms = await commsService.getAllCommsReceived(req.params.user_id)
     if (comms === '404') {
@@ -18,7 +18,7 @@ export const getAllCommsReceived = async (req, res) => {
   }
 }
 
-export const getAllCommsSent = async (req, res) => {
+export const getAllCommsSent = async (req, res, next) => {
   try {
     const comms = await commsService.getAllCommsSent(req.params.user_id)
     if (comms === '404') {
@@ -34,7 +34,7 @@ export const getAllCommsSent = async (req, res) => {
   }
 }
 
-export const getAllCommsDeleted = async (req, res) => {
+export const getAllCommsDeleted = async (req, res, next) => {
   try {
     const comms = await commsService.getAllCommsDeleted(req.params.user_id)
     if (comms === '404') {
@@ -50,7 +50,7 @@ export const getAllCommsDeleted = async (req, res) => {
   }
 }
 
-export const updateCom = async (req, res) => {
+export const updateCom = async (req, res, next) => {
   try {
     if (req.query.state && req.query.id_destino) {
       let result
@@ -107,7 +107,7 @@ export const updateCom = async (req, res) => {
   }
 }
 
-export const sendCom = async (req, res) => {
+export const sendCom = async (req, res, next) => {
   try {
     if (
       req.body.asunto &&
@@ -148,7 +148,7 @@ export const sendCom = async (req, res) => {
   }
 }
 
-export const getAllDispoSenders = async (req, res) => {
+export const getAllDispoSenders = async (req, res, next) => {
   try {
     const senders = await commsService.getAllDispoSenders(req.params.id_alumno)
     if (senders === '404') {

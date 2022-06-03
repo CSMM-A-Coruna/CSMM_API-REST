@@ -1,6 +1,6 @@
 import * as preferencesServices from '../services/preferences.service'
 
-export const getAllPreferences = async (req, res) => {
+export const getAllPreferences = async (req, res, next) => {
   try {
     const { user_id } = req.params
     if (user_id) {
@@ -25,7 +25,7 @@ export const getAllPreferences = async (req, res) => {
   }
 }
 
-export const updatePreference = async (req, res) => {
+export const updatePreference = async (req, res, next) => {
   try {
     const { tipo_preferencia, value } = req.body
     const id_usuario = req.params.user_id

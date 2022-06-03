@@ -1,7 +1,7 @@
 import app from '../app'
 import * as horarioService from '../services/horario.service'
 
-export const getHorarioByGrupo = async (req, res) => {
+export const getHorarioByGrupo = async (req, res, next) => {
   try {
     const { grupo } = req.query
     if (grupo) {

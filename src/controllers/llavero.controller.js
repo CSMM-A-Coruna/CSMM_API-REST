@@ -1,6 +1,6 @@
 import * as llaveroService from '../services/llavero.service'
 
-export const getLlaveroByIdAlumno = async (req, res) => {
+export const getLlaveroByIdAlumno = async (req, res, next) => {
   try {
     const llavero = await llaveroService.getLlaveroByIdAlumno(
       req.params.id_alumno
@@ -17,7 +17,7 @@ export const getLlaveroByIdAlumno = async (req, res) => {
   }
 }
 
-export const nuevoLlavero = async (req, res) => {
+export const nuevoLlavero = async (req, res, next) => {
   try {
     const { id_alumno, aplicacion, usuario, email, contraseña } = req.body
     if (id_alumno && aplicacion && usuario && email && contraseña) {
@@ -47,7 +47,7 @@ export const nuevoLlavero = async (req, res) => {
   }
 }
 
-export const actualizarLlavero = async (req, res) => {
+export const actualizarLlavero = async (req, res, next) => {
   try {
     const llavero = await llaveroService.getLlaveroById(req.params.id_llavero)
     if (llavero == '404') {
