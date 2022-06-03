@@ -56,31 +56,31 @@ export const updateCom = async (req, res, next) => {
       let result
       switch (req.query.state) {
         case 'importante':
-          result = commsService.setImportant(
+          result = await commsService.setImportant(
             req.params.id_com,
             req.query.id_destino
           )
           break
         case 'no_importante':
-          result = commsService.setNotImportant(
+          result = await commsService.setNotImportant(
             req.params.id_com,
             req.query.id_destino
           )
           break
         case 'leida':
-          result = commsService.setLeida(
+          result = await commsService.setLeida(
             req.params.id_com,
             req.query.id_destino
           )
           break
         case 'eliminado':
-          result = commsService.setEliminada(
+          result = await commsService.setEliminada(
             req.params.id_com,
             req.query.id_destino
           )
           break
         case 'restaurar':
-          result = commsService.setNotEliminada(
+          result = await commsService.setNotEliminada(
             req.params.id_com,
             req.query.id_destino
           )
