@@ -1,7 +1,7 @@
 // Arranque del servidor
 import app from './app'
 const cluster = require('cluster')
-if (app.settings.env == 'production') {
+if (app.settings.env === 'production') {
   if (cluster.isMaster) {
     let cpuCount = require('os').cpus().length
 
