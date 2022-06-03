@@ -48,7 +48,7 @@ class FTPClient {
     // Primero creamos el directorio en caso de que no exista.
     c.on('ready', function () {
       c.mkdir('/adjuntos/' + idComunicacion, false, function (err) {
-        if (err && err != 'Error: Create directory operation failed.') {
+        if (err && err !== 'Error: Create directory operation failed.') {
           console.log(err)
         }
         const cacheDir =

@@ -18,7 +18,7 @@ export const verifyToken = async (req, res, next) => {
 
   // Comprobamos que la firma es correcta
   try {
-    const decoded = jwt.verify(token, config.jwtSecret)
+    jwt.verify(token, config.jwtSecret);
     next()
   } catch (err) {
     return res.status(401).json({ message: 'Token invalid' })
@@ -27,8 +27,6 @@ export const verifyToken = async (req, res, next) => {
 
 export const verifyAuthDownload = async (req, res, next) => {
   // Cogemos el query
-  const { query } = req
-
   let auth = req.query.auth
 
   if (!auth) {
@@ -38,15 +36,11 @@ export const verifyAuthDownload = async (req, res, next) => {
   auth = auth.replace('Bearer ', '')
   // Comprobamos que la firma es correcta
   try {
-    const decoded = jwt.verify(auth, config.jwtSecret)
+    jwt.verify(auth, config.jwtSecret);
     next()
   } catch (err) {
     return res
       .status(401)
       .json({ message: 'No tienes permiso para descargar este documento.' })
   }
-}
-
-function reverseString(str) {
-  return str === '' ? '' : reverseString(str.substr(1)) + str.charAt(0)
 }
