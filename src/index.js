@@ -1,7 +1,7 @@
 // Arranque del servidor
 import app from './app'
 const cluster = require('cluster')
-if (app.settings.env === 'production') {
+/*if (app.settings.env === 'production') {
   if (cluster.isMaster) {
     let cpuCount = require('os').cpus().length
 
@@ -28,7 +28,7 @@ if (app.settings.env === 'production') {
       app.get('port')
     )
   }
-} else {
+} else {*/
   app.listen(app.get('port'))
   console.log('Servidor iniciado en el puerto', app.get('port'))
-}
+//}
