@@ -4,7 +4,7 @@ import config from './config'
 export const db = mysql.createConnection({
   host: config.dbHost,
   port: 3306,
-  user: 'csmm_gestor',
+  user: config.dbUser,
   password: config.dbPassword,
   database: config.dbDatabase,
 })
