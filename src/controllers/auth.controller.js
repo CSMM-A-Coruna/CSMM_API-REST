@@ -8,7 +8,7 @@ import * as authService from '../services/auth.service'
 const jwtExpireDate = '30d'
 
 // Registro
-export const signUp = async (req, res) => {
+export const signUp = async (req, res, next) => {
   // Comprobamos que tipo de usuario es
   switch (req.query.tipoUsuario) {
     case 'admin':
@@ -53,7 +53,7 @@ export const signUp = async (req, res) => {
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
     }
   } catch (err) {
@@ -62,7 +62,7 @@ export const signUp = async (req, res) => {
 }
 
 // Login with services
-export const signIn = async (req, res) => {
+export const signIn = async (req, res, next) => {
   try {
     if (req.body.usuario && req.body.password) {
       const result = await authService.searchByUsuario(req.body.usuario)
@@ -119,36 +119,33 @@ export const signIn = async (req, res) => {
         } else {
           next({
             statusCode: 401,
-            msg: 'Contraseña incorrecta'
+            msg: 'Contraseña incorrecta',
           })
         }
       } else {
         next({
           statusCode: 404,
-          msg: 'Usuario no encontrado'
+          msg: 'Usuario no encontrado',
         })
       }
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
-
     }
   } catch (err) {
     next(err)
   }
 }
 
-export const reloadToken = async (req, res) => {
+export const reloadToken = async (req, res, next) => {
   try {
     const token = jwt.decode(req.body.token)
     if (token) {
       const result = await authService.searchById(token.tipoUsuario, token.id)
       if (result.length) {
-        Usuario.calcularAlumnosAsociados(
-          result[0].id
-        ).then((data) => {
+        Usuario.calcularAlumnosAsociados(result[0].id).then((data) => {
           if (data.length) {
             let alumnos = []
             for (let index = 0; index < data.length; index++) {
@@ -192,13 +189,13 @@ export const reloadToken = async (req, res) => {
       } else {
         next({
           statusCode: 404,
-          msg: 'No se ha encontrado el usuario'
+          msg: 'No se ha encontrado el usuario',
         })
       }
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
     }
   } catch (err) {
@@ -206,7 +203,7 @@ export const reloadToken = async (req, res) => {
   }
 }
 
-export const saveFCMToken = async (req, res) => {
+export const saveFCMToken = async (req, res, next) => {
   try {
     if (req.body.id_usuario && req.body.fcm_token) {
       const update = await authService.updateFCMToken(
@@ -218,22 +215,21 @@ export const saveFCMToken = async (req, res) => {
       } else {
         next({
           statusCode: 404,
-          msg: 'No se ha encontrado el usuario'
+          msg: 'No se ha encontrado el usuario',
         })
       }
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
-
     }
   } catch (err) {
     next(err)
   }
 }
 
-export const checkPassword = async (req, res) => {
+export const checkPassword = async (req, res, next) => {
   try {
     const { id_usuario, password } = req.body
     if (id_usuario && password) {
@@ -249,16 +245,15 @@ export const checkPassword = async (req, res) => {
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
-
     }
   } catch (err) {
     next(err)
   }
 }
 
-export const changePassword = async (req, res) => {
+export const changePassword = async (req, res, next) => {
   try {
     const { id_usuario, new_password } = req.body
     if (id_usuario !== undefined && new_password !== undefined) {
@@ -267,9 +262,8 @@ export const changePassword = async (req, res) => {
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
-
     }
   } catch (err) {
     next(err)

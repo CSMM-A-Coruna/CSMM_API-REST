@@ -1,7 +1,7 @@
 import app from '../app'
 import * as horarioService from '../services/horario.service'
 
-export const getHorarioByGrupo = async (req, res) => {
+export const getHorarioByGrupo = async (req, res, next) => {
   try {
     const { grupo } = req.query
     if (grupo) {
@@ -9,7 +9,7 @@ export const getHorarioByGrupo = async (req, res) => {
       if (horario == '404') {
         next({
           statusCode: 404,
-          msg: 'No se ha encontrado el horario correspondiente a ese grupo'
+          msg: 'No se ha encontrado el horario correspondiente a ese grupo',
         })
       } else {
         res.status(200).json(horario)
@@ -17,7 +17,7 @@ export const getHorarioByGrupo = async (req, res) => {
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
     }
   } catch (err) {

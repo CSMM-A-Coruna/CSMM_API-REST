@@ -2,13 +2,13 @@ import NuevaComunicacion from '../models/NuevaComunicacion'
 import * as commsService from '../services/comms.service'
 import app from '../app'
 
-export const getAllCommsReceived = async (req, res) => {
+export const getAllCommsReceived = async (req, res, next) => {
   try {
     const comms = await commsService.getAllCommsReceived(req.params.user_id)
     if (comms === '404') {
       next({
         statusCode: 404,
-        msg: 'No se han encontrado comunicaciones recibidas'
+        msg: 'No se han encontrado comunicaciones recibidas',
       })
     } else {
       res.status(200).json(comms)
@@ -18,13 +18,13 @@ export const getAllCommsReceived = async (req, res) => {
   }
 }
 
-export const getAllCommsSent = async (req, res) => {
+export const getAllCommsSent = async (req, res, next) => {
   try {
     const comms = await commsService.getAllCommsSent(req.params.user_id)
     if (comms === '404') {
       next({
         statusCode: 404,
-        msg: 'No se han encontrado comunicaciones enviadas'
+        msg: 'No se han encontrado comunicaciones enviadas',
       })
     } else {
       res.status(200).json(comms)
@@ -34,13 +34,13 @@ export const getAllCommsSent = async (req, res) => {
   }
 }
 
-export const getAllCommsDeleted = async (req, res) => {
+export const getAllCommsDeleted = async (req, res, next) => {
   try {
     const comms = await commsService.getAllCommsDeleted(req.params.user_id)
     if (comms === '404') {
       next({
         statusCode: 404,
-        msg: 'No se han encontrado comunicaciones eliminadas'
+        msg: 'No se han encontrado comunicaciones eliminadas',
       })
     } else {
       res.status(200).json(comms)
@@ -50,37 +50,37 @@ export const getAllCommsDeleted = async (req, res) => {
   }
 }
 
-export const updateCom = async (req, res) => {
+export const updateCom = async (req, res, next) => {
   try {
     if (req.query.state && req.query.id_destino) {
       let result
       switch (req.query.state) {
         case 'importante':
-          result = commsService.setImportant(
+          result = await commsService.setImportant(
             req.params.id_com,
             req.query.id_destino
           )
           break
         case 'no_importante':
-          result = commsService.setNotImportant(
+          result = await commsService.setNotImportant(
             req.params.id_com,
             req.query.id_destino
           )
           break
         case 'leida':
-          result = commsService.setLeida(
+          result = await commsService.setLeida(
             req.params.id_com,
             req.query.id_destino
           )
           break
         case 'eliminado':
-          result = commsService.setEliminada(
+          result = await commsService.setEliminada(
             req.params.id_com,
             req.query.id_destino
           )
           break
         case 'restaurar':
-          result = commsService.setNotEliminada(
+          result = await commsService.setNotEliminada(
             req.params.id_com,
             req.query.id_destino
           )
@@ -93,13 +93,13 @@ export const updateCom = async (req, res) => {
       } else {
         next({
           statusCode: result,
-          msg: 'No se ha encontrado una comunicación con ese ID o hay conflictos'
+          msg: 'No se ha encontrado una comunicación con ese ID o hay conflictos',
         })
       }
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltán parámetros'
+        msg: 'Faltán parámetros',
       })
     }
   } catch (err) {
@@ -107,7 +107,7 @@ export const updateCom = async (req, res) => {
   }
 }
 
-export const sendCom = async (req, res) => {
+export const sendCom = async (req, res, next) => {
   try {
     if (
       req.body.asunto &&
@@ -129,7 +129,7 @@ export const sendCom = async (req, res) => {
       if (result == '500') {
         next({
           statusCode: 500,
-          msg: 'Error interno del servidor'
+          msg: 'Error interno del servidor',
         })
       } else {
         res
@@ -139,22 +139,21 @@ export const sendCom = async (req, res) => {
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
-
     }
   } catch (err) {
     next(err)
   }
 }
 
-export const getAllDispoSenders = async (req, res) => {
+export const getAllDispoSenders = async (req, res, next) => {
   try {
     const senders = await commsService.getAllDispoSenders(req.params.id_alumno)
     if (senders === '404') {
       next({
         statusCode: 404,
-        msg: 'No existe un usuario con ese ID o no tiene gente disponible para enviar'
+        msg: 'No existe un usuario con ese ID o no tiene gente disponible para enviar',
       })
     } else {
       res.status(200).json(senders)

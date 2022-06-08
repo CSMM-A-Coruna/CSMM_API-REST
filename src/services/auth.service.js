@@ -1,9 +1,9 @@
-import {executeQuery} from '../database'
+import { executeQuery } from '../database'
 import Usuario from '../models/Usuario'
 
 export const searchByUsuario = async (usuario) => {
   return await executeQuery(
-      `SELECT * FROM familias WHERE usuario = '${usuario}'`
+    `SELECT * FROM familias WHERE usuario = '${usuario}'`
   )
 }
 
@@ -18,8 +18,8 @@ export const updateFCMToken = async (idUsuario, fcmToken) => {
   )
   if (query.length) {
     await executeQuery(
-        `UPDATE familias SET fcm_token = '${fcmToken}' WHERE id = ${idUsuario}`
-    );
+      `UPDATE familias SET fcm_token = '${fcmToken}' WHERE id = ${idUsuario}`
+    )
     return '200'
   } else {
     return '404'
@@ -35,7 +35,7 @@ export const checkPassword = async (idUsuario, password) => {
       password,
       result[0].password
     )
-    return !!verifyPassword;
+    return !!verifyPassword
   } else {
     throw '404'
   }
@@ -44,6 +44,6 @@ export const checkPassword = async (idUsuario, password) => {
 export const changePassword = async (idUsuario, newPassword) => {
   const encryptedPassword = await Usuario.encryptPassword(newPassword)
   await executeQuery(
-      `UPDATE familias SET password = '${encryptedPassword}' WHERE id = ${idUsuario}`
-  );
+    `UPDATE familias SET password = '${encryptedPassword}' WHERE id = ${idUsuario}`
+  )
 }

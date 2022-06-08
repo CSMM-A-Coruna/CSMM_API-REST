@@ -3,7 +3,7 @@ import FTPClient from '../../middlewares/files/FTPClient'
 import app from '../../app'
 import * as adjuntosServices from '../../services/resources/adjuntos.service'
 
-export const upload = async (req, res) => {
+export const upload = async (req, res, next) => {
   try {
     await adjuntoUtil.uploadAdjuntoToAPI(req, res)
 
@@ -41,7 +41,7 @@ export const upload = async (req, res) => {
   }
 }
 
-export const downloadFile = async (req, res) => {
+export const downloadFile = async (req, res, next) => {
   const fileName = req.query.file_name
   const directoryPath =
     __basedir + '/resources/downloads/adjuntos/' + req.query.id_comunicacion
@@ -56,7 +56,7 @@ export const downloadFile = async (req, res) => {
   })
 }
 
-export const getListFiles = async (req, res) => {
+export const getListFiles = async (req, res, next) => {
   let path = ''
   if (req.query.path) {
     path = req.query.path
