@@ -9,7 +9,7 @@ export const getHorarioByGrupo = async (req, res, next) => {
       if (horario == '404') {
         next({
           statusCode: 404,
-          msg: 'No se ha encontrado el horario correspondiente a ese grupo'
+          msg: 'No se ha encontrado el horario correspondiente a ese grupo',
         })
       } else {
         res.status(200).json(horario)
@@ -17,7 +17,7 @@ export const getHorarioByGrupo = async (req, res, next) => {
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
     }
   } catch (err) {

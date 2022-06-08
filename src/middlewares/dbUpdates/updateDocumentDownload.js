@@ -11,15 +11,15 @@ export const updateDocumentDownload = async (
     )
     const idDocumento = getIdDocumento[0].id_documento
     await executeQuery(
-        `UPDATE documentos_alumno SET ip = '${ipUsuario}' WHERE id_documento = ${idDocumento}`
-    );
+      `UPDATE documentos_alumno SET ip = '${ipUsuario}' WHERE id_documento = ${idDocumento}`
+    )
     const date = new Date().toISOString()
     await executeQuery(
-        `UPDATE documentos_alumno SET descarga_fecha = '${date}' WHERE id_documento = ${idDocumento}`
-    );
+      `UPDATE documentos_alumno SET descarga_fecha = '${date}' WHERE id_documento = ${idDocumento}`
+    )
     await executeQuery(
-        `UPDATE documentos_alumnos SET estado = 1 WHERE id_documento = ${idDocumento}`
-    );
+      `UPDATE documentos_alumnos SET estado = 1 WHERE id_documento = ${idDocumento}`
+    )
   } catch (err) {
     throw err
   }

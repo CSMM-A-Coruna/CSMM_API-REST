@@ -13,6 +13,6 @@ export const getAllPreferencesByIdUsuario = async (idUsuario) => {
 
 export const updatePreference = async (idUsuario, tipoPreferencia, value) => {
   await executeQuery(
-      `UPDATE familias_app_ajustes SET ${tipoPreferencia} = ${value} WHERE id_usuario = ${idUsuario}`
-  );
+    `UPDATE familias_app_ajustes SET ${tipoPreferencia} = ${value} WHERE id_usuario = ${idUsuario}`
+  )
 }
