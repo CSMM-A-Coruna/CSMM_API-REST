@@ -2,7 +2,10 @@ import { Router } from 'express'
 import * as adjuntosController from '../../controllers/resources/adjuntos.controller'
 import * as documentController from '../../controllers/resources/documentos.controller'
 import { auth, adjuntoUtil } from '../../middlewares/index'
+import apicache from 'apicache'
 
+
+const cache = apicache.middleware
 const router = Router()
 
 // -- Todo lo relacionado con los archivos y FTP --
@@ -16,7 +19,7 @@ router.get(
   adjuntosController.downloadFile
 )
 // Coger todos los documentos
-router.get('/documentos', auth.verifyToken, documentController.getAllDocumentos)
+router.get('/documentos', auth.verifyToken, cache('2 minutes'), documentController.getAllDocumentos)
 // Descargar un documento general
 router.get(
   '/documentos/generales/download',

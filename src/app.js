@@ -7,7 +7,6 @@ import cors from 'cors'
 import RoutesV1 from './routes/v1/routes'
 import RoutesV2 from './routes/v2/routes'
 import { useTreblle } from 'treblle'
-import apicache from 'apicache'
 import { errorLogger, errorResponder, invalidPathHandler } from './middlewares/errorHandling'
 
 
@@ -41,9 +40,6 @@ if (app.settings.env === 'production') {
   app.use(morgan('dev'))
 }
 
-// API Cache para más performance
-//const cache = apicache.middleware
-//app.use(cache('2 minutes'))
 
 // Desactivamos response 304
 app.disable('etag')

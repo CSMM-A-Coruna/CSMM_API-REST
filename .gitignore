@@ -3,3 +3,4 @@ src/resources/uploads/
 src/resources/downloads/
 .DS_Store
 .idea
+.vscode
