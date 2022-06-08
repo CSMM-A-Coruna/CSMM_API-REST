@@ -53,7 +53,7 @@ export const signUp = async (req, res, next) => {
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
     }
   } catch (err) {
@@ -119,21 +119,20 @@ export const signIn = async (req, res, next) => {
         } else {
           next({
             statusCode: 401,
-            msg: 'Contraseña incorrecta'
+            msg: 'Contraseña incorrecta',
           })
         }
       } else {
         next({
           statusCode: 404,
-          msg: 'Usuario no encontrado'
+          msg: 'Usuario no encontrado',
         })
       }
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
-
     }
   } catch (err) {
     next(err)
@@ -146,9 +145,7 @@ export const reloadToken = async (req, res, next) => {
     if (token) {
       const result = await authService.searchById(token.tipoUsuario, token.id)
       if (result.length) {
-        Usuario.calcularAlumnosAsociados(
-          result[0].id
-        ).then((data) => {
+        Usuario.calcularAlumnosAsociados(result[0].id).then((data) => {
           if (data.length) {
             let alumnos = []
             for (let index = 0; index < data.length; index++) {
@@ -192,13 +189,13 @@ export const reloadToken = async (req, res, next) => {
       } else {
         next({
           statusCode: 404,
-          msg: 'No se ha encontrado el usuario'
+          msg: 'No se ha encontrado el usuario',
         })
       }
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
     }
   } catch (err) {
@@ -218,22 +215,21 @@ export const saveFCMToken = async (req, res, next) => {
       } else {
         next({
           statusCode: 404,
-          msg: 'No se ha encontrado el usuario'
+          msg: 'No se ha encontrado el usuario',
         })
       }
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
-
     }
   } catch (err) {
     next(err)
   }
 }
 
-export const checkPassword = async (req, res, next ) => {
+export const checkPassword = async (req, res, next) => {
   try {
     const { id_usuario, password } = req.body
     if (id_usuario && password) {
@@ -249,9 +245,8 @@ export const checkPassword = async (req, res, next ) => {
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
-
     }
   } catch (err) {
     next(err)
@@ -267,9 +262,8 @@ export const changePassword = async (req, res, next) => {
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
-
     }
   } catch (err) {
     next(err)

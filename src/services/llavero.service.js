@@ -44,22 +44,20 @@ export const actualizarLlavero = async (id, body) => {
   const { aplicacion, usuario, email, contraseña } = body
   if (aplicacion != null) {
     await executeQuery(
-        `UPDATE llavero SET aplicacion = "${aplicacion}" WHERE id = ${id}`
-    );
+      `UPDATE llavero SET aplicacion = "${aplicacion}" WHERE id = ${id}`
+    )
   }
   if (usuario != null) {
     await executeQuery(
-        `UPDATE llavero SET usuario = "${usuario}" WHERE id = ${id}`
-    );
+      `UPDATE llavero SET usuario = "${usuario}" WHERE id = ${id}`
+    )
   }
   if (email != null) {
-    await executeQuery(
-        `UPDATE llavero SET email = "${email}" WHERE id = ${id}`
-    );
+    await executeQuery(`UPDATE llavero SET email = "${email}" WHERE id = ${id}`)
   }
   if (contraseña != null) {
     await executeQuery(
-        `UPDATE llavero SET contraseña = "${contraseña}" WHERE id = ${id}`
-    );
+      `UPDATE llavero SET contraseña = "${contraseña}" WHERE id = ${id}`
+    )
   }
 }

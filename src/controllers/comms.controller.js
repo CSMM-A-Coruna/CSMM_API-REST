@@ -8,7 +8,7 @@ export const getAllCommsReceived = async (req, res, next) => {
     if (comms === '404') {
       next({
         statusCode: 404,
-        msg: 'No se han encontrado comunicaciones recibidas'
+        msg: 'No se han encontrado comunicaciones recibidas',
       })
     } else {
       res.status(200).json(comms)
@@ -24,7 +24,7 @@ export const getAllCommsSent = async (req, res, next) => {
     if (comms === '404') {
       next({
         statusCode: 404,
-        msg: 'No se han encontrado comunicaciones enviadas'
+        msg: 'No se han encontrado comunicaciones enviadas',
       })
     } else {
       res.status(200).json(comms)
@@ -40,7 +40,7 @@ export const getAllCommsDeleted = async (req, res, next) => {
     if (comms === '404') {
       next({
         statusCode: 404,
-        msg: 'No se han encontrado comunicaciones eliminadas'
+        msg: 'No se han encontrado comunicaciones eliminadas',
       })
     } else {
       res.status(200).json(comms)
@@ -93,13 +93,13 @@ export const updateCom = async (req, res, next) => {
       } else {
         next({
           statusCode: result,
-          msg: 'No se ha encontrado una comunicación con ese ID o hay conflictos'
+          msg: 'No se ha encontrado una comunicación con ese ID o hay conflictos',
         })
       }
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltán parámetros'
+        msg: 'Faltán parámetros',
       })
     }
   } catch (err) {
@@ -129,7 +129,7 @@ export const sendCom = async (req, res, next) => {
       if (result == '500') {
         next({
           statusCode: 500,
-          msg: 'Error interno del servidor'
+          msg: 'Error interno del servidor',
         })
       } else {
         res
@@ -139,9 +139,8 @@ export const sendCom = async (req, res, next) => {
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
-
     }
   } catch (err) {
     next(err)
@@ -154,7 +153,7 @@ export const getAllDispoSenders = async (req, res, next) => {
     if (senders === '404') {
       next({
         statusCode: 404,
-        msg: 'No existe un usuario con ese ID o no tiene gente disponible para enviar'
+        msg: 'No existe un usuario con ese ID o no tiene gente disponible para enviar',
       })
     } else {
       res.status(200).json(senders)

@@ -9,7 +9,7 @@ export const getAllPreferences = async (req, res, next) => {
       if (preferences == '404') {
         next({
           statusCode: 404,
-          msg: 'No se ha encontrado el ID del usuario'
+          msg: 'No se ha encontrado el ID del usuario',
         })
       } else {
         res.status(200).json(preferences)
@@ -17,7 +17,7 @@ export const getAllPreferences = async (req, res, next) => {
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
     }
   } catch (err) {
@@ -39,9 +39,8 @@ export const updatePreference = async (req, res, next) => {
     } else {
       next({
         statusCode: 400,
-        msg: 'Faltan parámetros'
+        msg: 'Faltan parámetros',
       })
-
     }
   } catch (err) {
     next(err)

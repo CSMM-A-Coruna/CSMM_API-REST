@@ -3,7 +3,6 @@ import { auth } from '../../middlewares/index'
 import * as llaveroController from '../../controllers/llavero.controller'
 import apicache from 'apicache'
 
-
 const cache = apicache.middleware
 const router = Router()
 

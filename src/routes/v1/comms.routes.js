@@ -3,7 +3,6 @@ import * as commsController from '../../controllers/comms.controller'
 import { auth } from '../../middlewares/index'
 import apicache from 'apicache'
 
-
 const cache = apicache.middleware
 const router = Router()
 
@@ -16,7 +15,12 @@ router.get(
   commsController.getAllCommsReceived
 )
 // Comunicaciones enviadas
-router.get('/sent/:user_id', auth.verifyToken, cache('2 minutes'), commsController.getAllCommsSent)
+router.get(
+  '/sent/:user_id',
+  auth.verifyToken,
+  cache('2 minutes'),
+  commsController.getAllCommsSent
+)
 // Comunicaciones borradas
 router.get(
   '/deleted/:user_id',

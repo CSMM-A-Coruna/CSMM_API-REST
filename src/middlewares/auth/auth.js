@@ -18,7 +18,7 @@ export const verifyToken = async (req, res, next) => {
 
   // Comprobamos que la firma es correcta
   try {
-    jwt.verify(token, config.jwtSecret);
+    jwt.verify(token, config.jwtSecret)
     next()
   } catch (err) {
     return res.status(401).json({ message: 'Token invalid' })
@@ -36,7 +36,7 @@ export const verifyAuthDownload = async (req, res, next) => {
   auth = auth.replace('Bearer ', '')
   // Comprobamos que la firma es correcta
   try {
-    jwt.verify(auth, config.jwtSecret);
+    jwt.verify(auth, config.jwtSecret)
     next()
   } catch (err) {
     return res

@@ -7,8 +7,11 @@ import cors from 'cors'
 import RoutesV1 from './routes/v1/routes'
 import RoutesV2 from './routes/v2/routes'
 import { useTreblle } from 'treblle'
-import { errorLogger, errorResponder, invalidPathHandler } from './middlewares/errorHandling'
-
+import {
+  errorLogger,
+  errorResponder,
+  invalidPathHandler,
+} from './middlewares/errorHandling'
 
 // Definimos la ruta base, para el sistema de descarga y subida de archivos
 global.__basedir = __dirname
@@ -40,7 +43,6 @@ if (app.settings.env === 'production') {
   app.use(morgan('dev'))
 }
 
-
 // Desactivamos response 304
 app.disable('etag')
 
@@ -68,6 +70,5 @@ app.use('/v2', RoutesV2)
 app.use(errorLogger)
 app.use(errorResponder)
 app.use(invalidPathHandler)
-
 
 export default app

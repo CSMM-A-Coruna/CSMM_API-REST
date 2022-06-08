@@ -4,7 +4,6 @@ import * as documentController from '../../controllers/resources/documentos.cont
 import { auth, adjuntoUtil } from '../../middlewares/index'
 import apicache from 'apicache'
 
-
 const cache = apicache.middleware
 const router = Router()
 
@@ -19,7 +18,12 @@ router.get(
   adjuntosController.downloadFile
 )
 // Coger todos los documentos
-router.get('/documentos', auth.verifyToken, cache('2 minutes'), documentController.getAllDocumentos)
+router.get(
+  '/documentos',
+  auth.verifyToken,
+  cache('2 minutes'),
+  documentController.getAllDocumentos
+)
 // Descargar un documento general
 router.get(
   '/documentos/generales/download',

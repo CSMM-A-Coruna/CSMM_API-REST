@@ -3,7 +3,6 @@ import * as preferenceController from '../../controllers/preferences.controller'
 import { auth } from '../../middlewares/index'
 import apicache from 'apicache'
 
-
 const cache = apicache.middleware
 const router = Router()
 // -- Preferencias del usuario --
