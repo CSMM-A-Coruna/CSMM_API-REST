@@ -1,7 +1,6 @@
 import { Router } from 'express'
 import { auth } from '../../middlewares/index'
 import * as llaveroController from '../../controllers/llavero.controller'
-import router from './auth.routes'
 import apicache from 'apicache'
 
 
